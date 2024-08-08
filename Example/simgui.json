@@ -22,5 +22,8 @@
         }
       }
     }
+  },
+  "NetworkTables Info": {
+    "visible": true
   }
 }
