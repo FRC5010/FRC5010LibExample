@@ -8,12 +8,23 @@ import java.io.File;
 import java.io.IOException;
 import org.frc5010.common.arch.GenericRobot;
 
-/** Add your docs here. */
-public class DrivetrainPropertiesJson {
-  public void readDrivetrainConfiguration(GenericRobot robot, File directory) throws IOException {
-    return;
-  }
-  ;
+/** Base class for Drivetrain properties classes */
+public interface DrivetrainPropertiesJson {
+  /** Drivetrain subsystem key name */
+  public static String DRIVE_TRAIN = "DriveTrain";
+  /**
+   * Reads the drivetrain configuration from the given directory
+   *
+   * @param robot the robot being configured
+   * @param directory the directory to read from
+   * @throws IOException
+   */
+  public void readDrivetrainConfiguration(GenericRobot robot, File directory) throws IOException;
 
-  public void createDriveTrain(GenericRobot robot) {}
+  /**
+   * Creates the drivetrain
+   *
+   * @param robot the robot being configured
+   */
+  public void createDriveTrain(GenericRobot robot);
 }

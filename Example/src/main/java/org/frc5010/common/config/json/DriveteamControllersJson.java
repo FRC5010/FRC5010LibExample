@@ -14,6 +14,7 @@ import java.util.Map;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.DriveteamControllerConfiguration;
 
+/** Contains an array of controller names and functions for reading in Controller configurations. */
 public class DriveteamControllersJson {
   public String[] controllers;
 

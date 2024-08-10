@@ -70,7 +70,7 @@ public class CameraConfigurationJson {
     switch (type) {
       case "limelight":
         {
-          camera = new LimeLightCamera(name, column);
+          camera = new LimeLightCamera(name, column, robotToCamera);
           break;
         }
       case "photonvision":

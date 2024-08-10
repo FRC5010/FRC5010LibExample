@@ -4,10 +4,17 @@
 
 package org.frc5010.common.config.json;
 
-/** Add your docs here. */
+/** Settings that determine the user mode settings of the robot */
 public class UserModeJson {
+  /** The maximum speed of the robot */
   public double maxSpeed = 0.0;
+
+  /** The maximum angular speed of the robot */
   public double maxAngularSpeed = 0.0;
-  public double maxAcceleration = 0.0;
-  public double maxAngularAcceleration = 0.0;
+
+  /** The maximum acceleration of the robot */
+  public double maxAccelleration = 0.0;
+
+  /** The maximum angular acceleration of the robot */
+  public double maxAngularAccelleration = 0.0;
 }

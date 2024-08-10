@@ -4,9 +4,14 @@
 
 package org.frc5010.common.config.json;
 
-/** Add your docs here. */
+/** Feed forward settings for a swerve drive module */
 public class YAGSLDriveModuleJson {
+  /** Static friction parameter */
   public double s = 0;
+
+  /** Velocity parameter */
   public double v = 0;
+
+  /** Acceleration parameter */
   public double a = 0;
 }

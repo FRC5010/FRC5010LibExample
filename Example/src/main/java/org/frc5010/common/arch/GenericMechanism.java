@@ -57,6 +57,9 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
   /**
    * setupDefaultCommands should setup the default commands needed by subsystems It could check for
    * Test mode and enable different commands
+   *
+   * @param driver - driver joystick
+   * @param operator - operator joystick
    */
   public abstract void setupDefaultCommands(Controller driver, Controller operator);
 

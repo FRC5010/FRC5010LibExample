@@ -8,16 +8,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.config.DrivetrainConfiguration;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 
-/** Add your docs here. */
-public class YAGSLDrivetrainJson extends DrivetrainPropertiesJson {
+/** Parameters for a YAGSLSwerveDrivetrain */
+public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
+  /** The directory to read from */
   public String directory = "";
+
+  /** The gear ratio of the turning motor */
   public double turningMotorGearRatio = 1.0;
+
+  /**
+   * The file names of the drive module's feed forward constants. These should match what are used
+   * in the YAGSL config
+   */
   public String[] driveModules;
 
   public void readDrivetrainConfiguration(GenericRobot robot, File baseDirectory)
@@ -43,7 +50,7 @@ public class YAGSLDrivetrainJson extends DrivetrainPropertiesJson {
     AprilTagPoseSystem atSystem =
         (AprilTagPoseSystem) robot.getSubsystem(CameraConfigurationJson.APRIL_TAG);
     robot.addSubsystem(
-        DrivetrainConfiguration.DRIVE_TRAIN,
+        DrivetrainPropertiesJson.DRIVE_TRAIN,
         new YAGSLSwerveDrivetrain(
             robot.getMechVisual(),
             robot.getDrivetrainConstants(),

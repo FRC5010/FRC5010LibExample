@@ -13,10 +13,17 @@ import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.arch.GenericRobot;
 
-/** Add your docs here. */
+/** JSON class with an array of cameras to configure */
 public class VisionPropertiesJson {
   public String[] cameras;
 
+  /**
+   * Creates cameras for a given robot using the provided map of camera configurations.
+   *
+   * @param robot the robot to add the cameras to
+   * @param map a map of camera configurations, where the key is the camera name and the value is
+   *     the configuration object
+   */
   public void createCameraSystem(GenericRobot robot, Map<String, CameraConfigurationJson> map) {
     map.keySet()
         .forEach(
@@ -25,6 +32,12 @@ public class VisionPropertiesJson {
             });
   }
 
+  /**
+   * Reads in cameras from the provided directory.
+   *
+   * @param directory the directory to read from
+   * @return the map of camera configurations
+   */
   public Map<String, CameraConfigurationJson> readCameraSystem(File directory)
       throws IOException, StreamReadException, DatabindException {
     Map<String, CameraConfigurationJson> camerasMap = new HashMap<>();

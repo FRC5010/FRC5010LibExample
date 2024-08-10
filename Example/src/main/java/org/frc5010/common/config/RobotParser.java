@@ -25,6 +25,13 @@ public class RobotParser {
   private static Map<String, CameraConfigurationJson> camerasMap;
   private static DrivetrainPropertiesJson driveTrainJson;
 
+  /**
+   * Creates a new RobotParser.
+   *
+   * @param robotDirectory the directory to read from
+   * @param robot the robot being configured
+   * @throws IOException
+   */
   public RobotParser(String robotDirectory, GenericRobot robot) throws IOException {
     File directory = new File(Filesystem.getDeployDirectory(), robotDirectory);
     checkDirectory(directory);
