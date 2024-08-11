@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** A subsystem for controlling the LED strip. */
 public class LedSubsystem extends SubsystemBase {
   private long currTime;
   private long startTime;
@@ -36,6 +37,12 @@ public class LedSubsystem extends SubsystemBase {
 
   private boolean ledConeMode = false;
 
+  /**
+   * Creates a new LedController.
+   *
+   * @param port
+   * @param length
+   */
   public LedSubsystem(int port, int length) {
     // init method, sets up the led strip and if you want it to be one solid color
     // you would do that here
@@ -79,6 +86,7 @@ public class LedSubsystem extends SubsystemBase {
     }
   }
 
+  /** Set up a rainbow action on the LED strip */
   private void rainbow() { // completely not needed but proof of concept if we want?
     // For every pixel
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -95,6 +103,7 @@ public class LedSubsystem extends SubsystemBase {
     m_rainbowFirstPixelHue %= 180;
   }
 
+  /** Set up a blink action on the LED strip */
   private void blink() {
     if (currTime - startTime >= delayMs) {
       if (ledOn) {
@@ -108,6 +117,7 @@ public class LedSubsystem extends SubsystemBase {
     }
   }
 
+  /** Set up an orbiting action on the LED strip */
   private void orbit() {
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
       if (i >= ledPos && (i - ledPos) < numberOrbit) {
@@ -130,10 +140,22 @@ public class LedSubsystem extends SubsystemBase {
     }
   }
 
+  /** Set up a rainbow action on the LED strip */
   public void setRainbow() {
     status = "rainbow";
   }
 
+  /**
+   * Set up an orbiting action on the LED strip
+   *
+   * @param r1 the red part of the color
+   * @param g1 the green part of the color
+   * @param b1 the blue part of the color
+   * @param r2 the red part of the color
+   * @param g2 the green part of the color
+   * @param b2 the blue part of the color
+   * @param percentLed the amount of leds to orbit
+   */
   public void setOrbit(int r1, int g1, int b1, int r2, int g2, int b2, double percentLed) {
     red1 = r1;
     green1 = g1;
@@ -145,6 +167,11 @@ public class LedSubsystem extends SubsystemBase {
     status = "orbit";
   }
 
+  /**
+   * Set up a blink action on the LED strip
+   *
+   * @param power the speed of action to represent
+   */
   public void speed(double power) {
     // this method shows that you can use the speed of something to change the leds,
     // and its pretty simple to do
@@ -159,6 +186,13 @@ public class LedSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
+  /**
+   * Set up a solid color on the LED strip
+   *
+   * @param red the red part of the color
+   * @param green the green part of the color
+   * @param blue the blue part of the color
+   */
   public void setSolidColor(int red, int green, int blue) {
     status = "solid";
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -167,6 +201,14 @@ public class LedSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
+  /**
+   * Set up a solid color on the LED strip
+   *
+   * @param red the red part of the color
+   * @param green the green part of the color
+   * @param blue the blue part of the color
+   * @param percent the percentage of the leds to set
+   */
   public void setSolidColorPercent(int red, int green, int blue, double percent) {
     status = "solid_percent";
     int percentLength = (int) ((double) m_ledBuffer.getLength() * percent);
@@ -181,6 +223,14 @@ public class LedSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
+  /**
+   * Set up a blink action on the LED strip
+   *
+   * @param red the red part of the color
+   * @param green the green part of the color
+   * @param blue the blue part of the color
+   * @param delayMs the amount of time to blink
+   */
   public void setBlink(int red, int green, int blue, long delayMs) {
     this.delayMs = delayMs;
     for (int i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -192,10 +242,12 @@ public class LedSubsystem extends SubsystemBase {
     status = "blink";
   }
 
+  /** Turn the LED strip off */
   public void off() {
     setSolidColor(0, 0, 0);
   }
 
+  /** Toggle the LED cone mode */
   public void togglePickUp() {
     ledConeMode = !ledConeMode;
   }

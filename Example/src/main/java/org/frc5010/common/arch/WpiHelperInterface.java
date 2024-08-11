@@ -6,7 +6,7 @@ package org.frc5010.common.arch;
 
 import org.frc5010.common.telemetery.WpiDataLogging;
 
-/** Add your docs here. */
+/** An interface for logging that can be mixed in classes */
 public interface WpiHelperInterface {
   /**
    * Logs a message to WPI logger

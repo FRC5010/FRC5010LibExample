@@ -13,6 +13,7 @@ import org.frc5010.common.arch.Persisted;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.mechanisms.DriveConstantsDef;
 
+/** A default driving command */
 public class DefaultDriveCommand extends Command {
   // TODO: Understand code
   private final GenericDrivetrain drivetrainSubsystem;
@@ -31,6 +32,15 @@ public class DefaultDriveCommand extends Command {
 
   private SlewRateLimiter xRateLimiter, yRateLimiter, thetaRateLimiter;
 
+  /**
+   * Creates a new DefaultDriveCommand
+   *
+   * @param drivetrainSubsystem The drivetrain subsystem
+   * @param translationXSupplier The supplier for the X translation
+   * @param translationYSupplier The supplier for the Y translation
+   * @param rotationSupplier The supplier for the rotation
+   * @param fieldOrientedDrive Whether the drive is field-oriented
+   */
   public DefaultDriveCommand(
       GenericDrivetrain drivetrainSubsystem,
       DoubleSupplier translationXSupplier,

@@ -14,12 +14,20 @@ import edu.wpi.first.wpilibj.Timer;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 
-/** Add your docs here. */
+/** A pose estimator for differential drive */
 public class DifferentialPose extends GenericPose {
   private GenericEncoder leftEncoder;
   private GenericEncoder rightEncoder;
   private final DifferentialDrivePoseEstimator poseEstimator;
 
+  /**
+   * Create a pose estimator for differential drive
+   *
+   * @param kinematics differential drive kinematics
+   * @param gyro gyroscope
+   * @param leftEncoder left encoder
+   * @param rightEncoder right encoder
+   */
   public DifferentialPose(
       DifferentialDriveKinematics kinematics,
       GenericGyro gyro,
@@ -52,12 +60,6 @@ public class DifferentialPose extends GenericPose {
   }
 
   public void updateLocalMeasurements() {
-    // not used anymore
-    // DifferentialDriveWheelSpeeds actWheelSpeeds = new DifferentialDriveWheelSpeeds(0, 0);
-    // poseEstimator.update(getGyroRotation2d(), 0, 0);
-
-    // actWheelSpeeds = new DifferentialDriveWheelSpeeds(leftEncoder.getVelocity(),
-    // rightEncoder.getVelocity());
     double leftDist = leftEncoder.getPosition();
     double rightDist = rightEncoder.getPosition();
     poseEstimator.updateWithTime(

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Add your docs here. */
+/** Registers values with the network tables */
 public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
   protected Map<String, Pair<String, Object>> sendables = new HashMap<>();
   protected Map<String, Pair<String, Object>> persisted = new HashMap<>();
@@ -31,9 +31,11 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     registered.add(wpiHelper);
   }
 
+  /** Adds registered Sendables to the Network Tables */
   public static void loadRegisteredToNetworkTables() {
     registered.stream().forEach(it -> SmartDashboard.putData(it));
   }
+
   /**
    * Gets the value of a WPI NT value of the specified type
    *
@@ -55,18 +57,42 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     return null;
   }
 
+  /**
+   * Gets the Double value of a WPI NT value
+   *
+   * @param key - String name of the variable being stored.
+   * @return - The value being stored.
+   */
   public Double getDouble(String key) {
     return (Double) get(key, Double.class.getSimpleName());
   }
 
+  /**
+   * Gets the Integer value of a WPI NT value
+   *
+   * @param key - String name of the variable being stored.
+   * @return - The Integer value being stored.
+   */
   public Integer getInteger(String key) {
     return (Integer) get(key, Integer.class.getSimpleName());
   }
 
+  /**
+   * Gets the String value of a WPI NT value
+   *
+   * @param key - String name of the variable being stored.
+   * @return - The String value being stored.
+   */
   public String getString(String key) {
     return (String) get(key, String.class.getSimpleName());
   }
 
+  /**
+   * Gets the Boolean value of a WPI NT value
+   *
+   * @param key - String name of the variable being stored.
+   * @return - The Boolean value being stored.
+   */
   public Boolean getBoolean(String key) {
     return (Boolean) get(key, Boolean.class.getSimpleName());
   }
@@ -92,26 +118,63 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * Declares a Double variable on the Network Tables for this class
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Double value being stored.
+   */
   public void declare(String key, Double val) {
     declare(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Declares an Integer variable on the Network Tables for this class
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Integer value being stored.
+   */
   public void declare(String key, Integer val) {
     declare(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Declares a String variable on the Network Tables for this class
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The String value being stored.
+   */
   public void declare(String key, String val) {
     declare(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Declares a Boolean variable on the Network Tables for this class
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Boolean value being stored.
+   */
   public void declare(String key, Boolean val) {
     declare(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Declares a Double variable on the Network Tables for this class and stores it as 0.0
+   *
+   * @param key - String name of the variable being stored.
+   */
   public void declareDouble(String key) {
     declare(key, Double.class.getSimpleName(), 0.0);
   }
 
+  /**
+   * Sets the value of a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param type - Enumerated type of the values supported by this interface.
+   * @param val - The value being stored. param - If the variable has not been declared, an error
+   *     will be printed and the value will not be set.
+   */
   public void set(String key, String type, Object val) {
     String valueType = type(key);
     if (null != valueType) {
@@ -126,22 +189,52 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * Sets the value of a Double variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Double value being stored.
+   */
   public void set(String key, Double val) {
     set(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Sets the value of an Integer variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Integer value being stored.
+   */
   public void set(String key, Integer val) {
     set(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Sets the value of a String variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The String value being stored.
+   */
   public void set(String key, String val) {
     set(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Sets the value of a Boolean variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Boolean value being stored.
+   */
   public void set(String key, Boolean val) {
     set(key, val.getClass().getSimpleName(), val);
   }
 
+  /**
+   * Gets the value of a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @return - The value being stored.
+   */
   public Object get(String key) {
     if (Preferences.containsKey(key)) {
       Pair<String, Object> value = persisted.get(key);
@@ -161,6 +254,12 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     return null;
   }
 
+  /**
+   * Gets the type of a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @return - The type of the value being stored.
+   */
   public String type(String key) {
     if (Preferences.containsKey(key)) {
       Pair<String, Object> value = persisted.get(key);
@@ -171,26 +270,63 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     return null;
   }
 
+  /**
+   * Declares a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - A pair of the type of the value and the value being stored.
+   */
   public void declare(String key, Pair<String, Object> val) {
     sendables.put(key, val);
   }
 
+  /**
+   * Persists an Integer variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Integer value being stored.
+   */
   public void persist(String key, Integer val) {
     persist(key, Integer.class.getSimpleName(), val);
   }
 
+  /**
+   * Persists a Double variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Double value being stored.
+   */
   public void persist(String key, Double val) {
     persist(key, Double.class.getSimpleName(), val);
   }
 
+  /**
+   * Persists a String variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The String value being stored.
+   */
   public void persist(String key, String val) {
     persist(key, String.class.getSimpleName(), val);
   }
 
+  /**
+   * Persists a Boolean variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The Boolean value being stored.
+   */
   public void persist(String key, Boolean val) {
     persist(key, Boolean.class.getSimpleName(), val);
   }
 
+  /**
+   * Persists a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param type - The type of the value being stored.
+   * @param val - The value being stored.
+   */
   public void persist(String key, String type, Object val) {
     Pair<String, Object> value = persisted.get(key);
     if (null == value) {
@@ -204,6 +340,12 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * Persists a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - A pair of the type of the value and the value being stored.
+   */
   public void persist(String key, Pair<String, Object> val) {
     if (!Preferences.containsKey(key)) {
       switch (val.getFirst()) {
@@ -231,6 +373,12 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * Sets a variable on the Network Tables
+   *
+   * @param key - String name of the variable being stored.
+   * @param val - The value being stored.
+   */
   public void set(String key, Object val) {
     if (Preferences.containsKey(key)) {
       Pair<String, Object> value = persisted.get(key);
@@ -250,6 +398,11 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * Adds a variable to a Display tab
+   *
+   * @param key - String name of the variable being stored.
+   */
   public void addToTab(ShuffleboardTab tab, String key) {
     if (Preferences.containsKey(key)) {
       Pair<String, Object> value = persisted.get(key);
@@ -283,6 +436,13 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * Adds a variable to the Display in a list
+   *
+   * @param key - String name of the variable being stored.
+   * @param list - String name of the list being stored in.
+   * @param key - String name of the variable being stored.
+   */
   public void addToTabList(ShuffleboardTab tab, String list, String key) {
     ShuffleboardLayout layout = tab.getLayout(list);
     if (Preferences.containsKey(key)) {
@@ -317,6 +477,12 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
     }
   }
 
+  /**
+   * initialsizes sendables on the network tables
+   *
+   * @param builder - The sendable builder
+   * @param loggingPrefix - The logging prefix
+   */
   public void initSendables(SendableBuilder builder, String loggingPrefix) {
     builder.setSmartDashboardType(loggingPrefix);
     for (String key : sendables.keySet()) {

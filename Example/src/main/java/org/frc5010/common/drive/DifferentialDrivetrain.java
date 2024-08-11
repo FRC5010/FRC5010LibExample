@@ -32,6 +32,7 @@ import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 
+/** A class for differential drive. */
 public class DifferentialDrivetrain extends GenericDrivetrain {
   private List<MotorController5010> motorList;
   private DifferentialDrive diffDrive;
@@ -47,6 +48,9 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
    *
    * @param left - requires the left motor as a template for the others
    * @param ports - a list of ports (assumes all ports are given)
+   * @param gyro - the gyroscope
+   * @param vision - the vision system
+   * @param mechVisual - the visualizer
    */
   public DifferentialDrivetrain(
       MotorController5010 left,
@@ -88,6 +92,12 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     diffDrive = new DifferentialDrive(left.getMotor(), right.getMotor());
   }
 
+  /**
+   * Arcade drive with throttle and rotation
+   *
+   * @param throttle - forward/reverse value
+   * @param steer - rotational value
+   */
   public void arcadeDrive(double throttle, double steer) {
     diffDrive.arcadeDrive(throttle, steer);
   }
@@ -118,9 +128,10 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   private Persisted<Double> motorRotationsPerWheelRotation;
   private Persisted<Double> kTrackwidthMeters;
 
-  // Create the simulation model of our drivetrain.
-  public static DifferentialDrivetrainSim driveSim;
+  /** Create the simulation model of our drivetrain. */
+  protected static DifferentialDrivetrainSim driveSim;
 
+  /** Initialize the simulation model of our drivetrain. */
   public void initSimulation() {
     KvLinear = new Persisted<>(DriveConstantsDef.KV_DRIVE_LINEAR, 1.3984);
     KaLinear = new Persisted<>(DriveConstantsDef.KA_DRIVE_LINEAR, 0.27137);
@@ -157,6 +168,11 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     rightEncoder = new SimulatedEncoder(12, 13);
   }
 
+  /**
+   * Get the chassis speeds.
+   *
+   * @return The chassis speeds
+   */
   public ChassisSpeeds getChassisSpeeds() {
     return chassisSpeeds;
   }

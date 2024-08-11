@@ -44,15 +44,21 @@ public class Drive extends GenericMechanism {
   private GenericDrivetrainConstants driveConstants;
   private List<? extends DrivePorts> motorPorts;
 
+  /** The drive types */
   public static class Type {
+    /** A differential drive */
     public static final String DIFF_DRIVE = "DifferentialDrive";
+    /** A Thrifty v1 swerve drive */
     public static final String THRIFTY_SWERVE_DRIVE = "ThriftySwerveDrive";
+    /** A MK4 swerve drive */
     public static final String MK4_SWERVE_DRIVE = "MK4SwerveDrive";
+    /** A MK4i swerve drive */
     public static final String MK4I_SWERVE_DRIVE = "MK4ISwerveDrive";
-    public static final String SDS_MK4I_SWERVE_DRIVE = "SDSMK4ISwerveDrive";
-    public static final String SDS_MK4_SWERVE_DRIVE = "SDSMK4SwerveDrive";
+    /** A YAGSL swerve drive */
     public static final String YAGSL_SWERVE_DRIVE = "YAGSLMK4ISwerveDrive";
+    /** A YAGSL Thrifty V1 swerve drive */
     public static final String YAGSL_THRIFTY_SWERVE_DRIVE = "YAGSLThriftySwerveDrive";
+    /** A YAGSL MK4 swerve drive */
     public static final String YAGSL_MK4_SWERVE_DRIVE = "YAGSLMK4SwerveDrive";
   }
 
@@ -62,6 +68,16 @@ public class Drive extends GenericMechanism {
   private static Persisted<Integer> driveVisualV;
   private String driveTrainFolder;
 
+  /**
+   * Create a Drive mechanism
+   *
+   * @param visionSystem the vision system for localization
+   * @param gyro the gyroscope
+   * @param type the drive type
+   * @param drivePorts the drive ports
+   * @param driveConstants the drive constants
+   * @param driveTrainFolder the drive train folder
+   */
   public Drive(
       AprilTagPoseSystem visionSystem,
       GenericGyro gyro,
@@ -165,6 +181,11 @@ public class Drive extends GenericMechanism {
             vision);
   }
 
+  /**
+   * Get the default drive command
+   *
+   * @return the default drive command
+   */
   public Command getDefaultCommand() {
     return defaultDriveCommand;
   }
@@ -184,6 +205,12 @@ public class Drive extends GenericMechanism {
     }
   }
 
+  /**
+   * Setup the default test commands
+   *
+   * @param driver - driver
+   * @param operator - operator
+   */
   public void setupTestDefaultCommands(Controller driver, Controller operator) {
     if (RobotBase.isReal()) {
       if (defaultDriveCommand == null) {
@@ -230,6 +257,11 @@ public class Drive extends GenericMechanism {
     driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
   }
 
+  /**
+   * Get the drive subsystem
+   *
+   * @return the drive subsystem
+   */
   public GenericDrivetrain getDrivetrain() {
     return drivetrain;
   }

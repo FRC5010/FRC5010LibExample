@@ -13,6 +13,11 @@ public class CanCoderEncoder implements GenericEncoder {
 
   private CANcoder canCoder;
 
+  /**
+   * Constructor for CanCoderEncoder
+   *
+   * @param CanID - CAN ID
+   */
   public CanCoderEncoder(int CanID) {
     this.canCoder = new CANcoder(CanID);
     CANcoderConfiguration config = new CANcoderConfiguration();

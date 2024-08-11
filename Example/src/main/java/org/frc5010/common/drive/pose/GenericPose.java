@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5010.common.sensors.gyro.GenericGyro;
 
-/** Add your docs here. */
+/** Base class for all pose estimators */
 public abstract class GenericPose {
   protected Field2d field2d;
   protected Matrix<N5, N1> stateStdDevs =
@@ -29,12 +29,23 @@ public abstract class GenericPose {
 
   protected GenericGyro gyro;
 
+  /**
+   * Constructor for GenericPose
+   *
+   * @param gyro gyro
+   */
   public GenericPose(GenericGyro gyro) {
     this.gyro = gyro;
   }
 
+  /** Reset the encoders. */
   public abstract void resetEncoders();
 
+  /**
+   * Get the Display field.
+   *
+   * @return the Display field
+   */
   public Field2d getField() {
     if (null == field2d) {
       field2d = new Field2d();
@@ -42,30 +53,65 @@ public abstract class GenericPose {
     return field2d;
   }
 
+  /**
+   * Get the current acceleration in the X direction.
+   *
+   * @return the current acceleration in the X direction
+   */
   public double getAccelX() {
     return 0;
   }
 
+  /**
+   * Get the current acceleration in the Y direction.
+   *
+   * @return the current acceleration in the Y direction
+   */
   public double getAccelY() {
     return 0;
   }
 
+  /**
+   * Get the current acceleration in the Z direction.
+   *
+   * @return the current acceleration in the Z direction
+   */
   public double getAccelZ() {
     return 0;
   }
 
+  /**
+   * Get the current gyro angle in the X direction.
+   *
+   * @return the current gyro angle in the X direction
+   */
   public double getGyroAngleX() {
     return gyro.getAngleX();
   }
 
+  /**
+   * Get the current gyro angle in the Y direction.
+   *
+   * @return the current gyro angle in the Y direction
+   */
   public double getGyroAngleY() {
     return gyro.getAngleY();
   }
 
+  /**
+   * Get the current gyro angle in the Z direction.
+   *
+   * @return the current gyro angle in the Z direction
+   */
   public double getGyroAngleZ() {
     return gyro.getAngleZ();
   }
 
+  /**
+   * Get the current gyro rotation as a {@link Rotation2d}.
+   *
+   * @return the current gyro rotation
+   */
   public Rotation2d getGyroRotation2d() {
     double angleZ = getGyroAngleZ();
     double radianZ = Math.toRadians(angleZ);
@@ -78,14 +124,31 @@ public abstract class GenericPose {
   public void resetGyro() {
     gyro.reset();
   }
-  ;
 
+  /**
+   * Update the pose estimator with vision data
+   *
+   * @param robotPose the robot pose
+   * @param imageCaptureTime the image capture time
+   * @param stdVector the standard deviation vector
+   */
   public abstract void updateVisionMeasurements(
       Pose2d robotPose, double imageCaptureTime, Vector<N3> stdVector);
 
+  /** Update the pose estimator with local data */
   public abstract void updateLocalMeasurements();
 
+  /**
+   * Get the current pose.
+   *
+   * @return the current pose
+   */
   public abstract Pose2d getCurrentPose();
 
+  /**
+   * Reset the pose estimator to a specified pose.
+   *
+   * @param pose the pose to reset to
+   */
   public abstract void resetToPose(Pose2d pose);
 }

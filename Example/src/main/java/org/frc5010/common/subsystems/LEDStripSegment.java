@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/** Add your docs here. */
+/** Defines a segment of an LED strip */
 public class LEDStripSegment {
   private int start, end;
   private Color8Bit color;
@@ -18,65 +18,138 @@ public class LEDStripSegment {
   public Function<Integer, Color8Bit> setLED = null;
   public Consumer<AddressableLEDBuffer> setLEDStrip = null;
 
+  /**
+   * Initialize an LED strip segment
+   *
+   * @param start - the start of the LED strip segment
+   * @param end - the end of the LED strip segment
+   * @param color - the color of the LED strip segment
+   */
   public LEDStripSegment(int start, int end, Color color) {
     this.start = start;
     this.end = end;
     this.color = color.getColor8Bit();
   }
 
+  /**
+   * Initialize an LED strip segment
+   *
+   * @param start - the start of the LED strip segment
+   * @param end - the end of the LED strip segment
+   * @param color - the color of the LED strip segment
+   */
   public LEDStripSegment(int start, int end, Color8Bit color) {
     this.start = start;
     this.end = end;
     this.color = color;
   }
 
+  /**
+   * Get the start of the LED strip segment
+   *
+   * @return the start position
+   */
   public int start() {
     return start;
   }
 
+  /**
+   * Get the end of the LED strip segment
+   *
+   * @return the end position
+   */
   public int end() {
     return end;
   }
 
+  /**
+   * Set the LED action at a particular position
+   *
+   * @param ledFunction - the function to set the LED at a particular position
+   */
   public void setLedAction(Function<Integer, Color8Bit> ledFunction) {
     setLED = ledFunction;
     setLEDStrip = null;
   }
 
+  /**
+   * Set the LED action using the whole LED buffer
+   *
+   * @param ledFunction - the function to set the LEDs taking in the whole LED buffer
+   */
   public void setLedAction(Consumer<AddressableLEDBuffer> ledFunction) {
     setLEDStrip = ledFunction;
     setLED = null;
   }
 
+  /**
+   * Set whether the LED strip segment is active
+   *
+   * @param active - whether the LED strip segment is active
+   */
   public LEDStripSegment setActive(boolean active) {
     this.active = active;
     this.needsUpdate = true;
     return this;
   }
 
+  /**
+   * Get whether the LED strip segment is active
+   *
+   * @return whether the LED strip segment is active
+   */
   public boolean isActive() {
     return active;
   }
 
+  /**
+   * Set whether the LED strip segment needs an update
+   *
+   * @param update - whether the LED strip segment needs an update
+   */
   public void setNeedsUpdate(boolean update) {
     needsUpdate = update;
   }
 
+  /**
+   * Get whether the LED strip segment needs an update
+   *
+   * @return whether the LED strip segment needs an update
+   */
   public boolean needsUpdate() {
     return needsUpdate;
   }
 
+  /**
+   * Set the color of the LED strip segment
+   *
+   * @param color - the color of the LED strip segment
+   */
   public LEDStripSegment setColor(Color color) {
     this.color = color.getColor8Bit();
     needsUpdate = true;
     return this;
   }
 
+  /**
+   * Get the color of the LED strip segment
+   *
+   * @return the color of the LED strip segment
+   */
+  public Color8Bit getColor() {
+    return color;
+  }
+
+  /**
+   * Get the current action used to set the LEDs at a particular position
+   *
+   * @return the current action
+   */
   public Function<Integer, Color8Bit> getCurrentAction() {
     return setLED;
   }
 
-  // solid color on
+  /** Turn on the LED strip segment */
   public void on() {
     setLedAction((Integer i) -> color);
     needsUpdate = true;
@@ -84,6 +157,7 @@ public class LEDStripSegment {
 
   int m_rainbowFirstPixelHue = 180;
 
+  /** Set up a rainbow action on the LED strip */
   public void rainbow() {
     m_rainbowFirstPixelHue = 180;
     needsUpdate = true;
@@ -104,12 +178,18 @@ public class LEDStripSegment {
         });
   }
 
+  /** Turn off the LED strip segment */
   public void off() {
     setLedAction((Integer i) -> Color.OFF.getColor8Bit());
     needsUpdate = true;
   }
 
-  // blink based on time
+  /**
+   * Blink the LED strip segment based on time *
+   *
+   * @param onTime - the time the LED should be on
+   * @param offTime - the time the LED should be off
+   */
   public void blink(long onTime, long offTime) {
     needsUpdate = true;
     setLedAction(
@@ -122,6 +202,11 @@ public class LEDStripSegment {
         });
   }
 
+  /**
+   * Flame effect on the LED strip segment
+   *
+   * @param scalar - the scalar of the flame
+   */
   public void flame(int scalar) {
     needsUpdate = true;
     setLedAction(
@@ -140,6 +225,17 @@ public class LEDStripSegment {
 
   int ledPos = start;
 
+  /**
+   * Orbit effect on the LED strip segment
+   *
+   * @param r1 red value of the first color
+   * @param g1 green value of the first color
+   * @param b1 blue value of the first color
+   * @param r2 red value of the second color
+   * @param g2 green value of the second color
+   * @param b2 blue value of the second color
+   * @param percentLed the percentage of the LED strip segment to orbit
+   */
   public void orbit(int r1, int g1, int b1, int r2, int g2, int b2, double percentLed) {
     int red1 = r1;
     int green1 = g1;
@@ -174,6 +270,16 @@ public class LEDStripSegment {
         });
   }
 
+  /** Chase effect on the LED strip segment */
+  public void chase() {
+    chase(false);
+  }
+
+  /**
+   * Rainbow chase effect on the LED strip segment
+   *
+   * @param rainbow - whether the rainbow should be used
+   */
   public void chase(boolean rainbow) {
     needsUpdate = true;
     int length = end - start;

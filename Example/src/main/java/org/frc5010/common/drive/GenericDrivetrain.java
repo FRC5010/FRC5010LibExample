@@ -47,16 +47,20 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     assert (null != poseEstimator);
     return poseEstimator.getGyroRotation2d();
   }
-  ;
 
+  /**
+   * Drive with ChassisSpeeds
+   *
+   * @param direction vector defining the direction and speed
+   */
   public abstract void drive(ChassisSpeeds direction);
 
   @Override
   public void periodic() {
     poseEstimator.update();
-    // lockWheels();
   }
 
+  /** Set the auto builder */
   public abstract void setAutoBuilder();
 
   public void disabledBehavior() {}

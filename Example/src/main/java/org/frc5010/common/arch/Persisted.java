@@ -74,39 +74,85 @@ public class Persisted<T> extends GenericPersisted {
     return defaultValue;
   }
 
+  /**
+   * setDefaultValue
+   *
+   * @param defaultValue the new default value
+   */
+  public void setDefaultValue(T defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+
+  /**
+   * Gets a Double of the persisted value
+   *
+   * @return the Double value
+   */
   public Double getDouble() {
     return Preferences.getDouble(getName(), (Double) defaultValue);
   }
 
+  /**
+   * Gets a Float of the persisted value
+   *
+   * @return the Float value
+   */
   public Float getFloat() {
     return Preferences.getFloat(getName(), (Float) defaultValue);
   }
 
+  /**
+   * Gets a Long of the persisted value
+   *
+   * @return the Long value
+   */
   public Long getLong() {
     return Preferences.getLong(getName(), (Long) defaultValue);
   }
 
+  /**
+   * Gets a Integer of the persisted value
+   *
+   * @return the Integer value
+   */
   public Integer getInteger() {
     return Preferences.getInt(getName(), (Integer) defaultValue);
   }
 
+  /**
+   * Gets a Boolean of the persisted value
+   *
+   * @return the Boolean value
+   */
   public Boolean getBoolean() {
     return Preferences.getBoolean(getName(), (Boolean) defaultValue);
   }
 
+  /** Gets a String of the persisted value */
   public String getString() {
     return Preferences.getString(getName(), (String) defaultValue);
   }
 
+  /**
+   * Sets the persisted value
+   *
+   * @param value The value
+   */
   public void set(T value) {
     this.defaultValue = value;
     init();
   }
 
+  /**
+   * Gets the persisted value
+   *
+   * @return
+   */
   public T get() {
     return initGet();
   }
 
+  /** Initialize the persisted value */
   private void init() {
     switch (getType()) {
       case "Double":
@@ -147,6 +193,11 @@ public class Persisted<T> extends GenericPersisted {
     }
   }
 
+  /**
+   * Initialize the persisted value and get it from storage
+   *
+   * @return the peristed value
+   */
   @SuppressWarnings("unchecked")
   private T initGet() {
     switch (getType()) {
@@ -181,32 +232,62 @@ public class Persisted<T> extends GenericPersisted {
     }
   }
 
-  /** Gets the value but doesn't display it in NetworkTables */
+  /**
+   * Gets the value but doesn't display it in NetworkTables
+   *
+   * @param name - String name of the variable being stored.
+   * @return - The Doubel value being stored.
+   */
   public static Double doubleVal(String name) {
     return Preferences.getDouble(name, 0);
   }
 
-  /** Gets the value but doesn't display it in NetworkTables */
+  /**
+   * Gets the value but doesn't display it in NetworkTables
+   *
+   * @param name - String name of the variable being stored.
+   * @return - The Float value being stored.
+   */
   public static Float floatVal(String name) {
     return Preferences.getFloat(name, 0);
   }
 
-  /** Gets the value but doesn't display it in NetworkTables */
+  /**
+   * Gets the value but doesn't display it in NetworkTables
+   *
+   * @param name - The name of the variable being stored.
+   * @return - The Long value being stored.
+   */
   public static Long longVal(String name) {
     return Preferences.getLong(name, 0);
   }
 
-  /** Gets the value but doesn't display it in NetworkTables */
+  /**
+   * Gets the value but doesn't display it in NetworkTables
+   *
+   * @param name - The name of the variable being stored.
+   * @return - The Integer value being stored.
+   */
   public static Integer integerVal(String name) {
     return Preferences.getInt(name, 0);
   }
 
-  /** Gets the value but doesn't display it in NetworkTables */
+  /**
+   * Gets the value but doesn't display it in NetworkTables
+   *
+   * @param name - The name of the variable being stored.
+   * @return - The Boolean value being stored.
+   */
   public static Boolean booleanVal(String name) {
     return Preferences.getBoolean(name, false);
   }
 
-  /** Gets the value but doesn't display it in NetworkTables */
+  /**
+   * Gets the value but doesn't display it in NetworkTables
+   *
+   * @param name - The name of the variable being stored.
+   * @return - The String value being stored.
+   */
   public static String stringVal(String name) {
     return Preferences.getString(name, "");
   }

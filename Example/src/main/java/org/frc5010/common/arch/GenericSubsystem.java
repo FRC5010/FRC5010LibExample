@@ -8,6 +8,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** Base class for subsystems that provides default logging and network table support */
 public class GenericSubsystem extends SubsystemBase implements WpiHelperInterface {
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
   protected String logPrefix = getClass().getSimpleName();
@@ -18,14 +19,29 @@ public class GenericSubsystem extends SubsystemBase implements WpiHelperInterfac
     WpiNetworkTableValuesHelper.register(this);
   }
 
+  /**
+   * Get the mechanism simulation visual
+   *
+   * @return the mechanism visual
+   */
   public Mechanism2d getMechSimulation() {
     return mechanismSimulation;
   }
 
+  /**
+   * Set the mechanism simulation visual
+   *
+   * @param mechSim the mechanism visual
+   */
   public void setMechSimulation(Mechanism2d mechSim) {
     mechanismSimulation = mechSim;
   }
 
+  /**
+   * Called when the command is created and registers it with the network tables
+   *
+   * @param builder - The sendable builder
+   */
   @Override
   public void initSendable(SendableBuilder builder) {
     log(logPrefix + ": Initializing sendables.");

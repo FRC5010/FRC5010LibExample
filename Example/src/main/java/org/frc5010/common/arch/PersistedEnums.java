@@ -6,14 +6,17 @@ package org.frc5010.common.arch;
 
 import edu.wpi.first.wpilibj.Preferences;
 
-/** Add your docs here. */
+/**
+ * Uses Enums to persist constants This enum values of this class are meant to be defined for the
+ * library and not by the user
+ */
 public enum PersistedEnums {
   /** Add constants to the enum */
   EXAMPLE_DOUBLE(0.0, Double.class),
   EXAMPLE_BOOLEAN(true, Boolean.class),
   ROBOT_VISUAL_H(60, Integer.class);
 
-  /**
+  /*
    * ---------------------------------------------------------------------------------------------
    */
   public Object value;
@@ -26,7 +29,7 @@ public enum PersistedEnums {
     initPersistedConstant();
   }
 
-  public void initPersistedConstant() {
+  private void initPersistedConstant() {
     if (!Preferences.containsKey(name())) {
       switch (type) {
         case "Double":
@@ -68,26 +71,56 @@ public enum PersistedEnums {
     }
   }
 
+  /**
+   * Gets the persisted value as a Double
+   *
+   * @return the persisted value
+   */
   public Double getDouble() {
     return Preferences.getDouble(name(), (Double) value);
   }
 
-  public Float getFloat(String key) {
+  /**
+   * Gets the persisted value as a Float
+   *
+   * @return - The persisted value
+   */
+  public Float getFloat() {
     return Preferences.getFloat(name(), (Float) value);
   }
 
+  /**
+   * Gets the persisted value as a Boolean
+   *
+   * @return the persisted value
+   */
   public Boolean getBoolean() {
     return Preferences.getBoolean(name(), (Boolean) value);
   }
 
+  /**
+   * Gets the persisted value as an Integer
+   *
+   * @return the persisted value
+   */
   public Integer getInteger() {
     return Preferences.getInt(name(), (Integer) value);
   }
 
+  /**
+   * Gets the persisted value as a Long
+   *
+   * @return the persisted value
+   */
   public Long getLong() {
     return Preferences.getLong(name(), (Long) value);
   }
 
+  /**
+   * Gets the persisted value as a String
+   *
+   * @return the persisted value
+   */
   public String getString() {
     return Preferences.getString(name(), (String) value);
   }

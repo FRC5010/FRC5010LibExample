@@ -22,24 +22,41 @@ import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.subsystems.Color;
 import org.frc5010.common.telemetery.WpiDataLogging;
 
+/** Robots should extend this class as the entry point into using the library */
 public abstract class GenericRobot extends GenericMechanism {
-  private SendableChooser<Command> command;
-  private Controller driver;
-  private Controller operator;
-  private static Alliance alliance;
-  private Map<String, GenericSubsystem> subsystems = new HashMap<>();
-  private Map<String, Controller> controllers = new HashMap<>();
-  private RobotParser parser;
-  private GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
-  Supplier<Pose2d> poseSupplier = () -> new Pose2d();
+  /** Selector for autonmous modes */
+  protected SendableChooser<Command> selectableCommand;
+  /** The driver controller */
+  protected Controller driver;
+  /** The operator controller */
+  protected Controller operator;
+  /** The current alliance color */
+  protected static Alliance alliance;
+  /** The map of subsystems created by the configuration system */
+  protected Map<String, GenericSubsystem> subsystems = new HashMap<>();
+  /** The map of sensors created by the configuration system */
+  protected Map<String, Controller> controllers = new HashMap<>();
+  /** The configuration parser */
+  protected RobotParser parser;
+  /** Constants that are used to configure the drivetrain */
+  protected GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
+  /** The pose supplier */
+  protected Supplier<Pose2d> poseSupplier = () -> new Pose2d();
 
+  /** The log level enums */
   public enum LogLevel {
     DEBUG,
     COMPETITION
   }
 
+  /** The current log level */
   public static LogLevel logLevel = LogLevel.DEBUG;
 
+  /**
+   * Creates a new robot using the provided configuration directory
+   *
+   * @param directory
+   */
   public GenericRobot(String directory) {
     super(Class.class.getName());
     try {
@@ -55,12 +72,20 @@ public abstract class GenericRobot extends GenericMechanism {
       DriverStation.silenceJoystickConnectionWarning(true);
       alliance = determineAllianceColor();
       values.declare("Alliance", alliance.toString());
+
+      // Put Mechanism 2d to SmartDashboard
+      mechVisual =
+          new Mechanism2d(
+              PersistedEnums.ROBOT_VISUAL_H.getInteger(),
+              RobotConstantsDef.robotVisualV.getInteger());
+      SmartDashboard.putData("Robot Visual", mechVisual);
     } catch (Exception e) {
       e.printStackTrace();
       return;
     }
   }
 
+  /** Creates a new robot using a programmatic configuration */
   public GenericRobot() {
     super(Class.class.getName());
 
@@ -85,22 +110,44 @@ public abstract class GenericRobot extends GenericMechanism {
     values.declare("Alliance", alliance.toString());
   }
 
+  /**
+   * Get a subsystem from the configuration
+   *
+   * @param name the key of the subsystem
+   * @return the subsystem
+   */
   public GenericSubsystem getSubsystem(String name) {
     return subsystems.get(name);
   }
 
+  /**
+   * Get the current log level
+   *
+   * @return the current log level
+   */
   public static LogLevel getLoggingLevel() {
     return logLevel;
   }
 
+  /**
+   * Set the current log level
+   *
+   * @param level the new log level
+   */
   public static void setLoggingLevel(LogLevel level) {
     logLevel = level;
   }
 
+  /**
+   * Return the Robot simulation visual
+   *
+   * @return the Mechanism 2d
+   */
   public Mechanism2d getMechVisual() {
     return mechVisual;
   }
 
+  /** Initialize the robot depending on whether we are simulating or not */
   @Override
   protected void initRealOrSim() {
     if (RobotBase.isReal()) {
@@ -127,6 +174,7 @@ public abstract class GenericRobot extends GenericMechanism {
     configureButtonBindings(driver, operator);
   }
 
+  /** Setup default commands depending on the robot mode */
   public void setupDefaultCommands() {
     if (DriverStation.isTeleop() || DriverStation.isAutonomous()) {
       setupDefaultCommands(driver, operator);
@@ -135,26 +183,30 @@ public abstract class GenericRobot extends GenericMechanism {
     }
   }
 
+  /** Build the auto commands and command chooser */
   public void buildAutoCommands() {
     initAutoCommands();
 
     // TODO: Figure out Pathplanner Warmup Command
 
-    command = AutoBuilder.buildAutoChooser();
-    if (null != command) {
-      shuffleTab.add("Auto Modes", command).withSize(2, 1);
+    selectableCommand = AutoBuilder.buildAutoChooser();
+    if (null != selectableCommand) {
+      shuffleTab.add("Auto Modes", selectableCommand).withSize(2, 1);
     }
   }
 
+  /** Get the selected auto command and also allow the robot to edit it */
   public Command getAutonomousCommand() {
-    return generateAutoCommand(command.getSelected());
+    return generateAutoCommand(selectableCommand.getSelected());
   }
 
+  /** Determine the alliance color, returning Blue by default */
   public Alliance determineAllianceColor() {
     Optional<Alliance> color = DriverStation.getAlliance();
     return color.orElse(Alliance.Blue);
   }
 
+  /** Choose the alliance color, returning Orange by default if undeterminable */
   public static Color chooseAllianceDisplayColor() {
     Optional<Alliance> allianceColor = DriverStation.getAlliance();
     if (allianceColor.isPresent()) {
@@ -163,34 +215,42 @@ public abstract class GenericRobot extends GenericMechanism {
     return Color.ORANGE;
   }
 
+  /** Get the current alliance */
   public static Alliance getAlliance() {
     return alliance;
   }
 
+  /** Add a controller to the configuration */
   public void addController(String name, Controller controller) {
     controllers.put(name, controller);
   }
 
+  /** Get a controller from the configuration */
   public Controller getController(String name) {
     return controllers.get(name);
   }
 
+  /** Add a subsystem to the configuration */
   public void addSubsystem(String name, GenericSubsystem subsystem) {
     subsystems.put(name, subsystem);
   }
 
+  /** Set the pose supplier */
   public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
     this.poseSupplier = poseSupplier;
   }
 
+  /** Get the pose supplier */
   public Supplier<Pose2d> getPoseSupplier() {
     return poseSupplier;
   }
 
+  /** Get the drivetrain constants */
   public GenericDrivetrainConstants getDrivetrainConstants() {
     return drivetrainConstants;
   }
 
+  /** Set the drivetrain constants */
   public void setDrivetrainConstants(GenericDrivetrainConstants constants) {
     this.drivetrainConstants = constants;
   }

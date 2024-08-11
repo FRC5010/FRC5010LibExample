@@ -74,10 +74,18 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
   /** setupPreferences should be implemented in place of using Constants files */
   protected void setupPreferences() {}
 
+  /** Used to initialize auto commands for the robot */
   public abstract void initAutoCommands();
 
+  /**
+   * Used to wrap the selected auto command in additional behavior
+   *
+   * @param autoCommand the auto command
+   * @return the wrapped auto command
+   */
   public abstract Command generateAutoCommand(Command autoCommand);
 
+  /** Executed periodically when robot is disabled */
   public void disabledBehavior() {}
 
   @Override
