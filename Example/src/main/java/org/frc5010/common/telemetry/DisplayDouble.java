@@ -10,12 +10,19 @@ import java.util.EnumSet;
 /** Add a double to the dashboard */
 public class DisplayDouble {
   // Variables
+  /** The value */
   protected double value_;
+  /** The name */
   protected final String name_;
+  /** The table */
   protected final String table_;
+  /** The topic */
   protected final DoubleTopic topic_;
+  /** The publisher */
   protected final DoublePublisher publisher_;
+  /** The subscriber */
   protected final DoubleSubscriber subscriber_;
+  /** The listener handle */
   protected int listenerHandle_;
 
   // Constructor

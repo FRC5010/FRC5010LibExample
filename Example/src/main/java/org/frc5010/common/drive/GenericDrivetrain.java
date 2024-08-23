@@ -17,12 +17,21 @@ import org.frc5010.common.commands.DefaultDriveCommand;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.sensors.Controller;
 
-/** Add your docs here. */
+/** Generic class for defining drivetrain behavior */
 public abstract class GenericDrivetrain extends GenericSubsystem {
+  /** The visual representation of the drivetrain */
   protected Mechanism2d mechVisual;
+
+  /** The pose estimator */
   protected DrivePoseEstimator poseEstimator;
+  /** Whether or not the robot is field oriented */
   protected boolean isFieldOrientedDrive = true;
 
+  /**
+   * Constructor
+   *
+   * @param mechVisual - The visual representation of the drivetrain
+   */
   public GenericDrivetrain(Mechanism2d mechVisual) {
     this.mechVisual = mechVisual;
     Shuffleboard.getTab("Drive")
@@ -30,19 +39,41 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         .withPosition(8, 0);
   }
 
+  /**
+   * Sets the pose estimator for the drivetrain.
+   *
+   * @param poseEstimator the new pose estimator to be set
+   */
   public void setDrivetrainPoseEstimator(DrivePoseEstimator poseEstimator) {
     this.poseEstimator = poseEstimator;
   }
 
+  /**
+   * Returns the DrivePoseEstimator object associated with this GenericDrivetrain.
+   *
+   * @return the DrivePoseEstimator object
+   */
   public DrivePoseEstimator getPoseEstimator() {
     return poseEstimator;
   }
 
+  /**
+   * Returns the Mechanism2d object associated with this GenericDrivetrain.
+   *
+   * @return the Mechanism2d object
+   * @throws NullPointerException if the poseEstimator is null
+   */
   public Mechanism2d getMechVisual() {
     assert (null != poseEstimator);
     return mechVisual;
   }
 
+  /**
+   * Returns the current heading of the pose estimator.
+   *
+   * @return the current heading as a Rotation2d object
+   * @throws AssertionError if the pose estimator is null
+   */
   public Rotation2d getHeading() {
     assert (null != poseEstimator);
     return poseEstimator.getGyroRotation2d();
@@ -55,6 +86,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    */
   public abstract void drive(ChassisSpeeds direction);
 
+  /** Updates the pose estimator in the periodic function. */
   @Override
   public void periodic() {
     poseEstimator.update();
@@ -63,12 +95,15 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   /** Set the auto builder */
   public abstract void setAutoBuilder();
 
+  /** Called when the robot is disabled */
   public void disabledBehavior() {}
 
+  /** Toggles the field oriented drive mode */
   public void toggleFieldOrientedDrive() {
     isFieldOrientedDrive = !isFieldOrientedDrive;
   }
 
+  /** Resets the orientation of the pose estimator */
   public void resetOrientation() {
     poseEstimator.resetToPose(
         new Pose2d(
@@ -76,8 +111,16 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
             new Rotation2d(GenericRobot.getAlliance() == Alliance.Blue ? 0 : Math.PI)));
   }
 
+  /** Locks the wheels */
   public void lockWheels() {}
 
+  /**
+   * Creates a default command for the GenericDrivetrain.
+   *
+   * @param driver the controller used to control the drivetrain
+   * @return a DefaultDriveCommand instance that drives the drivetrain based on the controller
+   *     inputs
+   */
   public Command createDefaultCommand(Controller driver) {
     return new DefaultDriveCommand(
         this,
@@ -87,6 +130,13 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         () -> isFieldOrientedDrive);
   }
 
+  /**
+   * Creates a default test command for the GenericDrivetrain.
+   *
+   * @param driver the controller used to control the drivetrain
+   * @return a DefaultDriveCommand instance that drives the drivetrain based on the controller
+   *     inputs
+   */
   public Command createDefaultTestCommand(Controller driver) {
     return new DefaultDriveCommand(
         this,
@@ -96,12 +146,25 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         () -> isFieldOrientedDrive);
   }
 
+  /**
+   * Checks if the GenericDrivetrain has any issues.
+   *
+   * @return false if the GenericDrivetrain does not have any issues, true otherwise.
+   */
   public boolean hasIssues() {
     return false;
   }
 
+  /** Resets the encoders */
   public void resetEncoders() {}
 
+  /**
+   * Generates an auto command that resets the encoders before starting and continues until the
+   * GenericDrivetrain has issues.
+   *
+   * @param autoCommand the command to be executed
+   * @return the generated auto command
+   */
   public Command generateAutoCommand(Command autoCommand) {
     return autoCommand
         .beforeStarting(

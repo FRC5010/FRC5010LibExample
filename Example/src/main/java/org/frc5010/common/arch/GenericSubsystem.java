@@ -10,8 +10,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Base class for subsystems that provides default logging and network table support */
 public class GenericSubsystem extends SubsystemBase implements WpiHelperInterface {
+  /** The network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
+  /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
+  /** The mechanism simulation */
   protected Mechanism2d mechanismSimulation;
 
   /** Creates a new LoggedSubsystem. */

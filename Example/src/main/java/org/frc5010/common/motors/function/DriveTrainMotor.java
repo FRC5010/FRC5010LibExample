@@ -6,12 +6,23 @@ package org.frc5010.common.motors.function;
 
 import org.frc5010.common.motors.MotorController5010;
 
-/** Add your docs here. */
+/** A class for handling drive train motors */
 public class DriveTrainMotor extends GenericFunctionalMotor {
+  /**
+   * Creates a new DriveTrainMotor
+   *
+   * @param motor The motor to use
+   */
   public DriveTrainMotor(MotorController5010 motor) {
     super(motor);
   }
 
+  /**
+   * Creates a new DriveTrainMotor
+   *
+   * @param motor The motor to use
+   * @param slewRate The slew rate
+   */
   public DriveTrainMotor(MotorController5010 motor, double slewRate) {
     super(motor);
     _motor.setSlewRate(slewRate);

@@ -16,6 +16,7 @@ import org.frc5010.common.config.DriveteamControllerConfiguration;
 
 /** Contains an array of controller names and functions for reading in Controller configurations. */
 public class DriveteamControllersJson {
+  /** An array of controller names */
   public String[] controllers;
 
   /**
@@ -34,6 +35,15 @@ public class DriveteamControllersJson {
             });
   }
 
+  /**
+   * Reads in controllers from the provided directory.
+   *
+   * @param directory the directory to read from
+   * @return the map of controller configurations
+   * @throws IOException if something fails on the filesystem
+   * @throws StreamReadException if something fails reading the file
+   * @throws DatabindException if something fails parsing the file
+   */
   public Map<String, DriveteamControllerConfiguration> readControllers(File directory)
       throws IOException, StreamReadException, DatabindException {
     Map<String, DriveteamControllerConfiguration> controllersMap = new HashMap<>();

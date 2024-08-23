@@ -15,21 +15,34 @@ import java.util.List;
 import java.util.Optional;
 import org.frc5010.common.vision.VisionConstants;
 
-/** Add your docs here. */
+/** A generic camera interface */
 public abstract class GenericCamera {
-
+  /** The list of updaters that will be called every time the camera is updated */
   protected List<Runnable> updaters = new ArrayList<>();
-  protected Transform3d cameraToRobot = new Transform3d();
+  /** The robot-to-camera transform */
+  protected Transform3d robotToCamera = new Transform3d();
+  /** The display tab to use */
   protected ShuffleboardTab visionTab;
+  /** The display layout to use */
   protected ShuffleboardLayout visionLayout;
+  /** Whether or not to update the values */
   protected boolean updateValues = false;
+  /** The index of the column in the dashboard */
   protected int colIndex;
+  /** The name of the camera */
   protected String name;
 
-  public GenericCamera(String name, int colIndex, Transform3d cameraToRobot) {
+  /**
+   * Create a new camera
+   *
+   * @param name the name of the camera
+   * @param colIndex the index of the column in the dashboard
+   * @param robotToCamera the robot-to-camera transform
+   */
+  public GenericCamera(String name, int colIndex, Transform3d robotToCamera) {
     this.colIndex = colIndex;
     this.name = name;
-    this.cameraToRobot = cameraToRobot;
+    this.robotToCamera = robotToCamera;
     visionTab = Shuffleboard.getTab(VisionConstants.SBTabVisionDisplay);
     visionLayout =
         visionTab
@@ -66,12 +79,24 @@ public abstract class GenericCamera {
     updaters.add(updater);
   }
 
+  /**
+   * Returns the name of the object.
+   *
+   * @return the name of the object
+   */
   public String name() {
     return name;
   }
 
-  public Transform3d getCameraToRobot() {
-    return cameraToRobot;
+  /**
+   * Returns the transformation matrix from the robot's coordinate system to the camera's coordinate
+   * system.
+   *
+   * @return the transformation matrix from the robot's coordinate system to the camera's coordinate
+   *     system
+   */
+  public Transform3d getRobotToCamera() {
+    return robotToCamera;
   }
 
   /**
@@ -83,17 +108,52 @@ public abstract class GenericCamera {
     updaters.remove(updater);
   }
 
+  /**
+   * Returns whether or not the camera has a valid target.
+   *
+   * @return whether or not the camera has a valid target
+   */
   public abstract boolean hasValidTarget();
 
+  /**
+   * Returns the yaw of the target in degrees along the horizontal X axis of the camera.
+   *
+   * @return the yaw of the target in degrees along the horizontal X axis of the camera
+   */
   public abstract double getTargetYaw();
 
+  /**
+   * Returns the pitch of the target in degrees along the vertical Y axis of the camera.
+   *
+   * @return the pitch of the target in degrees along the vertical Y axis of the camera
+   */
   public abstract double getTargetPitch();
 
+  /**
+   * Returns the area of the target.
+   *
+   * @return the area of the target
+   */
   public abstract double getTargetArea();
 
+  /**
+   * Returns the latency of the camera image.
+   *
+   * @return the latency of the camera image
+   */
   public abstract double getLatency();
 
+  /**
+   * Returns the current pose estimate of the robot.
+   *
+   * @return the current pose estimate of the robot
+   */
   public abstract Optional<Pose3d> getRobotPose();
 
+  /**
+   * Returns the target pose estimate relative to the robot.
+   *
+   * @return the target pose estimate relative to the robot
+   */
   public abstract Optional<Pose3d> getRobotToTargetPose();
 }

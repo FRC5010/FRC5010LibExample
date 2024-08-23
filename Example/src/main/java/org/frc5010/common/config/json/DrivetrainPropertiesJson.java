@@ -17,7 +17,7 @@ public interface DrivetrainPropertiesJson {
    *
    * @param robot the robot being configured
    * @param directory the directory to read from
-   * @throws IOException
+   * @throws IOException if something fails on the filesystem
    */
   public void readDrivetrainConfiguration(GenericRobot robot, File directory) throws IOException;
 

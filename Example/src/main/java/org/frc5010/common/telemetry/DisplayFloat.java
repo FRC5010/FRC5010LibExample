@@ -10,21 +10,28 @@ import java.util.EnumSet;
 /** Add a float to the dashboard */
 public class DisplayFloat {
   // Variables
+  /** The value */
   protected float value_;
+  /** The name */
   protected final String name_;
+  /** The table */
   protected final String table_;
+  /** The topic */
   protected final FloatTopic topic_;
+  /** The publisher */
   protected final FloatPublisher publisher_;
+  /** The subscriber */
   protected final FloatSubscriber subscriber_;
+  /** The listener handle */
   protected int listenerHandle_;
 
   // Constructor
   /**
    * Add a float to the dashboard
    *
-   * @param defaultValue
-   * @param name
-   * @param table
+   * @param defaultValue the default value
+   * @param name the name of the variable
+   * @param table the name of the table
    */
   public DisplayFloat(final float defaultValue, final String name, final String table) {
     value_ = defaultValue;

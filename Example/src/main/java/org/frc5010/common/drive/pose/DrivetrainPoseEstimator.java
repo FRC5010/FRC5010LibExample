@@ -25,15 +25,29 @@ import org.frc5010.common.vision.VisionSystem;
 
 /** Add your docs here. */
 public class DrivetrainPoseEstimator {
+  /** The vision system */
   private VisionSystem vision;
+
+  /** The 2d field */
   private final Field2d field2d;
+  /** The pose tracker */
   private final GenericPose poseTracker;
+  /** Whether or not to disable the vision update */
   private boolean disableVisionUpdate = false;
 
+  /** The closest tag to the robot */
   private int closestTagToRobot;
+  /** The closest target to the robot */
   private Pose3d closestTargetToRobot;
+  /** The tag poses */
   private List<Pose2d> tagPoses = new ArrayList<>();
 
+  /**
+   * Constructor for the DrivetrainPoseEstimator
+   *
+   * @param poseTracker the pose tracker to use
+   * @param vision the vision system
+   */
   public DrivetrainPoseEstimator(GenericPose poseTracker, VisionSystem vision) {
     this.poseTracker = poseTracker;
     this.vision = vision;
@@ -56,23 +70,52 @@ public class DrivetrainPoseEstimator {
     }
   }
 
+  /**
+   * Returns a formatted string representation of the current pose.
+   *
+   * @return a formatted string in the format "(x, y)" where x and y are the rounded coordinates of
+   *     the current pose.
+   */
   private String getFormattedPose() {
     var pose = getCurrentPose();
     return String.format("(%.2f, %.2f)", pose.getX(), pose.getY());
   }
 
+  /**
+   * Returns the current pose of the pose tracker.
+   *
+   * @return the current pose of the pose tracker as a Pose2d object
+   */
   public Pose2d getCurrentPose() {
     return poseTracker.getCurrentPose();
   }
 
+  /**
+   * Returns the current pose of the pose tracker as a Pose3d object.
+   *
+   * @return the current pose of the pose tracker as a Pose3d object
+   */
   public Pose3d getCurrentPose3d() {
     return new Pose3d(poseTracker.getCurrentPose());
   }
 
+  /**
+   * Sets the value of the `disableVisionUpdate` flag.
+   *
+   * @param disable the new value for the `disableVisionUpdate` flag
+   */
   public void setDisableVisionUpdate(boolean disable) {
     disableVisionUpdate = disable;
   }
 
+  /**
+   * Calculates the projected pose of the robot in the field after a given time and robot field
+   * speed.
+   *
+   * @param time the time in seconds
+   * @param robotFieldSpeed the robot's speed in the field
+   * @return the projected pose of the robot in the field
+   */
   public Pose3d getProjectedPose3d(double time, ChassisSpeeds robotFieldSpeed) {
     Transform3d movement =
         new Transform3d(
@@ -83,6 +126,12 @@ public class DrivetrainPoseEstimator {
     return getCurrentPose3d().plus(movement);
   }
 
+  /**
+   * Retrieves the current pose of the robot in 3D space as an array of doubles.
+   *
+   * @return An array of doubles containing the x, y, z coordinates of the pose, followed by the
+   *     quaternion components (w, x, y, z) of the rotation.
+   */
   public double[] getCurrentPose3dArray() {
     Pose3d pose = getCurrentPose3d();
     Quaternion rotation = pose.getRotation().getQuaternion();
@@ -97,16 +146,31 @@ public class DrivetrainPoseEstimator {
     };
   }
 
+  /**
+   * Returns the current rotation of the gyroscope as a Rotation2d object.
+   *
+   * @return the current rotation of the gyroscope as a Rotation2d object
+   */
   public Rotation2d getGyroRotation2d() {
     // System.out.println(poseTracker.getGyroRotation2d());
     return poseTracker.getGyroRotation2d();
   }
 
+  /**
+   * Returns the ID of the closest tag to the robot.
+   *
+   * @return the ID of the closest tag to the robot
+   */
   public int getClosestTagToRobot() {
     closestTagToRobot = AprilTags.poseToID.get(getCurrentPose().nearest(tagPoses));
     return closestTagToRobot;
   }
 
+  /**
+   * Returns the pose of the closest tag to the robot.
+   *
+   * @return the pose of the closest tag to the robot as a Pose3d object
+   */
   public Pose3d getPoseFromClosestTag() {
     Pose3d targetPose =
         vision.getFieldLayout().getTagPose(getClosestTagToRobot()).orElse(getCurrentPose3d());
@@ -114,11 +178,22 @@ public class DrivetrainPoseEstimator {
     return targetPose;
   }
 
+  /**
+   * Retrieves the pose of the closest vision target to the robot.
+   *
+   * @return the pose of the closest vision target as a Pose3d object
+   */
   public Pose3d getPoseFromClosestVisionTarget() {
     closestTargetToRobot = updatePoseFromClosestVisionTarget();
     return closestTargetToRobot;
   }
 
+  /**
+   * Updates the pose of the closest vision target to the robot based on the current vision data.
+   *
+   * @return the updated pose of the closest vision target as a Pose3d object, or null if the camera
+   *     transform is null
+   */
   public Pose3d updatePoseFromClosestVisionTarget() {
     double angleYaw = vision.getAngleX();
     double anglePitch = vision.getAngleY();
@@ -152,15 +227,29 @@ public class DrivetrainPoseEstimator {
     return targetPose;
   }
 
+  /**
+   * Sets the pose of a target object on the field.
+   *
+   * @param targetPose the pose to set for the target object
+   * @param targetName the name of the target object
+   */
   public void setTargetPoseOnField(Pose2d targetPose, String targetName) {
     field2d.getObject(targetName).setPose(targetPose);
   }
 
-  /*
+  /**
    * Perform all periodic pose estimation tasks.
    *
+   * <p>This method updates the local measurements of the pose tracker and checks if the vision
+   * update is disabled. If the vision update is not disabled, it retrieves the robot poses and pose
+   * distances from the vision's raw values. It then iterates over each camera and checks if the
+   * robot pose is not null. If the robot pose is not null, it retrieves the image capture time and
+   * checks if the fiducial ID for the camera is greater than 0. If the condition is true, it sets
+   * the visionUpdated flag to true, updates the dashboard with the camera name, and calls the
+   * updateVisionMeasurements method of the pose tracker with the robot pose, image capture time,
+   * and the standardized vector of the pose distance. Finally, it updates the dashboard with the
+   * vision updating status and sets the robot pose on the field2d.
    */
-
   public void update() {
 
     poseTracker.updateLocalMeasurements();
@@ -193,7 +282,7 @@ public class DrivetrainPoseEstimator {
    * when you have manually moved your robot in a particular position on the field (EX: when you
    * place it on the field at the start of the match).
    *
-   * @param pose
+   * @param pose the pose to reset to
    */
   public void resetToPose(Pose2d pose) {
     poseTracker.resetToPose(pose);

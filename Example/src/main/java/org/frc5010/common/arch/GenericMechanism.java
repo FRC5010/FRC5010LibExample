@@ -17,31 +17,62 @@ import org.frc5010.common.sensors.Controller;
  * functions:
  */
 public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
+  /** The visual representation of the mechanism */
   protected Mechanism2d mechVisual;
+  /** The tab for the mechanism */
   protected ShuffleboardTab shuffleTab;
+  /** The network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
+  /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
 
+  /**
+   * Constructor for GenericMechanism
+   *
+   * @param tabName - the name of the display tab
+   */
   public GenericMechanism(String tabName) {
     this.mechVisual = new Mechanism2d(1, 2);
     shuffleTab = Shuffleboard.getTab(tabName);
     WpiNetworkTableValuesHelper.register(this);
   }
 
+  /**
+   * Constructor for GenericMechanism with specified visual
+   *
+   * @param robotMechVisual - the visual representation of the mechanism
+   * @param shuffleTab - the tab for the mechanism
+   */
   public GenericMechanism(Mechanism2d robotMechVisual, ShuffleboardTab shuffleTab) {
     this.mechVisual = robotMechVisual;
     this.shuffleTab = shuffleTab;
     WpiNetworkTableValuesHelper.register(this);
   }
 
+  /**
+   * Retrieves the ShuffleboardTab associated with this GenericMechanism.
+   *
+   * @return the ShuffleboardTab for this GenericMechanism
+   */
   public ShuffleboardTab getDisplayTab() {
     return shuffleTab;
   }
 
+  /**
+   * Adds a variable to the Display in a list
+   *
+   * @param key - String name of the variable being stored.
+   */
   public void addToTab(String key) {
     values.addToTab(shuffleTab, key);
   }
 
+  /**
+   * Adds a variable to the Display in a list.
+   *
+   * @param list the name of the list to add the variable to
+   * @param key the name of the variable being stored
+   */
   public void addToTabList(String list, String key) {
     values.addToTabList(shuffleTab, list, key);
   }
@@ -63,6 +94,12 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
    */
   public abstract void setupDefaultCommands(Controller driver, Controller operator);
 
+  /**
+   * Sets up the default commands for testing purposes.
+   *
+   * @param driver the driver controller
+   * @param operator the operator controller
+   */
   public void setupTestDefaultCommmands(Controller driver, Controller operator) {}
 
   /**
@@ -88,6 +125,11 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
   /** Executed periodically when robot is disabled */
   public void disabledBehavior() {}
 
+  /**
+   * Initializes the sendable builder with the necessary components for this class.
+   *
+   * @param builder the sendable builder to initialize
+   */
   @Override
   public void initSendable(SendableBuilder builder) {
     log(logPrefix + ": Initializing sendables.");

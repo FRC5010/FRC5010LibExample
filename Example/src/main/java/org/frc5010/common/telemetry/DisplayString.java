@@ -10,12 +10,19 @@ import java.util.EnumSet;
 /** Add a string to the dashboard */
 public class DisplayString {
   // Variables
+  /** The value */
   protected String value_;
+  /** The name */
   protected final String name_;
+  /** The name of the table */
   protected final String table_;
+  /** The topic */
   protected final StringTopic topic_;
+  /** The publisher */
   protected final StringPublisher publisher_;
+  /** The subscriber */
   protected final StringSubscriber subscriber_;
+  /** The listener handle */
   protected int listenerHandle_;
 
   // Constructor

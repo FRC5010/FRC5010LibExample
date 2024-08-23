@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** Base class for commands that provides default logging and network table support */
 public class GenericCommand extends Command implements WpiHelperInterface {
+  /** Prefix for logging, usually the class name */
   protected String logPrefix = getName();
+  /** Network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
 
   /**
@@ -53,6 +55,8 @@ public class GenericCommand extends Command implements WpiHelperInterface {
   /**
    * Called once the command ends or is interrupted. Override this to implement the command with
    * logging.
+   *
+   * @param interrupted - true if the command was interrupted
    */
   public void stop(boolean interrupted) {}
 

@@ -14,7 +14,12 @@ package org.frc5010.common.config.json;
  * </ul>
  */
 public class DriveteamControllerJson {
+  /** The name of the controller */
   public String name;
+
+  /** The port number of the controller */
   public int port;
+
+  /** An array of axis file names for the controller */
   public String[] axis;
 }

@@ -10,12 +10,19 @@ import java.util.EnumSet;
 /** Add a boolean to the dashboard */
 public class DisplayBoolean {
   // Variables
+  /** The value being displayed */
   protected boolean value_;
+  /** The name of the variable */
   protected final String name_;
+  /** The table being stored in */
   protected final String table_;
+  /** The topic */
   protected final BooleanTopic topic_;
+  /** The publisher */
   protected final BooleanPublisher publisher_;
+  /** The subscriber */
   protected final BooleanSubscriber subscriber_;
+  /** The listener handle */
   protected int listenerHandle_;
 
   // Constructor

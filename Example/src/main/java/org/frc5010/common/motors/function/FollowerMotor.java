@@ -6,8 +6,14 @@ package org.frc5010.common.motors.function;
 
 import org.frc5010.common.motors.MotorController5010;
 
-/** Add your docs here. */
+/** A motor that acts as a follower. */
 public class FollowerMotor extends GenericFunctionalMotor {
+  /**
+   * Create a new follower motor.
+   *
+   * @param motor the motor to use as a follower
+   * @param leader the leader motor
+   */
   public FollowerMotor(MotorController5010 motor, MotorController5010 leader) {
     super(motor);
     setFollow(leader);

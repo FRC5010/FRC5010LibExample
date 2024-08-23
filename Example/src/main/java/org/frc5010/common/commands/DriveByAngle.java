@@ -12,25 +12,48 @@ import java.util.function.Supplier;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.mechanisms.DriveConstantsDef;
 
+/** Drive the robot where the angle is given */
 public class DriveByAngle extends Command {
   // TODO: Understand code
+  /** The subsystem used by this command. */
   private final GenericDrivetrain drivetrainSubsystem;
 
+  /** The translation supplier in the X direction. */
   private final DoubleSupplier m_translationXSupplier;
+  /** The translation supplier in the Y direction. */
   private final DoubleSupplier m_translationYSupplier;
+  /** The rotation supplier in the X direction */
   private final DoubleSupplier m_rotationXSupplier;
+  /** The rotation supplier in the Y direction */
   private final DoubleSupplier m_rotationYSupplier;
+  /** Whether to use field oriented drive */
   private Supplier<Boolean> fieldOrientedDrive;
 
+  /** The joystick simulation */
   private MechanismRoot2d joystick;
+  /** The X axis simulation */
   private MechanismLigament2d xAxis;
+  /** The Y axis simulation */
   private MechanismLigament2d yAxis;
+  /** The heading axis simulation */
   private MechanismLigament2d heading;
+  /** The max chassis velocity */
   private double maxChassisVelocity =
       Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
+  /** The max chassis rotation rate */
   private double maxChassisRotation =
       Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
 
+  /**
+   * Creates a new DriveByAngle command.
+   *
+   * @param drivetrainSubsystem the subsystem used by this command
+   * @param translationXSupplier the translation supplier in the X direction
+   * @param translationYSupplier the translation supplier in the Y direction
+   * @param rotationXSupplier the rotation supplier in the X direction
+   * @param rotationYSupplier the rotation supplier in the Y direction
+   * @param fieldOrientedDrive whether to use field oriented drive
+   */
   public DriveByAngle(
       GenericDrivetrain drivetrainSubsystem,
       DoubleSupplier translationXSupplier,

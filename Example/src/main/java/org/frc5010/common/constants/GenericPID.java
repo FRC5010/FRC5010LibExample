@@ -4,13 +4,24 @@
 
 package org.frc5010.common.constants;
 
-/** Add your docs here. */
+/** Class for holding PID constants */
 public class GenericPID {
-
+  /** The proportional constant */
   private double kP;
+
+  /** The integral constant */
   private double kI;
+
+  /** The derivative constant */
   private double kD;
 
+  /**
+   * Constructor for GenericPID
+   *
+   * @param kP - proportional
+   * @param kI - integral
+   * @param kD - derivative
+   */
   public GenericPID(double kP, double kI, double kD) {
 
     this.kP = kP;
@@ -18,26 +29,56 @@ public class GenericPID {
     this.kD = kD;
   }
 
+  /**
+   * Returns the value of the proportional constant.
+   *
+   * @return the value of the proportional constant
+   */
   public double getkP() {
     return kP;
   }
 
+  /**
+   * Sets the value of the proportional constant.
+   *
+   * @param kP the new value of the proportional constant
+   */
   public void setkP(double kP) {
     this.kP = kP;
   }
 
+  /**
+   * Returns the value of the integral constant.
+   *
+   * @return the value of the integral constant
+   */
   public double getkI() {
     return kI;
   }
 
+  /**
+   * Sets the value of the integral constant.
+   *
+   * @param kI the new value of the integral constant
+   */
   public void setkI(double kI) {
     this.kI = kI;
   }
 
+  /**
+   * Returns the value of the derivative constant.
+   *
+   * @return the value of the derivative constant
+   */
   public double getkD() {
     return kD;
   }
 
+  /**
+   * Sets the value of the derivative constant.
+   *
+   * @param kD the new value of the derivative constant
+   */
   public void setkD(double kD) {
     this.kD = kD;
   }

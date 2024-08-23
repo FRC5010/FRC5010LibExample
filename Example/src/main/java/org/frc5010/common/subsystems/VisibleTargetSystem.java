@@ -28,7 +28,7 @@ public class VisibleTargetSystem extends CameraSystem {
    */
   @Override
   public double getDistanceToTarget() {
-    Transform3d camera2Robot = camera.getCameraToRobot();
+    Transform3d camera2Robot = camera.getRobotToCamera();
     return hasTargets
         ? (targetHeight - camera2Robot.getTranslation().getZ())
                 / (Math.tan(Math.toRadians(targetPitch) + camera2Robot.getRotation().getY())

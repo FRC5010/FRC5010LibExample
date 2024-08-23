@@ -45,7 +45,9 @@ public abstract class GenericRobot extends GenericMechanism {
 
   /** The log level enums */
   public enum LogLevel {
+    /** The debug log level */
     DEBUG,
+    /** The competition log level */
     COMPETITION
   }
 
@@ -55,7 +57,7 @@ public abstract class GenericRobot extends GenericMechanism {
   /**
    * Creates a new robot using the provided configuration directory
    *
-   * @param directory
+   * @param directory the directory to read from
    */
   public GenericRobot(String directory) {
     super(Class.class.getName());
@@ -195,18 +197,30 @@ public abstract class GenericRobot extends GenericMechanism {
     }
   }
 
-  /** Get the selected auto command and also allow the robot to edit it */
+  /**
+   * Get the selected auto command and also allow the robot to edit it
+   *
+   * @return the selected auto command
+   */
   public Command getAutonomousCommand() {
     return generateAutoCommand(selectableCommand.getSelected());
   }
 
-  /** Determine the alliance color, returning Blue by default */
+  /**
+   * Determine the alliance color, returning Blue by default
+   *
+   * @return the alliance
+   */
   public Alliance determineAllianceColor() {
     Optional<Alliance> color = DriverStation.getAlliance();
     return color.orElse(Alliance.Blue);
   }
 
-  /** Choose the alliance color, returning Orange by default if undeterminable */
+  /**
+   * Choose the alliance color, returning Orange by default if undeterminable
+   *
+   * @return the alliance color
+   */
   public static Color chooseAllianceDisplayColor() {
     Optional<Alliance> allianceColor = DriverStation.getAlliance();
     if (allianceColor.isPresent()) {
@@ -215,42 +229,77 @@ public abstract class GenericRobot extends GenericMechanism {
     return Color.ORANGE;
   }
 
-  /** Get the current alliance */
+  /**
+   * Get the current alliance
+   *
+   * @return the alliance
+   */
   public static Alliance getAlliance() {
     return alliance;
   }
 
-  /** Add a controller to the configuration */
+  /**
+   * Add a controller to the configuration
+   *
+   * @param name the name of the controller
+   * @param controller the controller
+   */
   public void addController(String name, Controller controller) {
     controllers.put(name, controller);
   }
 
-  /** Get a controller from the configuration */
+  /**
+   * Get a controller from the configuration
+   *
+   * @param name the name of the controller
+   * @return the controller
+   */
   public Controller getController(String name) {
     return controllers.get(name);
   }
 
-  /** Add a subsystem to the configuration */
+  /**
+   * Add a subsystem to the configuration
+   *
+   * @param name the name of the subsystem
+   * @param subsystem the subsystem
+   */
   public void addSubsystem(String name, GenericSubsystem subsystem) {
     subsystems.put(name, subsystem);
   }
 
-  /** Set the pose supplier */
+  /**
+   * Set the pose supplier
+   *
+   * @param poseSupplier the pose supplier
+   */
   public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
     this.poseSupplier = poseSupplier;
   }
 
-  /** Get the pose supplier */
+  /**
+   * Get the pose supplier
+   *
+   * @return the pose supplier
+   */
   public Supplier<Pose2d> getPoseSupplier() {
     return poseSupplier;
   }
 
-  /** Get the drivetrain constants */
+  /**
+   * Get the drivetrain constants
+   *
+   * @return the drivetrain constants
+   */
   public GenericDrivetrainConstants getDrivetrainConstants() {
     return drivetrainConstants;
   }
 
-  /** Set the drivetrain constants */
+  /**
+   * Set the drivetrain constants
+   *
+   * @param constants the drivetrain constants
+   */
   public void setDrivetrainConstants(GenericDrivetrainConstants constants) {
     this.drivetrainConstants = constants;
   }

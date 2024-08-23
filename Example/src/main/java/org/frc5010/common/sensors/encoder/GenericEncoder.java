@@ -4,12 +4,20 @@
 
 package org.frc5010.common.sensors.encoder;
 
-/** Add your docs here. */
+/** A Generic encoder interface */
 public interface GenericEncoder {
+  /** Encoder measurement types */
   public static enum EncoderMeasurementType {
+    /** Encoder measurement type is quadrature */
     QUADRATURE,
+
+    /** Encoder measurement type is analog */
     ANALOG,
+
+    /** Encoder measurement type is relative */
     RELATIVE,
+
+    /** Encoder measurement type is absolute */
     ABSOLUTE
   }
 

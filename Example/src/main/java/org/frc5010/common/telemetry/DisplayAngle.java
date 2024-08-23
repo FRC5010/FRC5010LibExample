@@ -10,11 +10,17 @@ import org.frc5010.common.units.Angle;
 
 /** Add an angle to the dashboard */
 public class DisplayAngle extends Angle {
+  /** Name of the angle value */
   protected final String name_;
+  /** Name of the table to display the value */
   protected final String table_;
+  /** Topic for the angle */
   protected final DoubleTopic topic_;
+  /** Publisher for the angle */
   protected final DoublePublisher publisher_;
+  /** Subscriber for the angle */
   protected final DoubleSubscriber subscriber_;
+  /** Listener handle */
   protected int listenerHandle_;
 
   /**

@@ -46,7 +46,7 @@ public class PhotonVisionCamera extends GenericCamera {
       Transform3d cameraToRobot,
       Supplier<Pose2d> poseSupplier) {
     super(name, colIndex, cameraToRobot);
-    this.cameraToRobot = cameraToRobot;
+    this.robotToCamera = cameraToRobot;
     this.fieldLayout = fieldLayout;
     this.strategy = strategy;
     this.poseSupplier = poseSupplier;

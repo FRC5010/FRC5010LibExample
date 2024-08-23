@@ -10,12 +10,19 @@ import java.util.EnumSet;
 /** Add a long to the dashboard */
 public class DisplayLong {
   // Variables
+  /** The value */
   protected long value_;
+  /** The name */
   protected final String name_;
+  /** The table */
   protected final String table_;
+  /** The topic */
   protected final IntegerTopic topic_;
+  /** The publisher */
   protected final IntegerPublisher publisher_;
+  /** The subscriber */
   protected final IntegerSubscriber subscriber_;
+  /** The listener handle */
   protected int listenerHandle_;
 
   // Constructor

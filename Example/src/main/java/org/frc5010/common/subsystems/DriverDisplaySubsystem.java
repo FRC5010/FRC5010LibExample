@@ -10,11 +10,16 @@ import org.frc5010.common.drive.pose.DrivePoseEstimator;
 
 /** This was for creating a driver display for 2023 robot */
 public class DriverDisplaySubsystem extends SubsystemBase {
-  /** Creates a new DriverDisplaySubsystem. */
+  /** The pose estimator. */
   private DrivePoseEstimator poseEstimator;
-
+  /** The station ID that the driver should target */
   private String idToStation;
 
+  /**
+   * Creates a new DriverDisplaySubsystem.
+   *
+   * @param poseEstimator the pose estimator
+   */
   public DriverDisplaySubsystem(DrivePoseEstimator poseEstimator) {
     this.poseEstimator = poseEstimator;
   }

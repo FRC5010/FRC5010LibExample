@@ -18,29 +18,55 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.subsystems.LedSubsystem;
 
+/** A command that will automatically drive the robot to a particular position */
 public class DriveToPosition extends GenericCommand {
+  /** The subsystem that this command will run on */
   private SwerveDrivetrain swerveSubsystem;
+  /** The PID constants for translation */
   private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
-  private final GenericPID thetaTranslation = new GenericPID(.25, 0, 0);
+  /** The PID constants for rotation */
+  private final GenericPID pidRotation = new GenericPID(.25, 0, 0);
 
+  /** The constraints for translation in the X direction */
   private final TrapezoidProfile.Constraints xConstraints;
+  /** The constraints for translation in the Y direction */
   private final TrapezoidProfile.Constraints yConstraints;
+  /** The constraints for rotation */
   private final TrapezoidProfile.Constraints thetaConstraints;
 
+  /** The PID controller for translation in the X direction */
   private final ProfiledPIDController xController;
+  /** The PID controller for translation in the Y direction */
   private final ProfiledPIDController yController;
+  /** The PID controller for rotation */
   private final ProfiledPIDController thetaController;
 
+  /** The target pose */
   private Pose2d targetPose;
+  /** The target transform */
   private Transform2d targetTransform;
 
+  /** The robot pose provider */
   private Supplier<Pose2d> poseProvider;
+  /** The target pose provider */
   private Supplier<Pose3d> targetPoseProvider;
 
+  /** The speed that the robot will drive at in the X direction */
   private double xSpeed;
+  /** The speed that the robot will drive at in the Y direction */
   private double ySpeed;
+  /** The speed that the robot will rotate at */
   private double thetaSpeed;
 
+  /**
+   * Creates a new DriveToPosition command.
+   *
+   * @param swerveSubsystem The drivetrain subsystem
+   * @param poseProvider The pose provider
+   * @param targetPoseProvider The target pose provider
+   * @param ledSubsystem The LED subsystem
+   * @param offset The offset of the target pose
+   */
   public DriveToPosition(
       SwerveDrivetrain swerveSubsystem,
       Supplier<Pose2d> poseProvider,
@@ -70,10 +96,7 @@ public class DriveToPosition extends GenericCommand {
             pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
     thetaController =
         new ProfiledPIDController(
-            thetaTranslation.getkP(),
-            thetaTranslation.getkI(),
-            thetaTranslation.getkD(),
-            thetaConstraints);
+            pidRotation.getkP(), pidRotation.getkI(), pidRotation.getkD(), thetaConstraints);
 
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = (SwerveDrivetrain) swerveSubsystem;

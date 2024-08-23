@@ -19,14 +19,19 @@ import org.frc5010.common.sensors.gyro.GenericGyro;
 
 /** Base class for all pose estimators */
 public abstract class GenericPose {
+  /** The 2D field */
   protected Field2d field2d;
+  /** State standard deviations */
   protected Matrix<N5, N1> stateStdDevs =
       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5), 0.05, 0.05);
+  /** Odometry measurement standard deviations */
   protected Matrix<N3, N1> localMeasurementStdDevs =
       VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
+  /** Vision measurement standard deviations */
   protected Matrix<N3, N1> visionMeasurementStdDevs =
       VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
 
+  /** The gyro */
   protected GenericGyro gyro;
 
   /**

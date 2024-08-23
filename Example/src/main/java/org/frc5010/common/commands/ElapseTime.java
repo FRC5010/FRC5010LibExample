@@ -7,12 +7,18 @@ package org.frc5010.common.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
+/** A class that will run for a specified amount of time */
 public class ElapseTime extends Command {
-  /** Creates a new ElapseTime. */
+  /** the Timer. */
   Timer timer = new Timer();
-
+  /** the time to elapse */
   private double sec;
 
+  /**
+   * Creates a new ElapseTime.
+   *
+   * @param sec the time to elapse
+   */
   public ElapseTime(double sec) {
     timer.start();
     this.sec = sec;

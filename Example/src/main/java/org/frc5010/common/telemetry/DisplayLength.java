@@ -10,11 +10,17 @@ import org.frc5010.common.units.Length;
 
 /** Add a length to the dashboard */
 public class DisplayLength extends Length {
+  /** The name of the variable */
   protected final String name_;
+  /** The name of the table */
   protected final String table_;
+  /** The topic */
   protected final DoubleTopic topic_;
+  /** The publisher */
   protected final DoublePublisher publisher_;
+  /** The subscriber */
   protected final DoubleSubscriber subscriber_;
+  /** The listener handle */
   protected int listenerHandle_;
 
   // Constructor
