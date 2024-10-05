@@ -719,8 +719,8 @@ public class LimelightHelpers {
   /**
    * Switch to getBotPose
    *
-   * @param limelightName
-   * @return
+   * @param limelightName the name of the limelight camera
+   * @return An array of pose values
    */
   @Deprecated
   public static double[] getBotpose(String limelightName) {
@@ -730,8 +730,8 @@ public class LimelightHelpers {
   /**
    * Switch to getBotPose_wpiRed
    *
-   * @param limelightName
-   * @return
+   * @param limelightName the name of the limelight camera
+   * @return An array of pose values
    */
   @Deprecated
   public static double[] getBotpose_wpiRed(String limelightName) {
@@ -741,8 +741,8 @@ public class LimelightHelpers {
   /**
    * Switch to getBotPose_wpiBlue
    *
-   * @param limelightName
-   * @return
+   * @param limelightName the name of the limelight camera
+   * @return An array of pose values
    */
   @Deprecated
   public static double[] getBotpose_wpiBlue(String limelightName) {

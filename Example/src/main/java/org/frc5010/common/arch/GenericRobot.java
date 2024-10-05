@@ -27,9 +27,9 @@ public abstract class GenericRobot extends GenericMechanism {
   /** Selector for autonmous modes */
   protected SendableChooser<Command> selectableCommand;
   /** The driver controller */
-  protected Controller driver;
+  protected Optional<Controller> driver;
   /** The operator controller */
-  protected Controller operator;
+  protected Optional<Controller> operator;
   /** The current alliance color */
   protected static Alliance alliance;
   /** The map of subsystems created by the configuration system */
@@ -65,12 +65,15 @@ public abstract class GenericRobot extends GenericMechanism {
       parser = new RobotParser(directory, this);
       parser.createRobot(this);
 
-      driver = controllers.get("driver");
-      operator = controllers.get("operator");
-      if (!operator.isPluggedIn()) {
-        operator = driver;
-        driver.setSingleControllerMode(true);
-      }
+      driver = Optional.ofNullable(controllers.get("driver"));
+      operator = Optional.ofNullable(controllers.get("operator"));
+      operator.ifPresent(
+          op -> {
+            if (!op.isPluggedIn()) {
+              operator = driver;
+              driver.ifPresent(it -> it.setSingleControllerMode(true));
+            }
+          });
       DriverStation.silenceJoystickConnectionWarning(true);
       alliance = determineAllianceColor();
       values.declare("Alliance", alliance.toString());
@@ -92,13 +95,13 @@ public abstract class GenericRobot extends GenericMechanism {
     super(Class.class.getName());
 
     // Setup controllers
-    driver = new Controller(Controller.JoystickPorts.ZERO.ordinal());
-    controllers.put("driver", driver);
-    operator = new Controller(Controller.JoystickPorts.ONE.ordinal());
-    controllers.put("operator", operator);
-    if (!operator.isPluggedIn()) {
+    driver = Optional.of(new Controller(Controller.JoystickPorts.ZERO.ordinal()));
+    controllers.put("driver", driver.get());
+    operator = Optional.of(new Controller(Controller.JoystickPorts.ONE.ordinal()));
+    controllers.put("operator", operator.get());
+    if (!operator.get().isPluggedIn()) {
       operator = driver;
-      driver.setSingleControllerMode(true);
+      driver.get().setSingleControllerMode(true);
     }
     // Put Mechanism 2d to SmartDashboard
     mechVisual =
@@ -173,15 +176,15 @@ public abstract class GenericRobot extends GenericMechanism {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   public void configureButtonBindings() {
-    configureButtonBindings(driver, operator);
+    configureButtonBindings(driver.orElse(null), operator.orElse(null));
   }
 
   /** Setup default commands depending on the robot mode */
   public void setupDefaultCommands() {
     if (DriverStation.isTeleop() || DriverStation.isAutonomous()) {
-      setupDefaultCommands(driver, operator);
+      setupDefaultCommands(driver.orElse(null), operator.orElse(null));
     } else if (DriverStation.isTest()) {
-      setupTestDefaultCommmands(driver, operator);
+      setupTestDefaultCommmands(driver.orElse(null), operator.orElse(null));
     }
   }
 
@@ -190,10 +193,11 @@ public abstract class GenericRobot extends GenericMechanism {
     initAutoCommands();
 
     // TODO: Figure out Pathplanner Warmup Command
-
-    selectableCommand = AutoBuilder.buildAutoChooser();
-    if (null != selectableCommand) {
-      shuffleTab.add("Auto Modes", selectableCommand).withSize(2, 1);
+    if (AutoBuilder.isConfigured()) {
+      selectableCommand = AutoBuilder.buildAutoChooser();
+      if (null != selectableCommand) {
+        shuffleTab.add("Auto Modes", selectableCommand).withSize(2, 1);
+      }
     }
   }
 

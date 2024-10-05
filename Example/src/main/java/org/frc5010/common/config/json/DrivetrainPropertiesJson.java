@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import org.frc5010.common.arch.GenericRobot;
 
-/** Base class for Drivetrain properties classes */
+/** Interface for Drivetrain properties classes */
 public interface DrivetrainPropertiesJson {
   /** Drivetrain subsystem key name */
   public static String DRIVE_TRAIN = "DriveTrain";

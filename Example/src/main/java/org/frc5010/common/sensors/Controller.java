@@ -29,8 +29,24 @@ public class Controller {
       LEFT_STICK_BUTT,
       RIGHT_STICK_BUTT;
   private POVButton UP, RIGHT, DOWN, LEFT;
-  private Axis LEFT_X, LEFT_Y, L_TRIGGER, R_TRIGGER, RIGHT_X, RIGHT_Y;
-  private Map<Integer, Axis> axisMap = new HashMap<>();
+  private Map<Integer, Axis> axisMap =
+      new HashMap<>(
+          Map.of(
+              AxisNums.LEFT_X.ordinal(), new Axis(),
+              AxisNums.LEFT_Y.ordinal(), new Axis(),
+              AxisNums.L_TRIGGER.ordinal(), new Axis(),
+              AxisNums.R_TRIGGER.ordinal(), new Axis(),
+              AxisNums.RIGHT_X.ordinal(), new Axis(),
+              AxisNums.RIGHT_Y.ordinal(), new Axis()));
+
+  private static enum AxisNums {
+    LEFT_X,
+    LEFT_Y,
+    L_TRIGGER,
+    R_TRIGGER,
+    RIGHT_X,
+    RIGHT_Y
+  }
 
   /**
    * Defines a decoratable axis on a joystick This class can be decorated by classes which define
@@ -41,7 +57,7 @@ public class Controller {
     /** The axis port */
     protected int port;
     /** The joystick */
-    protected Joystick joystick;
+    protected Joystick joystick = new Joystick(0);
 
     /** The axis instance */
     protected Axis instance;
@@ -297,15 +313,6 @@ public class Controller {
     THREE
   }
 
-  private static enum AxisNums {
-    LEFT_X,
-    LEFT_Y,
-    L_TRIGGER,
-    R_TRIGGER,
-    RIGHT_X,
-    RIGHT_Y
-  }
-
   private static enum POVDirs {
     UP(0),
     RIGHT(90),
@@ -381,7 +388,7 @@ public class Controller {
    * @param yAxis the decorated axis object
    */
   public void setLeftYAxis(Axis yAxis) {
-    LEFT_Y = yAxis;
+    axisMap.put(AxisNums.LEFT_Y.ordinal(), yAxis);
   }
 
   /**
@@ -390,7 +397,7 @@ public class Controller {
    * @param xAxis the decorated axis object
    */
   public void setLeftXAxis(Axis xAxis) {
-    LEFT_X = xAxis;
+    axisMap.put(AxisNums.LEFT_X.ordinal(), xAxis);
   }
 
   /**
@@ -399,7 +406,7 @@ public class Controller {
    * @param yAxis the decorated axis object
    */
   public void setRightYAxis(Axis yAxis) {
-    RIGHT_Y = yAxis;
+    axisMap.put(AxisNums.RIGHT_Y.ordinal(), yAxis);
   }
 
   /**
@@ -408,7 +415,7 @@ public class Controller {
    * @param xAxis the decorated axis object
    */
   public void setRightXAxis(Axis xAxis) {
-    RIGHT_X = xAxis;
+    axisMap.put(AxisNums.RIGHT_X.ordinal(), xAxis);
   }
 
   /**
@@ -417,7 +424,7 @@ public class Controller {
    * @param leftTriggerAxis the decorated axis object
    */
   public void setLeftTrigger(Axis leftTriggerAxis) {
-    L_TRIGGER = leftTriggerAxis;
+    axisMap.put(AxisNums.L_TRIGGER.ordinal(), leftTriggerAxis);
   }
 
   /**
@@ -426,7 +433,7 @@ public class Controller {
    * @param rightTriggerAxis the decorated axis object
    */
   public void setRightTrigger(Axis rightTriggerAxis) {
-    R_TRIGGER = rightTriggerAxis;
+    axisMap.put(AxisNums.R_TRIGGER.ordinal(), rightTriggerAxis);
   }
 
   /**
@@ -435,8 +442,7 @@ public class Controller {
    * @return the new axis
    */
   public Axis createLeftYAxis() {
-    LEFT_Y = new Axis(AxisNums.LEFT_Y.ordinal(), joystick);
-    return LEFT_Y;
+    return new Axis(AxisNums.LEFT_Y.ordinal(), joystick);
   }
 
   /**
@@ -445,8 +451,7 @@ public class Controller {
    * @return the new axis
    */
   public Axis createLeftXAxis() {
-    LEFT_X = new Axis(AxisNums.LEFT_X.ordinal(), joystick);
-    return LEFT_X;
+    return new Axis(AxisNums.LEFT_X.ordinal(), joystick);
   }
 
   /**
@@ -455,8 +460,7 @@ public class Controller {
    * @return the new axis
    */
   public Axis createRightYAxis() {
-    RIGHT_Y = new Axis(AxisNums.RIGHT_Y.ordinal(), joystick);
-    return RIGHT_Y;
+    return new Axis(AxisNums.RIGHT_Y.ordinal(), joystick);
   }
 
   /**
@@ -465,8 +469,7 @@ public class Controller {
    * @return the new axis
    */
   public Axis createRightXAxis() {
-    RIGHT_X = new Axis(AxisNums.RIGHT_X.ordinal(), joystick);
-    return RIGHT_X;
+    return new Axis(AxisNums.RIGHT_X.ordinal(), joystick);
   }
 
   /**
@@ -475,8 +478,7 @@ public class Controller {
    * @return the new axis
    */
   public Axis createLeftTrigger() {
-    L_TRIGGER = new Axis(AxisNums.L_TRIGGER.ordinal(), joystick);
-    return L_TRIGGER;
+    return new Axis(AxisNums.L_TRIGGER.ordinal(), joystick);
   }
 
   /**
@@ -485,8 +487,7 @@ public class Controller {
    * @return the new axis
    */
   public Axis createRightTrigger() {
-    R_TRIGGER = new Axis(AxisNums.R_TRIGGER.ordinal(), joystick);
-    return R_TRIGGER;
+    return new Axis(AxisNums.R_TRIGGER.ordinal(), joystick);
   }
 
   /**
@@ -541,7 +542,7 @@ public class Controller {
    * @return the current value
    */
   public double getLeftYAxis() {
-    return LEFT_Y.get();
+    return axisMap.get(AxisNums.LEFT_Y.ordinal()).get();
   }
 
   /**
@@ -550,7 +551,7 @@ public class Controller {
    * @return the current value
    */
   public double getLeftXAxis() {
-    return LEFT_X.get();
+    return axisMap.get(AxisNums.LEFT_X.ordinal()).get();
   }
 
   /**
@@ -559,7 +560,7 @@ public class Controller {
    * @return the current value
    */
   public double getRightYAxis() {
-    return RIGHT_Y.get();
+    return axisMap.get(AxisNums.RIGHT_Y.ordinal()).get();
   }
 
   /**
@@ -568,7 +569,7 @@ public class Controller {
    * @return the current value
    */
   public double getRightXAxis() {
-    return RIGHT_X.get();
+    return axisMap.get(AxisNums.RIGHT_Y.ordinal()).get();
   }
 
   /**
@@ -577,7 +578,7 @@ public class Controller {
    * @return the current value
    */
   public double getLeftTrigger() {
-    return L_TRIGGER.get();
+    return axisMap.get(AxisNums.L_TRIGGER.ordinal()).get();
   }
 
   /**
@@ -586,7 +587,7 @@ public class Controller {
    * @return the current value
    */
   public double getRightTrigger() {
-    return R_TRIGGER.get();
+    return axisMap.get(AxisNums.R_TRIGGER.ordinal()).get();
   }
 
   /**

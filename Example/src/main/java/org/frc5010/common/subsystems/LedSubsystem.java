@@ -40,8 +40,8 @@ public class LedSubsystem extends SubsystemBase {
   /**
    * Creates a new LedController.
    *
-   * @param port
-   * @param length
+   * @param port the port of the LEDs
+   * @param length the length of the LEDs
    */
   public LedSubsystem(int port, int length) {
     // init method, sets up the led strip and if you want it to be one solid color
@@ -252,6 +252,7 @@ public class LedSubsystem extends SubsystemBase {
     ledConeMode = !ledConeMode;
   }
 
+  /** Get the LED cone mode */
   public boolean getLedConeMode() {
     return ledConeMode;
   }
