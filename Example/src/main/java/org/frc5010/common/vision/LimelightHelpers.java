@@ -836,7 +836,7 @@ public class LimelightHelpers {
    * Gets the Pose2d for easy use with Odometry vision pose estimator (addVisionMeasurement)
    *
    * @param limelightName
-   * @return
+   * @return A Pose2d
    */
   public static Pose2d getBotPose2d_wpiBlue(String limelightName) {
 

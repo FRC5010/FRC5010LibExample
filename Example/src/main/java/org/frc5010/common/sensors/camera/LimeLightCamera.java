@@ -137,6 +137,7 @@ public class LimeLightCamera extends GenericCamera {
   /** Update the camera */
   @Override
   public void update() {
+    LimelightHelpers.getLatestResults(name);
     if (hasValidTarget()) {
       poseEstimate =
           megatagChooser.getAsBoolean() ? getRobotPoseEstimateM1() : getRobotPoseEstimateM2();

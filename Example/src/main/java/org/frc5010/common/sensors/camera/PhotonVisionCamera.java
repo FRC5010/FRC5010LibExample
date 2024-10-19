@@ -5,147 +5,111 @@
 package org.frc5010.common.sensors.camera;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
-import java.util.function.Supplier;
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
-import org.photonvision.simulation.SimCameraProperties;
-import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-/** Add your docs here. */
+/** A camera using the PhotonVision library. */
 public class PhotonVisionCamera extends GenericCamera {
-  static VisionSystemSim visionSim = new VisionSystemSim("main");
-  protected static boolean fieldRegisted = false;
-
-  protected PhotonPoseEstimator poseEstimator;
+  /** The camera */
   protected PhotonCamera camera;
-  protected PoseStrategy strategy;
+  /** The field layout */
   protected AprilTagFieldLayout fieldLayout;
+  /** The target, if any */
   protected Optional<PhotonTrackedTarget> target = Optional.empty();
+  /** The latest camera result */
   protected PhotonPipelineResult camResult;
-  protected SimCameraProperties cameraProp = new SimCameraProperties();
-  protected PhotonCameraSim cameraSim;
-  protected Supplier<Pose2d> poseSupplier;
 
-  public PhotonVisionCamera(
-      String name,
-      int colIndex,
-      AprilTagFieldLayout fieldLayout,
-      PoseStrategy strategy,
-      Transform3d cameraToRobot,
-      Supplier<Pose2d> poseSupplier) {
+  /**
+   * Constructor
+   *
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param cameraToRobot - the camera-to-robot transform
+   */
+  public PhotonVisionCamera(String name, int colIndex, Transform3d cameraToRobot) {
     super(name, colIndex, cameraToRobot);
     this.robotToCamera = cameraToRobot;
-    this.fieldLayout = fieldLayout;
-    this.strategy = strategy;
-    this.poseSupplier = poseSupplier;
     camera = new PhotonCamera(name);
-    poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, camera, cameraToRobot);
-
-    if (RobotBase.isSimulation()) {
-      visionSim.addAprilTags(fieldLayout);
-
-      // A 640 x 480 camera with a 100 degree diagonal FOV.
-      cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(100));
-      // Approximate detection noise with average and standard deviation error in
-      // pixels.
-      cameraProp.setCalibError(0.25, 0.08);
-      // Set the camera image capture framerate (Note: this is limited by robot loop
-      // rate).
-      cameraProp.setFPS(40);
-      // The average and standard deviation in milliseconds of image data latency.
-      cameraProp.setAvgLatencyMs(35);
-      cameraProp.setLatencyStdDevMs(5);
-
-      cameraSim = new PhotonCameraSim(camera, cameraProp);
-      visionSim.addCamera(cameraSim, cameraToRobot);
-
-      if (!fieldRegisted) {
-        fieldRegisted = true;
-        visionTab.add("Vision Field", visionSim.getDebugField());
-      }
-    }
   }
 
+  /** Update the camera and target with the latest result */
   @Override
   public void update() {
     camResult = camera.getLatestResult();
-    if (camResult.hasTargets()) {
-      target = Optional.ofNullable(camResult.getBestTarget());
-    }
-    if (RobotBase.isSimulation()) {
-      visionSim.update(poseSupplier.get());
-      visionSim.resetRobotPose(poseSupplier.get());
-    }
   }
 
+  /**
+   * Does the camera have a valid target?
+   *
+   * @return true if the camera has a valid target
+   */
   @Override
   public boolean hasValidTarget() {
     return camResult.hasTargets();
   }
 
+  /**
+   * Get the target yaw
+   *
+   * @return the target yaw
+   */
   @Override
   public double getTargetYaw() {
     return target.map(t -> t.getYaw()).orElse(Double.MAX_VALUE);
   }
 
+  /**
+   * Get the target pitch
+   *
+   * @return the target pitch
+   */
   @Override
   public double getTargetPitch() {
     return target.map(t -> t.getPitch()).orElse(Double.MAX_VALUE);
   }
 
+  /**
+   * Get the target area
+   *
+   * @return the target area
+   */
   @Override
   public double getTargetArea() {
     return target.map(t -> t.getArea()).orElse(Double.MAX_VALUE);
   }
 
+  /**
+   * Get the latency in seconds
+   *
+   * @return the latency in seconds
+   */
   @Override
   public double getLatency() {
     return Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
   }
 
+  /**
+   * Get the target pose estimate relative to the robot.
+   *
+   * @return the target pose estimate relative to the robot
+   */
   @Override
   public Optional<Pose3d> getRobotPose() {
-    Pose3d robotPoseEst = null;
-    if (null != poseSupplier) {
-      if (strategy == PoseStrategy.CLOSEST_TO_REFERENCE_POSE) {
-        poseEstimator.setReferencePose(poseSupplier.get());
-      }
-      if (strategy == PoseStrategy.CLOSEST_TO_LAST_POSE) {
-        poseEstimator.setLastPose(poseSupplier.get());
-      }
-    }
-    if (target.isPresent()) {
-      Optional<EstimatedRobotPose> result = poseEstimator.update();
-
-      if (result.isPresent()
-          && result.get().estimatedPose != null
-          && target.get().getPoseAmbiguity() < 0.5) {
-        robotPoseEst = result.get().estimatedPose;
-      }
-    }
-    return Optional.ofNullable(robotPoseEst);
+    return Optional.empty();
   }
 
+  /**
+   * Get the target pose estimate relative to the robot.
+   *
+   * @return the target pose estimate relative to the robot
+   */
   @Override
   public Optional<Pose3d> getRobotToTargetPose() {
-    Pose3d targetPoseEst = null;
-    if (target.isPresent()) {
-      if (target.get().getFiducialId() != 0) {
-        targetPoseEst = fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null);
-      }
-    }
-    return Optional.ofNullable(targetPoseEst);
+    return Optional.empty();
   }
 }

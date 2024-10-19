@@ -17,8 +17,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.function.DoubleSupplier;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.Persisted;
@@ -46,6 +48,7 @@ public class SwerveDrivetrain extends GenericDrivetrain {
 
   private boolean ready = false;
   private Persisted<Double> maxChassisVelocity;
+  private Command defaultDriveCommand;
 
   public SwerveDrivetrain(
       Mechanism2d mechVisual,
@@ -88,6 +91,74 @@ public class SwerveDrivetrain extends GenericDrivetrain {
   public SwerveDrivetrain(Mechanism2d mechVisual, GenericDrivetrainConstants swerveConstants) {
     super(mechVisual);
     this.swerveConstants = swerveConstants;
+  }
+
+  public Command getDefaultCommand() {
+    return defaultDriveCommand;
+  }
+
+  public void setupDefaultCommands(Controller driver, Controller operator) {
+    // Handle real or simulation case for default commands
+    if (RobotBase.isReal()) {
+      if (defaultDriveCommand == null) {
+        this.defaultDriveCommand = createDefaultCommand(driver);
+        setDefaultCommand(defaultDriveCommand);
+      }
+    } else {
+      if (defaultDriveCommand == null) {
+        this.defaultDriveCommand = createDefaultCommand(driver);
+        setDefaultCommand(defaultDriveCommand);
+      }
+    }
+  }
+
+  /**
+   * Setup the default test commands
+   *
+   * @param driver - driver
+   * @param operator - operator
+   */
+  public void setupTestDefaultCommands(Controller driver, Controller operator) {
+    if (RobotBase.isReal()) {
+      if (defaultDriveCommand == null) {
+        this.defaultDriveCommand = createDefaultTestCommand(driver);
+        setDefaultCommand(defaultDriveCommand);
+      }
+    } else {
+      if (defaultDriveCommand == null) {
+        this.defaultDriveCommand = createDefaultCommand(driver);
+        setDefaultCommand(defaultDriveCommand);
+      }
+    }
+  }
+
+  /**
+   * Drive Axis - Left X and Y, Right X Reset Orientation - Start Lock Wheels - Left Bumper Field
+   * Oriented - B Button
+   */
+  public void configureButtonBindings(Controller driver, Controller operator) {
+    // If there needs to be some commands that are real or simulation only use this
+    if (!DriverStation.isTest()) {
+      if (RobotBase.isReal()) {
+        driver.createBButton().onTrue(Commands.runOnce(() -> toggleFieldOrientedDrive()));
+        driver.createStartButton().onTrue(Commands.runOnce(() -> resetOrientation()));
+      } else {
+
+      }
+      driver
+          .createLeftBumper()
+          .whileTrue(
+              Commands.run(
+                  () -> {
+                    lockWheels();
+                  },
+                  this));
+    }
+    // Put commands that can be both real and simulation afterwards
+
+    driver.setLeftXAxis(driver.createLeftXAxis().negate().deadzone(0.08));
+    driver.setLeftYAxis(driver.createLeftYAxis().negate().deadzone(0.08));
+    driver.setRightXAxis(driver.createRightXAxis().negate().deadzone(0.08));
   }
 
   @Override

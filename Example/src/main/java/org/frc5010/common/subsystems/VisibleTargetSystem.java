@@ -36,4 +36,32 @@ public class VisibleTargetSystem extends CameraSystem {
             + camera2Robot.getTranslation().getNorm()
         : Double.MAX_VALUE;
   }
+
+  /**
+   * Does the camera have a valid target?
+   *
+   * @return true if the camera has a valid target
+   */
+  @Override
+  public boolean hasValidTarget() {
+    return hasTargets;
+  }
+
+  /**
+   * Get the yaw of the target
+   *
+   * @return the yaw of the target
+   */
+  public double getTargetYaw() {
+    return targetYaw;
+  }
+
+  /**
+   * Get the pitch of the target
+   *
+   * @return the pitch of the target
+   */
+  public double getTargetPitch() {
+    return targetPitch;
+  }
 }
