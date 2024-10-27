@@ -14,32 +14,32 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** This is an example robot class. */
 public class ExampleRobot extends GenericRobot {
-	SwerveConstants swerveConstants;
-	GenericDrivetrain drivetrain;
+  SwerveConstants swerveConstants;
+  GenericDrivetrain drivetrain;
   DisplayValueSubsystem displayValueSubsystem = new DisplayValueSubsystem();
 
-	public ExampleRobot(String directory) {
-		super(directory);
-		drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainPropertiesJson.DRIVE_TRAIN);
-	}
+  public ExampleRobot(String directory) {
+    super(directory);
+    drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainPropertiesJson.DRIVE_TRAIN);
+  }
 
-    @Override
-    public void configureButtonBindings(Controller driver, Controller operator) {
-    }
+  @Override
+  public void configureButtonBindings(Controller driver, Controller operator) {
+  }
 
-    @Override
-    public void setupDefaultCommands(Controller driver, Controller operator) {
-		drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
-    }
+  @Override
+  public void setupDefaultCommands(Controller driver, Controller operator) {
+    drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
+  }
 
-    @Override
-    public void initAutoCommands() {
-        drivetrain.setAutoBuilder();
-    }
+  @Override
+  public void initAutoCommands() {
+    drivetrain.setAutoBuilder();
+  }
 
-    @Override
-    public Command generateAutoCommand(Command autoCommand) {
-		return drivetrain.generateAutoCommand(autoCommand);
-    }
+  @Override
+  public Command generateAutoCommand(Command autoCommand) {
+    return drivetrain.generateAutoCommand(autoCommand);
+  }
 
 }
