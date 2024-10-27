@@ -5,6 +5,7 @@
 package org.frc5010.common.sensors.camera;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -54,6 +55,10 @@ public abstract class GenericCamera {
     visionLayout.addDouble("Target Pitch", this::getTargetPitch);
     visionLayout.addDouble("Target Area", this::getTargetArea);
     visionLayout.addDouble("Latency", this::getLatency);
+    visionLayout.addDouble(
+        "Pose X", () -> getRobotPose().orElse(new Pose3d(-1, -1, 0, new Rotation3d())).getX());
+    visionLayout.addDouble(
+        "Pose Y", () -> getRobotPose().orElse(new Pose3d(-1, -1, 0, new Rotation3d())).getY());
   }
 
   /**

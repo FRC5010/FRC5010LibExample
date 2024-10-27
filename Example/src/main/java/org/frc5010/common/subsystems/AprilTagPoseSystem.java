@@ -166,9 +166,11 @@ public class AprilTagPoseSystem extends CameraSystem {
   public boolean hasValidTarget() {
     for (GenericCamera camera : cameras) {
       if (camera.hasValidTarget()) {
+        values.set(HAS_VALID_TARGET, true);
         return true;
       }
     }
+    values.set(HAS_VALID_TARGET, false);
     return false;
   }
 }

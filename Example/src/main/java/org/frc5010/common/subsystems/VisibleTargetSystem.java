@@ -8,17 +8,34 @@ import edu.wpi.first.math.geometry.Transform3d;
 import org.frc5010.common.sensors.camera.GenericCamera;
 
 public class VisibleTargetSystem extends CameraSystem {
-  boolean hasTargets = false;
-  double targetHeight = 0;
-  double targetPitch = 0;
-  double targetYaw = 0;
+  protected boolean hasTargets = false;
+  protected double targetHeight = 0;
+  protected double targetPitch = 0;
+  protected double targetYaw = 0;
+  protected String TARGET_PITCH = "targetPitch";
+  protected String TARGET_YAW = "targetYaw";
 
   public VisibleTargetSystem(GenericCamera camera, double targetHeight) {
     super(camera);
     this.targetHeight = targetHeight;
-    camera.registerUpdater(() -> hasTargets = camera.hasValidTarget());
-    camera.registerUpdater(() -> targetYaw = camera.getTargetYaw());
-    camera.registerUpdater(() -> targetPitch = camera.getTargetPitch());
+    values.declare(TARGET_PITCH, 0.0);
+    values.declare(TARGET_YAW, 0.0);
+
+    camera.registerUpdater(
+        () -> {
+          hasTargets = camera.hasValidTarget();
+          values.set(HAS_VALID_TARGET, hasTargets);
+        });
+    camera.registerUpdater(
+        () -> {
+          targetYaw = camera.getTargetYaw();
+          values.set(TARGET_YAW, targetYaw);
+        });
+    camera.registerUpdater(
+        () -> {
+          targetPitch = camera.getTargetPitch();
+          values.set(TARGET_PITCH, targetPitch);
+        });
   }
 
   /**
@@ -34,7 +51,7 @@ public class VisibleTargetSystem extends CameraSystem {
                 / (Math.tan(Math.toRadians(targetPitch) + camera2Robot.getRotation().getY())
                     * Math.cos(Math.toRadians(targetYaw)))
             + camera2Robot.getTranslation().getNorm()
-        : Double.MAX_VALUE;
+        : -1;
   }
 
   /**

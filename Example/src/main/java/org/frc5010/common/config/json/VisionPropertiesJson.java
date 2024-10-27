@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.vision.AprilTags;
 
 /** JSON class with an array of cameras to configure */
 public class VisionPropertiesJson {
@@ -25,11 +27,19 @@ public class VisionPropertiesJson {
    *     the configuration object
    */
   public void createCameraSystem(GenericRobot robot, Map<String, CameraConfigurationJson> map) {
-    map.keySet()
-        .forEach(
-            it -> {
-              map.get(it).configureCamera(robot);
-            });
+    if (map.isEmpty()) {
+      AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem("apriltag");
+      if (atSystem == null) {
+        atSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
+        robot.addSubsystem("apriltag", atSystem);
+      }
+    } else {
+      map.keySet()
+          .forEach(
+              it -> {
+                map.get(it).configureCamera(robot);
+              });
+    }
   }
 
   /**

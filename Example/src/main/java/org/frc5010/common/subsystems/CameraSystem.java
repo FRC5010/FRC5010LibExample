@@ -16,6 +16,7 @@ public abstract class CameraSystem extends GenericSubsystem {
   /** The camera object. */
   protected GenericCamera camera;
 
+  protected String HAS_VALID_TARGET = "hasValidTarget";
   /**
    * Creates a new CameraSystem.
    *
@@ -24,6 +25,7 @@ public abstract class CameraSystem extends GenericSubsystem {
   public CameraSystem(GenericCamera camera) {
     super();
     this.camera = camera;
+    values.declare(HAS_VALID_TARGET, false);
   }
 
   /**
