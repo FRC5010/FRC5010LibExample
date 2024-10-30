@@ -41,7 +41,7 @@ public class RobotContainer implements WpiHelperInterface {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		return robot.generateAutoCommand(command.getSelected());
+		return robot.getAutonomousCommand();
 	}
 
 	public void initAutoCommands() {
