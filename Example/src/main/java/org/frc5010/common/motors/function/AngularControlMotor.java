@@ -6,9 +6,9 @@ package org.frc5010.common.motors.function;
 
 import org.frc5010.common.motors.MotorController5010;
 
-/** Add your docs here. */
-public class PositionControlMotor extends GenericControlledMotor {
-  public PositionControlMotor(MotorController5010 motor) {
+/** Provides PID control for angular motors */
+public class AngularControlMotor extends GenericControlledMotor {
+  public AngularControlMotor(MotorController5010 motor) {
     super(motor);
   }
 }

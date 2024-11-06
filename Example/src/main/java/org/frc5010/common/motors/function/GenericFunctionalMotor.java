@@ -4,7 +4,10 @@
 
 package org.frc5010.common.motors.function;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.frc5010.common.motors.MotorController5010;
@@ -16,6 +19,10 @@ import org.frc5010.common.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 public class GenericFunctionalMotor implements MotorController5010 {
   /** The motor */
   protected MotorController5010 _motor;
+
+  protected Mechanism2d _visualizer;
+  protected Pose3d _robotToMotor;
+  protected String _visualName;
 
   /**
    * Constructor for a motor
@@ -228,5 +235,33 @@ public class GenericFunctionalMotor implements MotorController5010 {
   public void factoryDefault() {
     // Not sure if it needs to return anything
     _motor.factoryDefault();
+  }
+
+  public GenericFunctionalMotor setVisualizer(
+      Mechanism2d visualizer, Pose3d robotToMotor, String visualName) {
+    _visualizer = visualizer;
+    _robotToMotor = robotToMotor;
+    _visualName = visualName;
+    return this;
+  }
+
+  public Mechanism2d getVisualizer() {
+    return _visualizer;
+  }
+
+  /** Needs to be overridden by subclasses to draw the motor behavior on the visualizer */
+  public void draw() {}
+
+  public Pose3d getRobotToMotor() {
+    return _robotToMotor;
+  }
+
+  /** Needs to be overridden by subclasses to update the motor behavior during simulation */
+  public void simulationUpdate() {}
+
+  @Override
+  public DCMotor getMotorSimulationType() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
   }
 }

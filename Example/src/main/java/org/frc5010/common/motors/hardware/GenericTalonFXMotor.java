@@ -14,6 +14,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -133,5 +134,11 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
 
   public void enableFOC(boolean enableFOC) {
     this.enableFOC = enableFOC;
+  }
+
+  @Override
+  public DCMotor getMotorSimulationType() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
   }
 }

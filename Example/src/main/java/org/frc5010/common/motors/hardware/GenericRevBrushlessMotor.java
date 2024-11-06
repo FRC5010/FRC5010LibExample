@@ -5,6 +5,7 @@
 package org.frc5010.common.motors.hardware;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -171,5 +172,11 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
   @Override
   public void factoryDefault() {
     super.restoreFactoryDefaults();
+  }
+
+  @Override
+  public DCMotor getMotorSimulationType() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
   }
 }

@@ -4,6 +4,7 @@
 
 package org.frc5010.common.motors;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -101,4 +102,11 @@ public interface MotorController5010 extends MotorController {
    * @return The default SysIdRoutine
    */
   SysIdRoutine getDefaultSysId(SubsystemBase subsystemBase);
+
+  /**
+   * Returns the simulated instance of the motor
+   *
+   * @return The simulated instance of the motor
+   */
+  DCMotor getMotorSimulationType();
 }

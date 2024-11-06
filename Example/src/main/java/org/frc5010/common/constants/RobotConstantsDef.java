@@ -4,8 +4,6 @@
 
 package org.frc5010.common.constants;
 
-import org.frc5010.common.arch.Persisted;
-
 /** For Constants that don't change from year to year. */
 public class RobotConstantsDef {
   public static final String DRIVE_VISUAL_H = "driveVisualH";
@@ -16,6 +14,6 @@ public class RobotConstantsDef {
   // --------------------------------------------------------
   // Persisted values can be handled in a Constants file like this as an example
   // Recommend using other files for this
-  public static Persisted<Integer> robotVisualV =
-      new Persisted<>(RobotConstantsDef.ROBOT_VISUAL_V, 60);
+  public static int robotVisualV = 60;
+  public static int robotVisualH = 60;
 }

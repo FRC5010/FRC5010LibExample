@@ -79,10 +79,7 @@ public abstract class GenericRobot extends GenericMechanism {
       values.declare("Alliance", alliance.toString());
 
       // Put Mechanism 2d to SmartDashboard
-      mechVisual =
-          new Mechanism2d(
-              PersistedEnums.ROBOT_VISUAL_H.getInteger(),
-              RobotConstantsDef.robotVisualV.getInteger());
+      mechVisual = new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
       SmartDashboard.putData("Robot Visual", mechVisual);
     } catch (Exception e) {
       e.printStackTrace();
@@ -104,10 +101,7 @@ public abstract class GenericRobot extends GenericMechanism {
       driver.get().setSingleControllerMode(true);
     }
     // Put Mechanism 2d to SmartDashboard
-    mechVisual =
-        new Mechanism2d(
-            PersistedEnums.ROBOT_VISUAL_H.getInteger(),
-            RobotConstantsDef.robotVisualV.getInteger());
+    mechVisual = new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
     SmartDashboard.putData("Robot Visual", mechVisual);
 
     DriverStation.silenceJoystickConnectionWarning(true);

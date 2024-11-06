@@ -4,6 +4,7 @@
 
 package org.frc5010.common.motors.hardware;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import org.frc5010.common.motors.MotorConstants;
 
 /** Add your docs here. */
@@ -13,5 +14,10 @@ public class KrakenX60 extends GenericTalonFXMotor {
   public KrakenX60(int port) {
     super(port);
     setCurrentLimit(MotorConstants.CurrentLimits.KrakenX60);
+  }
+
+  @Override
+  public DCMotor getMotorSimulationType() {
+    return DCMotor.getKrakenX60(1);
   }
 }
