@@ -261,7 +261,11 @@ public class GenericFunctionalMotor implements MotorController5010 {
 
   @Override
   public DCMotor getMotorSimulationType() {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
+  }
+
+  @Override
+  public double getMaxRPM() {
+    throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
   }
 }

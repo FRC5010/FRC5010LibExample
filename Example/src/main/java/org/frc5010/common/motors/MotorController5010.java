@@ -108,5 +108,12 @@ public interface MotorController5010 extends MotorController {
    *
    * @return The simulated instance of the motor
    */
-  DCMotor getMotorSimulationType();
+  public DCMotor getMotorSimulationType();
+
+  /**
+   * Returns the maximum RPM
+   *
+   * @return The maximum RPM
+   */
+  public double getMaxRPM();
 }

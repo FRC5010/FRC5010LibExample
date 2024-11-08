@@ -56,4 +56,6 @@ public interface PIDController5010 {
   public PIDControlType getControlType();
 
   public boolean isAtTarget();
+
+  public double calculateControlEffort(double current);
 }

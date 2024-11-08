@@ -23,4 +23,9 @@ public class NEO550 extends GenericRevBrushlessMotor {
   public DCMotor getMotorSimulationType() {
     return DCMotor.getNeo550(1);
   }
+
+  @Override
+  public double getMaxRPM() {
+    return MAXRPM;
+  }
 }

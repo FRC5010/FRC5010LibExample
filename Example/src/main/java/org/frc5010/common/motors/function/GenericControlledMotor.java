@@ -5,12 +5,14 @@
 package org.frc5010.common.motors.function;
 
 import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
 
 /** Add your docs here. */
 public class GenericControlledMotor extends GenericFunctionalMotor implements PIDController5010 {
-  PIDController5010 pid;
+  protected PIDController5010 pid;
+  protected MotorFeedFwdConstants feedFwd;
 
   public GenericControlledMotor(MotorController5010 motor) {
     super(motor);
@@ -125,5 +127,24 @@ public class GenericControlledMotor extends GenericFunctionalMotor implements PI
   @Override
   public boolean isAtTarget() {
     return pid.isAtTarget();
+  }
+
+  @Override
+  public double calculateControlEffort(double current) {
+    return pid.calculateControlEffort(current) + getFeedForward();
+  }
+
+  public void setMotorFeedFwd(MotorFeedFwdConstants feedFwd) {
+    this.feedFwd = feedFwd;
+  }
+
+  public MotorFeedFwdConstants getMotorFeedFwd() {
+    return feedFwd;
+  }
+
+  public double getFeedForward() {
+    return null == feedFwd
+        ? 0.0
+        : pid.getReference() * (feedFwd.getkVC() + feedFwd.getkAC()) + feedFwd.getkSC();
   }
 }

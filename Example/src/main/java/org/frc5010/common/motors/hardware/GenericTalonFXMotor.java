@@ -141,4 +141,9 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
   }
+
+  @Override
+  public double getMaxRPM() {
+    throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
+  }
 }

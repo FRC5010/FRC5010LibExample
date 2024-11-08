@@ -20,4 +20,9 @@ public class KrakenX60 extends GenericTalonFXMotor {
   public DCMotor getMotorSimulationType() {
     return DCMotor.getKrakenX60(1);
   }
+
+  @Override
+  public double getMaxRPM() {
+    return MAXRPM;
+  }
 }

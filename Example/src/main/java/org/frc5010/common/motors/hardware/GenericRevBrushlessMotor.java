@@ -176,7 +176,11 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
 
   @Override
   public DCMotor getMotorSimulationType() {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
+  }
+
+  @Override
+  public double getMaxRPM() {
+    throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
   }
 }
