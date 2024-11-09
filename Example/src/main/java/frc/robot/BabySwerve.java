@@ -8,39 +8,28 @@ import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.json.DrivetrainPropertiesJson;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
-import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.sensors.Controller;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** This is an example robot class. */
-public class ExampleRobot extends GenericRobot {
+public class BabySwerve extends GenericRobot {
   SwerveConstants swerveConstants;
   GenericDrivetrain drivetrain;
-  PercentControlMotor percentControlMotor;
   DisplayValueSubsystem displayValueSubsystem = new DisplayValueSubsystem();
-  ExampleSubsystem exampleSubsystem;
-  DeviceFactory deviceFactory = new DeviceFactory(mechVisual);
 
-  public ExampleRobot(String directory) {
+  public BabySwerve(String directory) {
     super(directory);
-    drivetrain = (GenericDrivetrain) subsystems.get(DrivetrainPropertiesJson.DRIVE_TRAIN);
-    exampleSubsystem = new ExampleSubsystem();
+    drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainPropertiesJson.DRIVE_TRAIN);
   }
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.createXButton().onTrue(exampleSubsystem.setControlMotorReference(() -> 5000))
-        .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
-    driver.createYButton().onTrue(exampleSubsystem.setControlMotorReference(() -> 2000))
-        .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
-    driver.createAButton().onTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
-        .onFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
   }
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> driver.getLeftYAxis()));
+    drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 
   @Override

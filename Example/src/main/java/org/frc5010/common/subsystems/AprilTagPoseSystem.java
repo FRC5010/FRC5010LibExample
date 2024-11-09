@@ -124,8 +124,9 @@ public class AprilTagPoseSystem extends CameraSystem {
    * @return the distance to the target
    */
   public double getDistanceToTarget(String camera) {
-    return Optional.ofNullable(targetPose3ds.get(camera))
-        .map(it -> it.get().getTranslation().getNorm())
+    return targetPose3ds
+        .get(camera)
+        .map(it -> it.getTranslation().getNorm())
         .orElse(Double.MAX_VALUE);
   }
 

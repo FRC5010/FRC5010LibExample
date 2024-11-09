@@ -36,8 +36,8 @@ public class SimulatedVisualTargetCamera extends SimulatedCamera {
 
   /** Update the simulated camera */
   @Override
-  public void update() {
-    super.update();
+  public void updateCameraInfo() {
+    super.updateCameraInfo();
     if (camResult.hasTargets()) {
       target = Optional.ofNullable(camResult.getBestTarget());
     }

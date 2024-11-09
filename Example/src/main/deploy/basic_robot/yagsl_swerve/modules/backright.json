@@ -1,6 +1,6 @@
 {
   "drive": {
-    "type": "talonfx",
+    "type": "sparkmax",
     "id": 18,
     "canbus": null
   },

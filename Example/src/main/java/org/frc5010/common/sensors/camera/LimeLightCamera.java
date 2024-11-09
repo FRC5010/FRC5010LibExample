@@ -18,6 +18,7 @@ import org.frc5010.common.vision.LimelightHelpers.PoseEstimate;
 /** Limelight Camera */
 public class LimeLightCamera extends GenericCamera {
   Optional<PoseEstimate> poseEstimate = Optional.empty();
+  Optional<Pose3d> targetPose = Optional.empty();
   Supplier<GenericGyro> gyroSupplier;
   BooleanSupplier megatagChooser;
 
@@ -136,11 +137,12 @@ public class LimeLightCamera extends GenericCamera {
 
   /** Update the camera */
   @Override
-  public void update() {
+  public void updateCameraInfo() {
     LimelightHelpers.getLatestResults(name);
     if (hasValidTarget()) {
       poseEstimate =
           megatagChooser.getAsBoolean() ? getRobotPoseEstimateM1() : getRobotPoseEstimateM2();
+      targetPose = Optional.of(LimelightHelpers.getTargetPose3d_RobotSpace(name));
     }
   }
 
@@ -183,7 +185,7 @@ public class LimeLightCamera extends GenericCamera {
   /** Get the target pose estimate relative to the robot */
   @Override
   public Optional<Pose3d> getRobotToTargetPose() {
-    return Optional.empty();
+    return targetPose;
   }
 
   /**

@@ -70,10 +70,14 @@ public abstract class GenericCamera {
    * @throws NullPointerException if any of the updaters are null
    */
   public void update() {
+    updateCameraInfo();
     for (Runnable updater : updaters) {
       updater.run();
     }
   }
+
+  /** Updates the vision information from the camera */
+  public void updateCameraInfo() {}
 
   /**
    * Registers a Runnable updater to the list of updaters.

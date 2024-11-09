@@ -14,6 +14,6 @@ public class RobotConstantsDef {
   // --------------------------------------------------------
   // Persisted values can be handled in a Constants file like this as an example
   // Recommend using other files for this
-  public static int robotVisualV = 60;
-  public static int robotVisualH = 60;
+  public static int robotVisualV = 2;
+  public static int robotVisualH = 2;
 }

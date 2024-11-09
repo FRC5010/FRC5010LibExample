@@ -70,5 +70,5 @@ public class RobotJson {
    *
    * @param robot the robot being configured
    */
-  public void readMechanismDefinitionss(GenericRobot robot) {}
+  public void readMechanismDefinitions(GenericRobot robot) {}
 }

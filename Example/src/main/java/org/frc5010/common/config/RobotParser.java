@@ -68,7 +68,7 @@ public class RobotParser {
       default:
         break;
     }
-    robotJson.readMechanismDefinitionss(robot);
+    robotJson.readMechanismDefinitions(robot);
   }
 
   /**

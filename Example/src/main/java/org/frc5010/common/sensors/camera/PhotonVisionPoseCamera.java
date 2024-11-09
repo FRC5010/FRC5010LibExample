@@ -49,7 +49,7 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
 
   /** Update the camera and target with the latest result */
   @Override
-  public void update() {
+  public void updateCameraInfo() {
     camResult = camera.getLatestResult();
     if (camResult.hasTargets()) {
       target = Optional.ofNullable(camResult.getBestTarget());

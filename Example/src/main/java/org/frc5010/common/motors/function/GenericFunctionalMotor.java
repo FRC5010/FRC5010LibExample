@@ -10,10 +10,12 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.encoder.GenericEncoder.EncoderMeasurementType;
+import org.frc5010.common.units.Length;
 
 /** A class that wraps a motor controller with functionality */
 public class GenericFunctionalMotor implements MotorController5010 {
@@ -262,6 +264,15 @@ public class GenericFunctionalMotor implements MotorController5010 {
   @Override
   public DCMotor getMotorSimulationType() {
     throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
+  }
+
+  public double getSimX(Length x) {
+    return x.getMeters() * RobotConstantsDef.robotVisualH / 2.0
+        + RobotConstantsDef.robotVisualH / 2.0;
+  }
+
+  public double getSimY(Length y) {
+    return y.getMeters();
   }
 
   @Override

@@ -39,7 +39,7 @@ public class PhotonVisionCamera extends GenericCamera {
 
   /** Update the camera and target with the latest result */
   @Override
-  public void update() {
+  public void updateCameraInfo() {
     camResult = camera.getLatestResult();
   }
 

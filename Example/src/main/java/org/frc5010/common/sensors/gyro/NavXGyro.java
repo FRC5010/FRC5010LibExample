@@ -64,7 +64,7 @@ public class NavXGyro implements GenericGyro {
 
   @Override
   public void setAngle(double angle) {
-    gyro.setAngleAdjustment(angle);
+    gyro.setAngleAdjustment(angle - getAngle());
   }
 
   @Override

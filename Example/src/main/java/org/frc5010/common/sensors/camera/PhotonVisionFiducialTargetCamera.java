@@ -36,8 +36,8 @@ public class PhotonVisionFiducialTargetCamera extends PhotonVisionCamera {
 
   /** Update the camera and target with the latest result */
   @Override
-  public void update() {
-    super.update();
+  public void updateCameraInfo() {
+    super.updateCameraInfo();
     if (camResult.hasTargets()) {
       target =
           camResult.getTargets().stream()

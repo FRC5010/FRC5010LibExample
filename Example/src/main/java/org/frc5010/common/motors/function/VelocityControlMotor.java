@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 import org.frc5010.common.telemetry.DisplayDouble;
+import org.frc5010.common.units.Length;
 
 /** Add your docs here. */
 public class VelocityControlMotor extends GenericControlledMotor {
@@ -28,12 +28,9 @@ public class VelocityControlMotor extends GenericControlledMotor {
   protected FlywheelSim simMotor;
   protected SimulatedEncoder simEncoder;
   protected GenericEncoder encoder;
-  protected DisplayDouble reference =
-      new DisplayDouble(0, "reference", VelocityControlMotor.class.getSimpleName());
-  protected DisplayDouble velocity =
-      new DisplayDouble(0, "velocity", VelocityControlMotor.class.getSimpleName());
-  protected DisplayDouble control =
-      new DisplayDouble(0, "control", VelocityControlMotor.class.getSimpleName());
+  protected DisplayDouble reference;
+  protected DisplayDouble velocity;
+  protected DisplayDouble control;
 
   public VelocityControlMotor(MotorController5010 motor) {
     super(motor);
@@ -53,17 +50,20 @@ public class VelocityControlMotor extends GenericControlledMotor {
       Mechanism2d visualizer, Pose3d robotToMotor, String visualName) {
     super.setVisualizer(visualizer, robotToMotor, visualName);
 
+    reference = new DisplayDouble(0, "reference", visualName);
+    velocity = new DisplayDouble(0, "velocity", visualName);
+    control = new DisplayDouble(0, "control", visualName);
     root =
         visualizer.getRoot(
             _visualName,
-            robotToMotor.getX() * RobotConstantsDef.robotVisualH,
-            robotToMotor.getZ() * RobotConstantsDef.robotVisualV);
+            getSimX(Length.Meter(robotToMotor.getX())),
+            getSimY(Length.Meter(robotToMotor.getZ())));
     speedometer =
         new MechanismLigament2d(
-            visualName + "-velocity", 5, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
+            visualName + "-velocity", 0.1, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
     setpoint =
         new MechanismLigament2d(
-            visualName + "-setpoint", 5, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
+            visualName + "-setpoint", 0.1, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
     root.append(speedometer);
     root.append(setpoint);
     return this;

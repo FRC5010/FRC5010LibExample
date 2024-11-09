@@ -22,7 +22,7 @@ public class PhotonVisionVisualTargetCamera extends PhotonVisionCamera {
 
   /** Update the camera and target with the latest result */
   @Override
-  public void update() {
+  public void updateCameraInfo() {
     super.update();
     if (camResult.hasTargets()) {
       target = Optional.ofNullable(camResult.getBestTarget());

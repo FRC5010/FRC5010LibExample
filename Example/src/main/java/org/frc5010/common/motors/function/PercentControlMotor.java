@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.units.Length;
 
 /** Add your docs here. */
 public class PercentControlMotor extends GenericFunctionalMotor {
@@ -49,11 +49,11 @@ public class PercentControlMotor extends GenericFunctionalMotor {
     root =
         visualizer.getRoot(
             _visualName,
-            robotToMotor.getX() * RobotConstantsDef.robotVisualH,
-            robotToMotor.getZ() * RobotConstantsDef.robotVisualV);
+            getSimX(Length.Meter(robotToMotor.getX())),
+            getSimY(Length.Meter(robotToMotor.getZ())));
     speedometer =
         new MechanismLigament2d(
-            visualName + "-speed", 5, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
+            visualName + "-speed", 0.1, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
     root.append(speedometer);
     return this;
   }
