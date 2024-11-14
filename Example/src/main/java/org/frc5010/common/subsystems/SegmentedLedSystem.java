@@ -35,7 +35,7 @@ public class SegmentedLedSystem extends GenericSubsystem {
   private List<MechanismLigament2d> simLEDs = new ArrayList<>();
 
   public SegmentedLedSystem(int port, int length, Mechanism2d simulator) {
-    setMechSimulation(simulator);
+    super(simulator);
     m_led = new AddressableLED(port);
     m_ledBuffer = new AddressableLEDBuffer(length);
     m_ledOff = new AddressableLEDBuffer(length);

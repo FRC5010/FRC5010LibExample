@@ -23,7 +23,7 @@ public abstract class CameraSystem extends GenericSubsystem {
    * @param camera the camera object
    */
   public CameraSystem(GenericCamera camera) {
-    super();
+    super(null);
     this.camera = camera;
     values.declare(HAS_VALID_TARGET, false);
   }

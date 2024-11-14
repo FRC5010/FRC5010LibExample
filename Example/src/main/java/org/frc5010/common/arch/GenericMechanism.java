@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.sensors.Controller;
 
 /**
@@ -32,7 +33,8 @@ public abstract class GenericMechanism implements WpiHelperInterface, Sendable {
    * @param tabName - the name of the display tab
    */
   public GenericMechanism(String tabName) {
-    this.mechVisual = new Mechanism2d(1, 2);
+    this.mechVisual =
+        new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
     shuffleTab = Shuffleboard.getTab(tabName);
     WpiNetworkTableValuesHelper.register(this);
   }

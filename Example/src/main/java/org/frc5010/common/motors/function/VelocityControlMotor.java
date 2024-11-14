@@ -79,8 +79,8 @@ public class VelocityControlMotor extends GenericControlledMotor {
     }
     velocity.setValue(currentVelocity);
     reference.setValue(getReference());
-    speedometer.setAngle(currentVelocity / _motor.getMaxRPM() * 180);
-    setpoint.setAngle(getReference() / _motor.getMaxRPM() * 180);
+    speedometer.setAngle(270 - currentVelocity / _motor.getMaxRPM() * 180);
+    setpoint.setAngle(270 - getReference() / _motor.getMaxRPM() * 180);
   }
 
   @Override

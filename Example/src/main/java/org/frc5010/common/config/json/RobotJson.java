@@ -4,9 +4,13 @@
 
 package org.frc5010.common.config.json;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import org.frc5010.common.arch.GenericDeviceHandler;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
@@ -37,8 +41,8 @@ public class RobotJson {
   /** Drivetrain gear ratio between drive motor and wheels */
   public double driveMotorGearRatio = 1.0;
 
-  /** Mechanism definition files */
-  public String[] mechanismDefinitions;
+  /** Device definition files */
+  public Map<String, String> devices;
 
   /**
    * Reads the robot configuration from the given directory
@@ -68,7 +72,17 @@ public class RobotJson {
   /**
    * Reads the mechanism definition files
    *
-   * @param robot the robot being configured
+   * @param system the system being configured
+   * @throws IOException
+   * @throws DatabindException
+   * @throws StreamReadException
    */
-  public void readMechanismDefinitions(GenericRobot robot) {}
+  public void readDeviceDefinitions(GenericDeviceHandler system, File directory)
+      throws StreamReadException, DatabindException, IOException {
+    for (String key : devices.keySet()) {
+      File mechanismDefFile = new File(directory, "devices/" + devices.get(key));
+      assert mechanismDefFile.exists();
+      DeviceConfigReader.readDeviceConfig(system, mechanismDefFile, key);
+    }
+  }
 }

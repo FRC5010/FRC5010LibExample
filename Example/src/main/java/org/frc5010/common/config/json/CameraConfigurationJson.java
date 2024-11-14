@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import java.util.ArrayList;
 import java.util.List;
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.sensors.camera.GenericCamera;
 import org.frc5010.common.sensors.camera.LimeLightCamera;
 import org.frc5010.common.sensors.camera.PhotonVisionCamera;
@@ -20,6 +21,7 @@ import org.frc5010.common.sensors.camera.PhotonVisionVisualTargetCamera;
 import org.frc5010.common.sensors.camera.SimulatedCamera;
 import org.frc5010.common.sensors.camera.SimulatedFiducialTargetCamera;
 import org.frc5010.common.sensors.camera.SimulatedVisualTargetCamera;
+import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.VisibleTargetSystem;
 import org.frc5010.common.vision.AprilTags;
@@ -83,6 +85,8 @@ public class CameraConfigurationJson {
         case "limelight":
           {
             camera = new LimeLightCamera(name, column, robotToCamera);
+            ((LimeLightCamera) camera)
+                .setGyroSupplier(() -> (GenericGyro) robot.getDevice(ConfigConstants.GYRO));
             break;
           }
         case "photonvision":

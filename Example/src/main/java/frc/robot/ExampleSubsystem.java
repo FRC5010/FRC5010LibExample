@@ -25,7 +25,8 @@ public class ExampleSubsystem extends GenericSubsystem {
     protected GenericControlledMotor angularMotor;
 
     public ExampleSubsystem() {
-        this.motor = percentControlledMotor();
+        super();
+        this.motor = (PercentControlMotor)devices.get("percent_motor");
         this.controlledMotor = velocityControlledMotor();
         this.angularMotor = angularControlledMotor();
     }
@@ -70,14 +71,14 @@ public class ExampleSubsystem extends GenericSubsystem {
 
     @Override
     public void periodic() {
-        motor.draw();
+        super.periodic();
         controlledMotor.draw();
         angularMotor.draw();
     }
 
     @Override
     public void simulationPeriodic() {
-        motor.simulationUpdate();
+        super.simulationPeriodic();
         controlledMotor.simulationUpdate();
         angularMotor.simulationUpdate();
     }

@@ -5,7 +5,7 @@
 package frc.robot;
 
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.config.json.DrivetrainPropertiesJson;
+import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.motors.function.PercentControlMotor;
@@ -24,7 +24,7 @@ public class ExampleRobot extends GenericRobot {
 
   public ExampleRobot(String directory) {
     super(directory);
-    drivetrain = (GenericDrivetrain) subsystems.get(DrivetrainPropertiesJson.DRIVE_TRAIN);
+    drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
     exampleSubsystem = new ExampleSubsystem();
   }
 

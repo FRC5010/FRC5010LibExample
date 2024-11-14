@@ -33,7 +33,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    * @param mechVisual - The visual representation of the drivetrain
    */
   public GenericDrivetrain(Mechanism2d mechVisual) {
-    this.mechVisual = mechVisual;
+    super(mechVisual);
     Shuffleboard.getTab("Drive")
         .addBoolean("Field Oriented", () -> isFieldOrientedDrive)
         .withPosition(8, 0);

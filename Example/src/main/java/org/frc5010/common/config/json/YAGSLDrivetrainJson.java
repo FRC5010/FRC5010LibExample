@@ -5,10 +5,13 @@
 package org.frc5010.common.config.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import java.io.File;
 import java.io.IOException;
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
@@ -50,9 +53,9 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
     AprilTagPoseSystem atSystem =
         (AprilTagPoseSystem) robot.getSubsystem(CameraConfigurationJson.APRIL_TAG);
     robot.addSubsystem(
-        DrivetrainPropertiesJson.DRIVE_TRAIN,
+        ConfigConstants.DRIVETRAIN,
         new YAGSLSwerveDrivetrain(
-            robot.getMechVisual(),
+            new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
             robot.getDrivetrainConstants(),
             turningMotorGearRatio,
             directory,

@@ -7,6 +7,7 @@
     "wheelDiameter": 0.103386904,
     "physicalMaxSpeed": 5.93,
     "driveMotorGearRatio": 1.0,
-    "mechanismDefinitions": [
-    ]
+    "devices": {
+        "gyro": "gyro_settings.json"
+    }
 }

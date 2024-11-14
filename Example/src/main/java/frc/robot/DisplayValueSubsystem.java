@@ -41,7 +41,7 @@ public class DisplayValueSubsystem extends GenericSubsystem {
   DisplayTime outputTime = new DisplayTime(TimeUnit.MILLISECOND, 0.0, "Output Time", OUTPUT_TABLE);
 
     public DisplayValueSubsystem() {
-        super();
+        super(null);
     }
 
     @Override

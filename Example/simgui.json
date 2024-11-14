@@ -4,7 +4,10 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pose/Pose Field": "Field2d",
       "/Shuffleboard/Vision/Vision Field": "Field2d",
+      "/Shuffleboard/baby_swerve/Auto Modes": "String Chooser",
+      "/Shuffleboard/basic_robot/Auto Modes": "String Chooser",
       "/Shuffleboard/java.lang.Class/Auto Modes": "String Chooser",
+      "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
       "/SmartDashboard/Robot Visual": "Mechanism2d",
@@ -19,6 +22,11 @@
         "right": 2961,
         "top": 79,
         "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Drive Visual": {
         "window": {
           "visible": true
         }

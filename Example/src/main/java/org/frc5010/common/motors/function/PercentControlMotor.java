@@ -33,8 +33,8 @@ public class PercentControlMotor extends GenericFunctionalMotor {
     super(motor, slewRate);
   }
 
-  public PercentControlMotor setupSimulatedMotor(double gearing, double jKgMetersSquared) {
-    simMotor = new FlywheelSim(_motor.getMotorSimulationType(), gearing, jKgMetersSquared);
+  public PercentControlMotor setupSimulatedMotor(double gearing, double momentOfInertiaKgMetersSq) {
+    simMotor = new FlywheelSim(_motor.getMotorSimulationType(), gearing, momentOfInertiaKgMetersSq);
     simEncoder =
         new SimulatedEncoder(
             MotorFactory.getNextSimEncoderPort(), MotorFactory.getNextSimEncoderPort());
@@ -60,7 +60,7 @@ public class PercentControlMotor extends GenericFunctionalMotor {
 
   @Override
   public void draw() {
-    speedometer.setAngle(_motor.get() * 180);
+    speedometer.setAngle(270 - _motor.get() * 180);
   }
 
   @Override

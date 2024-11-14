@@ -16,14 +16,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.frc5010.common.config.RobotParser;
+import org.frc5010.common.config.SubsystemParser;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
-import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.subsystems.Color;
 import org.frc5010.common.telemetery.WpiDataLogging;
 
 /** Robots should extend this class as the entry point into using the library */
-public abstract class GenericRobot extends GenericMechanism {
+public abstract class GenericRobot extends GenericMechanism implements GenericDeviceHandler {
   /** Selector for autonmous modes */
   protected SendableChooser<Command> selectableCommand;
   /** The driver controller */
@@ -36,12 +36,16 @@ public abstract class GenericRobot extends GenericMechanism {
   protected Map<String, GenericSubsystem> subsystems = new HashMap<>();
   /** The map of sensors created by the configuration system */
   protected Map<String, Controller> controllers = new HashMap<>();
+  /** The map of devices created by the configuration system */
+  protected Map<String, Object> devices = new HashMap<>();
   /** The configuration parser */
   protected RobotParser parser;
   /** Constants that are used to configure the drivetrain */
   protected GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
   /** The pose supplier */
   protected Supplier<Pose2d> poseSupplier = () -> new Pose2d();
+  /** The subsystem parser */
+  public static SubsystemParser subsystemParser;
 
   /** The log level enums */
   public enum LogLevel {
@@ -60,10 +64,11 @@ public abstract class GenericRobot extends GenericMechanism {
    * @param directory the directory to read from
    */
   public GenericRobot(String directory) {
-    super(Class.class.getName());
+    super(directory);
     try {
       parser = new RobotParser(directory, this);
       parser.createRobot(this);
+      subsystemParser = new SubsystemParser(directory, this);
 
       driver = Optional.ofNullable(controllers.get("driver"));
       operator = Optional.ofNullable(controllers.get("operator"));
@@ -78,8 +83,6 @@ public abstract class GenericRobot extends GenericMechanism {
       alliance = determineAllianceColor();
       values.declare("Alliance", alliance.toString());
 
-      // Put Mechanism 2d to SmartDashboard
-      mechVisual = new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
       SmartDashboard.putData("Robot Visual", mechVisual);
     } catch (Exception e) {
       e.printStackTrace();
@@ -100,8 +103,6 @@ public abstract class GenericRobot extends GenericMechanism {
       operator = driver;
       driver.get().setSingleControllerMode(true);
     }
-    // Put Mechanism 2d to SmartDashboard
-    mechVisual = new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV);
     SmartDashboard.putData("Robot Visual", mechVisual);
 
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -264,6 +265,33 @@ public abstract class GenericRobot extends GenericMechanism {
    */
   public void addSubsystem(String name, GenericSubsystem subsystem) {
     subsystems.put(name, subsystem);
+  }
+
+  /**
+   * Add a mechanism to the configuration
+   *
+   * @param name the name of the mechanism
+   * @param mechanism the mechanism
+   */
+  @Override
+  public void addDevice(String name, Object mechanism) {
+    devices.put(name, mechanism);
+  }
+
+  /**
+   * Get a mechanism from the configuration
+   *
+   * @param name the name of the mechanism
+   * @return the mechanism
+   * @throws IllegalArgumentException if the mechanism does not exist
+   */
+  @Override
+  public Object getDevice(String name) {
+    Object mechanism = devices.get(name);
+    if (null == mechanism) {
+      throw new IllegalArgumentException("Mechanism " + name + " does not exist");
+    }
+    return mechanism;
   }
 
   /**

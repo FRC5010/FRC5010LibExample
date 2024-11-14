@@ -50,6 +50,7 @@ import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.constants.Constants.AutonConstants;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
@@ -801,35 +802,66 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   public void initGlassWidget() {
+    SmartDashboard.putData("Drive Visual", mechanismSimulation);
     SwerveModule[] modules = swerveDrive.getModules();
-    visualRoots.put(0, mechVisual.getRoot("frontleft", 15, 45));
-    visualRoots.put(1, mechVisual.getRoot("frontright", 45, 45));
-    visualRoots.put(2, mechVisual.getRoot("backleft", 15, 15));
-    visualRoots.put(3, mechVisual.getRoot("backright", 45, 15));
+
+    visualRoots.put(
+        0,
+        mechanismSimulation.getRoot(
+            "frontleft",
+            RobotConstantsDef.robotVisualH * modules[0].configuration.moduleLocation.getX()
+                + RobotConstantsDef.robotVisualH / 2.0,
+            RobotConstantsDef.robotVisualV * modules[0].configuration.moduleLocation.getY()
+                + RobotConstantsDef.robotVisualV / 2.0));
+    visualRoots.put(
+        1,
+        mechanismSimulation.getRoot(
+            "frontright",
+            RobotConstantsDef.robotVisualH * modules[1].configuration.moduleLocation.getX()
+                + RobotConstantsDef.robotVisualH / 2.0,
+            RobotConstantsDef.robotVisualV * modules[1].configuration.moduleLocation.getY()
+                + RobotConstantsDef.robotVisualV / 2.0));
+    visualRoots.put(
+        2,
+        mechanismSimulation.getRoot(
+            "backleft",
+            RobotConstantsDef.robotVisualH * modules[2].configuration.moduleLocation.getX()
+                + RobotConstantsDef.robotVisualH / 2.0,
+            RobotConstantsDef.robotVisualV * modules[2].configuration.moduleLocation.getY()
+                + RobotConstantsDef.robotVisualV / 2.0));
+    visualRoots.put(
+        3,
+        mechanismSimulation.getRoot(
+            "backright",
+            RobotConstantsDef.robotVisualH * modules[3].configuration.moduleLocation.getX()
+                + RobotConstantsDef.robotVisualH / 2.0,
+            RobotConstantsDef.robotVisualV * modules[3].configuration.moduleLocation.getY()
+                + RobotConstantsDef.robotVisualV / 2.0));
     for (int i = 0; i < modules.length; i++) {
       visualRoots
           .get(i)
-          .append(new MechanismLigament2d(i + "-vert", 10, 90, 6.0, new Color8Bit(50, 50, 50)));
+          .append(new MechanismLigament2d(i + "-vert", 0.10, 90, 6.0, new Color8Bit(50, 50, 50)));
       visualRoots
           .get(i)
-          .append(new MechanismLigament2d(i + "-hori", 10, 0, 6.0, new Color8Bit(50, 50, 50)));
+          .append(new MechanismLigament2d(i + "-hori", 0.10, 0, 6.0, new Color8Bit(50, 50, 50)));
       motorDials.put(
           i,
           visualRoots
               .get(i)
               .append(
                   new MechanismLigament2d(
-                      i + "-motor", 10.0, 90, 6.0, new Color8Bit(Color.kYellow))));
+                      i + "-motor", 0.10, 90, 6.0, new Color8Bit(Color.kYellow))));
       absEncDials.put(
           i,
           visualRoots
               .get(i)
-              .append(new MechanismLigament2d(i + "-Abs", 10, 90, 6, new Color8Bit(Color.kBlue))));
+              .append(
+                  new MechanismLigament2d(i + "-Abs", 0.10, 90, 6, new Color8Bit(Color.kBlue))));
       expectDials.put(
           i,
           visualRoots
               .get(i)
-              .append(new MechanismLigament2d(i + "-Exp", 10, 90, 6, new Color8Bit(Color.kRed))));
+              .append(new MechanismLigament2d(i + "-Exp", 0.10, 90, 6, new Color8Bit(Color.kRed))));
     }
   }
 
@@ -843,10 +875,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       motorDials.get(moduleKey).setAngle(turningDeg + 90);
       motorDials
           .get(moduleKey)
-          .setLength(10 * modules[moduleKey].getAngleMotor().getVelocity() + 2);
+          .setLength(0.0001 * modules[moduleKey].getAngleMotor().getVelocity() + 0.002);
       expectDials
           .get(moduleKey)
-          .setLength(10 * modules[moduleKey].getDriveMotor().getVelocity() + 2);
+          .setLength(0.0001 * modules[moduleKey].getDriveMotor().getVelocity() + 0.002);
       expectDials.get(moduleKey).setAngle(modules[moduleKey].getState().angle.getDegrees() + 90);
     }
   }

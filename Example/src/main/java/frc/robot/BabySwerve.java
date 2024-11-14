@@ -5,7 +5,7 @@
 package frc.robot;
 
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.config.json.DrivetrainPropertiesJson;
+import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
@@ -20,7 +20,7 @@ public class BabySwerve extends GenericRobot {
 
   public BabySwerve(String directory) {
     super(directory);
-    drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainPropertiesJson.DRIVE_TRAIN);
+    drivetrain = (GenericDrivetrain) getSubsystem(ConfigConstants.DRIVETRAIN);
   }
 
   @Override
