@@ -13,12 +13,12 @@ import org.frc5010.common.sensors.Controller;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** This is an example robot class. */
-public class ExampleRobot extends GenericRobot {
+public class BabySwerve extends GenericRobot {
   SwerveConstants swerveConstants;
   GenericDrivetrain drivetrain;
   DisplayValueSubsystem displayValueSubsystem = new DisplayValueSubsystem();
 
-  public ExampleRobot(String directory) {
+  public BabySwerve(String directory) {
     super(directory);
     drivetrain = (GenericDrivetrain) getSubsystem(DrivetrainPropertiesJson.DRIVE_TRAIN);
   }
