@@ -30,8 +30,12 @@ public class GenericSubsystem extends SubsystemBase
   }
 
   public GenericSubsystem() {
+    WpiNetworkTableValuesHelper.register(this);
+  }
+
+  public GenericSubsystem(String configFile) {
     try {
-      GenericRobot.subsystemParser.parseSubsystem(this);
+      GenericRobot.subsystemParser.parseSubsystem(this, configFile);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);

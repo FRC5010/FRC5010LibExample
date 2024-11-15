@@ -9,9 +9,6 @@ import org.frc5010.common.sensors.gyro.PigeonGyro;
 public class GyroSettingsConfigurationJson implements DeviceConfiguration {
   public String type;
   public int id;
-  public double x;
-  public double y;
-  public double z;
 
   @Override
   public Object configure(Mechanism2d mechanismSimulation) {

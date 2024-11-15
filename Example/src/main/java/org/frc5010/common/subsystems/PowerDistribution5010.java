@@ -24,13 +24,11 @@ public class PowerDistribution5010 extends GenericSubsystem {
   private LinearFilter voltageFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
   public PowerDistribution5010() {
-    super(null);
     powerDistribution = new PowerDistribution();
     declareInitialValues();
   }
 
   public PowerDistribution5010(int id, ModuleType type) {
-    super(null);
     powerDistribution = new PowerDistribution(id, type);
     declareInitialValues();
   }

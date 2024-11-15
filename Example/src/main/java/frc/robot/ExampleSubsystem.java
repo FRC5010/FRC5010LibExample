@@ -7,8 +7,6 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.function.AngularControlMotor;
-import org.frc5010.common.motors.function.GenericControlledMotor;
-import org.frc5010.common.motors.function.GenericFunctionalMotor;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.motors.function.VelocityControlMotor;
 import org.frc5010.common.units.Angle;
@@ -16,18 +14,19 @@ import org.frc5010.common.units.Length;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class ExampleSubsystem extends GenericSubsystem {
-    protected GenericFunctionalMotor motor;
-    protected GenericControlledMotor controlledMotor;
-    protected GenericControlledMotor angularMotor;
+    protected PercentControlMotor motor;
+    protected VelocityControlMotor controlledMotor;
+    protected AngularControlMotor angularMotor;
 
     public ExampleSubsystem() {
-        super();
+        super("example.json");
         this.motor = (PercentControlMotor)devices.get("percent_motor");
-        this.controlledMotor = velocityControlledMotor();
+        this.controlledMotor = (VelocityControlMotor)devices.get("velocity_motor");
         this.angularMotor = angularControlledMotor();
     }
 
@@ -48,12 +47,13 @@ public class ExampleSubsystem extends GenericSubsystem {
 
     public AngularControlMotor angularControlledMotor() {
         AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.NEO(13))
-                .setupSimulatedMotor(20, 0.1,
-                        Length.Meter(0.2), Angle.Degree(0), Angle.Degree(360),
-                        false, Angle.Degree(0))
+                .setupSimulatedMotor((5.0 * 68.0 / 24.0) *  (80.0 / 24.0), Units.lbsToKilograms(22),
+                        Length.Inch(19), Angle.Degree(0), Angle.Degree(360),
+                        false, 6.05, Angle.Degree(0))
                 .setVisualizer(mechanismSimulation, new Pose3d(0.75, 0, 0.25, new Rotation3d()), "angular");
-        angularMotor.setValues(new GenericPID(1, 0, 0.1));
-        angularMotor.setMotorFeedFwd(new MotorFeedFwdConstants(0.1, 10, 0, false));
+        angularMotor.setValues(new GenericPID(0.01, 0.000025, 0.003));
+        angularMotor.setMotorFeedFwd(new MotorFeedFwdConstants(0.0, 0.01, 0.0, false));
+        angularMotor.setIZone(3);
         return angularMotor;
     }
 
@@ -72,14 +72,12 @@ public class ExampleSubsystem extends GenericSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        controlledMotor.draw();
         angularMotor.draw();
     }
 
     @Override
     public void simulationPeriodic() {
         super.simulationPeriodic();
-        controlledMotor.simulationUpdate();
         angularMotor.simulationUpdate();
     }
 }

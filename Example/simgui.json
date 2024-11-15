@@ -26,11 +26,6 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Drive Visual": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Robot Visual": {
         "window": {
           "visible": true
@@ -47,6 +42,9 @@
         "Output": {
           "open": true
         },
+        "open": true
+      },
+      "angular": {
         "open": true
       }
     }

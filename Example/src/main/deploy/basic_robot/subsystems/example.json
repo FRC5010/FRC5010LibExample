@@ -1,0 +1,6 @@
+{
+    "devices": {
+        "percent_motor": "percent_motor.json",
+        "velocity_motor": "velocity_motor.json"
+    }
+}

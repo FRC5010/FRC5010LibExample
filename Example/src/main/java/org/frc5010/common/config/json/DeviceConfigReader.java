@@ -39,6 +39,12 @@ public class DeviceConfigReader {
         system.addDevice(
             percentMotorConfig.name, percentMotorConfig.configure(system.getMechVisual()));
         break;
+      case "velocity_motor":
+        VelocityMotorConfigurationJson motorConfigurationJson =
+            new ObjectMapper().readValue(deviceFile, VelocityMotorConfigurationJson.class);
+        system.addDevice(
+            motorConfigurationJson.name, motorConfigurationJson.configure(system.getMechVisual()));
+        break;
       default:
         break;
     }

@@ -34,7 +34,7 @@ public class ExampleRobot extends GenericRobot {
         .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
     driver.createYButton().onTrue(exampleSubsystem.setControlMotorReference(() -> 2000))
         .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
-    driver.createAButton().onTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
+    driver.createAButton().whileTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
         .onFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
   }
 

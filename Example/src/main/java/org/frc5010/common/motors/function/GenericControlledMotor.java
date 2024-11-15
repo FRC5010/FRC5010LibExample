@@ -143,8 +143,8 @@ public class GenericControlledMotor extends GenericFunctionalMotor implements PI
   }
 
   public double getFeedForward() {
-    return null == feedFwd
+    return (null == feedFwd
         ? 0.0
-        : pid.getReference() * (feedFwd.getkVC() + feedFwd.getkAC()) + feedFwd.getkSC();
+        : pid.getReference() * (feedFwd.getkVC() + feedFwd.getkAC()) + feedFwd.getkSC());
   }
 }

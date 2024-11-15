@@ -33,7 +33,7 @@ public class SubsystemParser {
     assert new File(directory, "robot.json").exists();
   }
 
-  public void parseSubsystem(GenericSubsystem genericSubsystem)
+  public void parseSubsystem(GenericSubsystem genericSubsystem, String configFile)
       throws StreamReadException, DatabindException, IOException {
     File directory = new File(Filesystem.getDeployDirectory(), robotDirectory + "/subsystems/");
     checkDirectory(directory);
@@ -43,11 +43,7 @@ public class SubsystemParser {
     // Read in the subsystem configuration
     // Read in the robot configuration
     SubsystemJson subsystemJson =
-        new ObjectMapper()
-            .readValue(
-                new File(
-                    directory, genericSubsystem.getClass().getSimpleName().toLowerCase() + ".json"),
-                SubsystemJson.class);
+        new ObjectMapper().readValue(new File(directory, configFile), SubsystemJson.class);
     subsystemJson.configureSubsystem(genericSubsystem, directory);
   }
 }

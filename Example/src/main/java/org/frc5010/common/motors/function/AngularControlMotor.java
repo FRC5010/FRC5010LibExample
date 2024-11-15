@@ -4,9 +4,11 @@
 
 package org.frc5010.common.motors.function;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -37,6 +39,7 @@ public class AngularControlMotor extends GenericControlledMotor {
   protected DisplayDouble reference;
   protected DisplayDouble position;
   protected DisplayDouble control;
+  protected double kG = 0.0;
 
   public AngularControlMotor(MotorController5010 motor) {
     super(motor);
@@ -50,11 +53,13 @@ public class AngularControlMotor extends GenericControlledMotor {
       Angle minAngle,
       Angle maxAngle,
       boolean simulateGravity,
+      double kG,
       Angle startingAngle) {
     this.armLength = armLength;
     this.minAngle = minAngle;
     this.maxAngle = maxAngle;
     this.startingAngle = startingAngle;
+    this.kG = kG;
 
     simMotor =
         new SingleJointedArmSim(
@@ -107,6 +112,34 @@ public class AngularControlMotor extends GenericControlledMotor {
   }
 
   @Override
+  public void setReference(double reference) {
+    super.setReference(reference);
+    if (!RobotBase.isReal()) {
+      control.setValue(calculateControlEffort(simEncoder.getPosition()));
+      _motor.set(control.getValue() / RobotController.getBatteryVoltage());
+    }
+  }
+
+  public double getPivotPosition() {
+    if (RobotBase.isReal()) {
+      return encoder.getPosition() > 180 ? encoder.getPosition() - 360 : encoder.getPosition();
+    } else {
+      return simEncoder.getPosition();
+    }
+  }
+
+  @Override
+  public double getFeedForward() {
+    ArmFeedforward pivotFeedforward =
+        new ArmFeedforward(
+            getMotorFeedFwd().getkS(), kG, getMotorFeedFwd().getkV(), getMotorFeedFwd().getkA());
+    double ff =
+        pivotFeedforward.calculate(
+            Units.degreesToRadians(getPivotPosition()), Units.degreesToRadians(0));
+    return ff;
+  }
+
+  @Override
   public void draw() {
     double currentPosition = 0;
     if (RobotBase.isReal()) {
@@ -123,9 +156,10 @@ public class AngularControlMotor extends GenericControlledMotor {
   @Override
   public void simulationUpdate() {
     control.setValue(calculateControlEffort(simEncoder.getPosition()));
-    simMotor.setInput(control.getValue());
+    simMotor.setInput(_motor.get() * RobotController.getBatteryVoltage());
     simMotor.update(0.020);
     simEncoder.setPosition(Units.radiansToDegrees(simMotor.getAngleRads()));
+
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(simMotor.getCurrentDrawAmps()));
   }
