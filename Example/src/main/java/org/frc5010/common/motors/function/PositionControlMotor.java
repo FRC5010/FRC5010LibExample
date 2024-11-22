@@ -4,11 +4,19 @@
 
 package org.frc5010.common.motors.function;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.motors.MotorController5010;
 
 /** Add your docs here. */
 public class PositionControlMotor extends GenericControlledMotor {
-  public PositionControlMotor(MotorController5010 motor) {
-    super(motor);
+  public PositionControlMotor(MotorController5010 motor, String visualName) {
+    super(motor, visualName);
+  }
+
+  @Override
+  public Command getSysIdCommand(SubsystemBase subsystemBase) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getSysIdCommand'");
   }
 }

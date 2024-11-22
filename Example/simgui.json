@@ -35,21 +35,23 @@
   },
   "NetworkTables": {
     "transitory": {
+      "SmartDashboard": {
+        "open": true
+      },
       "Test": {
         "Input": {
           "open": true
         },
         "Output": {
           "open": true
-        },
-        "open": true
+        }
       },
       "angular": {
         "open": true
+      },
+      "velocity_motor": {
+        "open": true
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   }
 }

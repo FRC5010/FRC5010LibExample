@@ -25,8 +25,8 @@ public class PercentControlMotor extends GenericFunctionalMotor {
   protected FlywheelSim simMotor;
   protected SimulatedEncoder simEncoder;
 
-  public PercentControlMotor(MotorController5010 motor) {
-    super(motor);
+  public PercentControlMotor(MotorController5010 motor, String visualName) {
+    super(motor, visualName);
   }
 
   public PercentControlMotor(MotorController5010 motor, double slewRate) {
@@ -42,9 +42,8 @@ public class PercentControlMotor extends GenericFunctionalMotor {
   }
 
   @Override
-  public PercentControlMotor setVisualizer(
-      Mechanism2d visualizer, Pose3d robotToMotor, String visualName) {
-    super.setVisualizer(visualizer, robotToMotor, visualName);
+  public PercentControlMotor setVisualizer(Mechanism2d visualizer, Pose3d robotToMotor) {
+    super.setVisualizer(visualizer, robotToMotor);
 
     root =
         visualizer.getRoot(
@@ -53,7 +52,7 @@ public class PercentControlMotor extends GenericFunctionalMotor {
             getSimY(Length.Meter(robotToMotor.getZ())));
     speedometer =
         new MechanismLigament2d(
-            visualName + "-speed", 0.1, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
+            _visualName + "-speed", 0.1, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
     root.append(speedometer);
     return this;
   }

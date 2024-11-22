@@ -13,8 +13,8 @@ public class DriveTrainMotor extends GenericFunctionalMotor {
    *
    * @param motor The motor to use
    */
-  public DriveTrainMotor(MotorController5010 motor) {
-    super(motor);
+  public DriveTrainMotor(MotorController5010 motor, String visualName) {
+    super(motor, visualName);
   }
 
   /**
@@ -23,8 +23,8 @@ public class DriveTrainMotor extends GenericFunctionalMotor {
    * @param motor The motor to use
    * @param slewRate The slew rate
    */
-  public DriveTrainMotor(MotorController5010 motor, double slewRate) {
-    super(motor);
+  public DriveTrainMotor(MotorController5010 motor, String visualName, double slewRate) {
+    super(motor, visualName);
     _motor.setSlewRate(slewRate);
   }
 }

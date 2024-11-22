@@ -5,6 +5,7 @@
 package org.frc5010.common.motors;
 
 import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.sensors.absolute_encoder.GenericAbsoluteEncoder;
 
 public interface PIDController5010 {
   public static enum PIDControlType {
@@ -58,4 +59,6 @@ public interface PIDController5010 {
   public boolean isAtTarget();
 
   public double calculateControlEffort(double current);
+
+  public void configureAbsoluteControl(GenericAbsoluteEncoder encoder, double min, double max);
 }

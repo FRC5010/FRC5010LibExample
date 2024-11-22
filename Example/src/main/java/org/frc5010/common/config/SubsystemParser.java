@@ -29,14 +29,14 @@ public class SubsystemParser {
     this.robot = robot;
   }
 
-  private void checkDirectory(File directory) {
-    assert new File(directory, "robot.json").exists();
+  private void checkDirectory(File directory, String configFile) {
+    assert new File(directory, configFile).exists();
   }
 
   public void parseSubsystem(GenericSubsystem genericSubsystem, String configFile)
       throws StreamReadException, DatabindException, IOException {
     File directory = new File(Filesystem.getDeployDirectory(), robotDirectory + "/subsystems/");
-    checkDirectory(directory);
+    checkDirectory(directory, configFile);
 
     genericSubsystem.setMechSimulation(mechanismSimulation);
 

@@ -20,7 +20,6 @@ public class ExampleRobot extends GenericRobot {
   PercentControlMotor percentControlMotor;
   DisplayValueSubsystem displayValueSubsystem = new DisplayValueSubsystem();
   ExampleSubsystem exampleSubsystem;
-  DeviceFactory deviceFactory = new DeviceFactory(mechVisual);
 
   public ExampleRobot(String directory) {
     super(directory);
@@ -35,7 +34,7 @@ public class ExampleRobot extends GenericRobot {
     driver.createYButton().onTrue(exampleSubsystem.setControlMotorReference(() -> 2000))
         .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
     driver.createAButton().whileTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
-        .onFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
+        .whileFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
   }
 
   @Override

@@ -92,7 +92,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   /** Creates a new robot using a programmatic configuration */
   public GenericRobot() {
-    super(Class.class.getName());
+    super("Robot");
 
     // Setup controllers
     driver = Optional.of(new Controller(Controller.JoystickPorts.ZERO.ordinal()));

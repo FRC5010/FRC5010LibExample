@@ -4,10 +4,13 @@
 
 package org.frc5010.common.motors.control;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.SparkPIDController;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
+import org.frc5010.common.sensors.absolute_encoder.GenericAbsoluteEncoder;
+import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 
 /** Add your docs here. */
 public class RevPID extends GenericPIDController {
@@ -169,5 +172,13 @@ public class RevPID extends GenericPIDController {
   @Override
   public GenericPID getValues() {
     return new GenericPID(getP(), getI(), getD());
+  }
+
+  @Override
+  public void configureAbsoluteControl(GenericAbsoluteEncoder encoder, double min, double max) {
+    controller.setFeedbackDevice((AbsoluteEncoder) ((RevAbsoluteEncoder) encoder).getEncoder());
+    controller.setPositionPIDWrappingEnabled(true);
+    controller.setPositionPIDWrappingMinInput(min);
+    controller.setPositionPIDWrappingMaxInput(max);
   }
 }

@@ -14,8 +14,8 @@ public class FollowerMotor extends GenericFunctionalMotor {
    * @param motor the motor to use as a follower
    * @param leader the leader motor
    */
-  public FollowerMotor(MotorController5010 motor, MotorController5010 leader) {
-    super(motor);
+  public FollowerMotor(MotorController5010 motor, MotorController5010 leader, String visualName) {
+    super(motor, visualName);
     setFollow(leader);
   }
 }

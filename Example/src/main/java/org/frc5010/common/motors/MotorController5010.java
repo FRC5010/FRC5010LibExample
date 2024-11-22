@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 
 /** Common interface fdr motors in the library */
 public interface MotorController5010 extends MotorController {
@@ -72,11 +71,10 @@ public interface MotorController5010 extends MotorController {
   /**
    * Gets the motor encoder
    *
-   * @param sensorType The sensor type
    * @param countsPerRev The number of counts per revolution
    * @return The motor encoder
    */
-  GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev);
+  GenericEncoder getMotorEncoder(int countsPerRev);
 
   /**
    * Gets the PID controller

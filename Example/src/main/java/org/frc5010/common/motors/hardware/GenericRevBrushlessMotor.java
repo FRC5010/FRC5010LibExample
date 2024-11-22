@@ -14,7 +14,6 @@ import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.motors.SystemIdentification;
 import org.frc5010.common.motors.control.RevPID;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 import org.frc5010.common.sensors.encoder.RevEncoder;
 
 /** A class for a generic REV brushless motor */
@@ -122,14 +121,16 @@ public class GenericRevBrushlessMotor extends CANSparkMax implements MotorContro
    * Retrieves the generic encoder for the motor with the specified sensor type and counts per
    * revolution.
    *
-   * @param sensorType the type of sensor to use for the encoder
    * @param countsPerRev the number of counts per revolution of the motor
    * @return a new instance of GenericEncoder, which wraps the encoder returned by the superclass's
    *     getEncoder() method
    */
   @Override
-  public GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev) {
-    return new RevEncoder(super.getEncoder());
+  public GenericEncoder getMotorEncoder(int countsPerRev) {
+    GenericEncoder encoder = new RevEncoder(super.getEncoder());
+    encoder.setPositionConversion(countsPerRev);
+    encoder.setVelocityConversion(countsPerRev);
+    return encoder;
   }
 
   /**

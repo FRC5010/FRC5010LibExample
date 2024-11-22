@@ -28,9 +28,9 @@ public class VelocityMotorConfigurationJson implements DeviceConfiguration {
   @Override
   public Object configure(Mechanism2d mechanismSimulation) {
     VelocityControlMotor motor =
-        new VelocityControlMotor(DeviceConfigReader.getMotor(type, id))
+        new VelocityControlMotor(DeviceConfigReader.getMotor(type, id), name)
             .setupSimulatedMotor(gearing, momentOfInertiaKgMSq)
-            .setVisualizer(mechanismSimulation, new Pose3d(x, y, z, new Rotation3d()), name);
+            .setVisualizer(mechanismSimulation, new Pose3d(x, y, z, new Rotation3d()));
     if (kP != 0.0 || kI != 0.0 || kD != 0.0) {
       motor.setValues(new GenericPID(kP, kI, kD));
     }

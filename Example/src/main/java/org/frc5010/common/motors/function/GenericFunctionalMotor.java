@@ -10,29 +10,29 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 import org.frc5010.common.units.Length;
 
 /** A class that wraps a motor controller with functionality */
-public class GenericFunctionalMotor implements MotorController5010 {
+public class GenericFunctionalMotor implements MotorController5010, WpiHelperInterface {
   /** The motor */
   protected MotorController5010 _motor;
 
   protected Mechanism2d _visualizer;
   protected Pose3d _robotToMotor;
   protected String _visualName;
-
   /**
    * Constructor for a motor
    *
    * @param motor The motor
    */
-  public GenericFunctionalMotor(MotorController5010 motor) {
+  public GenericFunctionalMotor(MotorController5010 motor, String visualName) {
     this._motor = motor;
+    _visualName = visualName;
   }
 
   /**
@@ -191,13 +191,12 @@ public class GenericFunctionalMotor implements MotorController5010 {
   /**
    * Retrieves the generic encoder for the motor.
    *
-   * @param sensorType the type of sensor to use for the encoder
    * @param countsPerRev the number of counts per revolution of the motor
    * @return the generic encoder for the motor
    */
   @Override
-  public GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev) {
-    return _motor.getMotorEncoder();
+  public GenericEncoder getMotorEncoder(int countsPerRev) {
+    return _motor.getMotorEncoder(countsPerRev);
   }
 
   /**
@@ -239,11 +238,9 @@ public class GenericFunctionalMotor implements MotorController5010 {
     _motor.factoryDefault();
   }
 
-  public GenericFunctionalMotor setVisualizer(
-      Mechanism2d visualizer, Pose3d robotToMotor, String visualName) {
+  public GenericFunctionalMotor setVisualizer(Mechanism2d visualizer, Pose3d robotToMotor) {
     _visualizer = visualizer;
     _robotToMotor = robotToMotor;
-    _visualName = visualName;
     return this;
   }
 

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
+import org.frc5010.common.sensors.absolute_encoder.GenericAbsoluteEncoder;
 
 /** Add your docs here. */
 public class TalonFXPID extends GenericPIDController {
@@ -178,5 +179,10 @@ public class TalonFXPID extends GenericPIDController {
   @Override
   public void setOutputRange(double min, double max) { // TODO: Implement
     throw new UnsupportedOperationException("Not implemented for TalonFX");
+  }
+
+  @Override
+  public void configureAbsoluteControl(GenericAbsoluteEncoder encoder, double min, double max) {
+    setControlType(PIDControlType.POSITION);
   }
 }

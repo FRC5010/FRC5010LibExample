@@ -24,7 +24,6 @@ import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.motors.control.TalonFXPID;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.GenericEncoder.EncoderMeasurementType;
 import org.frc5010.common.sensors.encoder.TalonFXEncoder;
 
 /** Add your docs here. */
@@ -93,8 +92,11 @@ public class GenericTalonFXMotor extends TalonFX implements MotorController5010 
   }
 
   @Override
-  public GenericEncoder getMotorEncoder(EncoderMeasurementType sensorType, int countsPerRev) {
-    return new TalonFXEncoder(this);
+  public GenericEncoder getMotorEncoder(int countsPerRev) {
+    GenericEncoder encoder = new TalonFXEncoder(this);
+    encoder.setPositionConversion(countsPerRev);
+    encoder.setVelocityConversion(countsPerRev);
+    return encoder;
   }
 
   @Override

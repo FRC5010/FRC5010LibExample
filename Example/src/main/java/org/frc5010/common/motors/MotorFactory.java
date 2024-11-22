@@ -72,12 +72,12 @@ public class MotorFactory {
     return new KrakenX60(port);
   }
 
-  public static MotorController5010 DriveTrainMotor(MotorController5010 motor) {
-    return new DriveTrainMotor(motor);
+  public static MotorController5010 DriveTrainMotor(MotorController5010 motor, String name) {
+    return new DriveTrainMotor(motor, name);
   }
 
   public static MotorController5010 FollowMotor(
       MotorController5010 motor, MotorController5010 leader) {
-    return new FollowerMotor(motor, leader);
+    return new FollowerMotor(motor, leader, "");
   }
 }
