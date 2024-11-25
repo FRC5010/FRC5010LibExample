@@ -7,15 +7,24 @@ package org.frc5010.common.drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+
+import static edu.wpi.first.units.Units.Kilogram;
+
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.commands.DefaultDriveCommand;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.sensors.Controller;
+
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 /** Generic class for defining drivetrain behavior */
 public abstract class GenericDrivetrain extends GenericSubsystem {
@@ -26,6 +35,11 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   protected DrivePoseEstimator poseEstimator;
   /** Whether or not the robot is field oriented */
   protected boolean isFieldOrientedDrive = true;
+  /**
+   * Load the RobotConfig from the GUI settings. You should probably
+   * store this in your Constants file
+   */
+  protected RobotConfig config;
 
   /**
    * Constructor
@@ -34,6 +48,15 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    */
   public GenericDrivetrain(Mechanism2d mechVisual) {
     super(mechVisual);
+    try {
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      config = new RobotConfig(Kilogram.of(68).magnitude(),
+          SingleJointedArmSim.estimateMOI(0.5, Kilogram.of(68).magnitude()),
+          new ModuleConfig(0.1, 4.5, 1.19, 
+          DCMotor.getNEO(1), 40, 4), 0.5, 0.5);
+    }
+
     Shuffleboard.getTab("Drive")
         .addBoolean("Field Oriented", () -> isFieldOrientedDrive)
         .withPosition(8, 0);
@@ -84,7 +107,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    *
    * @param direction vector defining the direction and speed
    */
-  public abstract void drive(ChassisSpeeds direction);
+  public abstract void drive(ChassisSpeeds direction, DriveFeedforwards feedforwards);
 
   /** Updates the pose estimator in the periodic function. */
   @Override
@@ -96,7 +119,8 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   public abstract void setAutoBuilder();
 
   /** Called when the robot is disabled */
-  public void disabledBehavior() {}
+  public void disabledBehavior() {
+  }
 
   /** Toggles the field oriented drive mode */
   public void toggleFieldOrientedDrive() {
@@ -112,14 +136,16 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   }
 
   /** Locks the wheels */
-  public void lockWheels() {}
+  public void lockWheels() {
+  }
 
   /**
    * Creates a default command for the GenericDrivetrain.
    *
    * @param driver the controller used to control the drivetrain
-   * @return a DefaultDriveCommand instance that drives the drivetrain based on the controller
-   *     inputs
+   * @return a DefaultDriveCommand instance that drives the drivetrain based on
+   *         the controller
+   *         inputs
    */
   public Command createDefaultCommand(Controller driver) {
     return new DefaultDriveCommand(
@@ -134,8 +160,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    * Creates a default test command for the GenericDrivetrain.
    *
    * @param driver the controller used to control the drivetrain
-   * @return a DefaultDriveCommand instance that drives the drivetrain based on the controller
-   *     inputs
+   * @return a DefaultDriveCommand instance that drives the drivetrain based on
+   *         the controller
+   *         inputs
    */
   public Command createDefaultTestCommand(Controller driver) {
     return new DefaultDriveCommand(
@@ -149,17 +176,20 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   /**
    * Checks if the GenericDrivetrain has any issues.
    *
-   * @return false if the GenericDrivetrain does not have any issues, true otherwise.
+   * @return false if the GenericDrivetrain does not have any issues, true
+   *         otherwise.
    */
   public boolean hasIssues() {
     return false;
   }
 
   /** Resets the encoders */
-  public void resetEncoders() {}
+  public void resetEncoders() {
+  }
 
   /**
-   * Generates an auto command that resets the encoders before starting and continues until the
+   * Generates an auto command that resets the encoders before starting and
+   * continues until the
    * GenericDrivetrain has issues.
    *
    * @param autoCommand the command to be executed

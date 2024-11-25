@@ -1,6 +1,6 @@
 package org.frc5010.common.constants;
 
-import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.config.PIDConstants;
 
 /** A class for library constants */
 public class Constants {

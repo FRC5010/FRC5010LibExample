@@ -91,13 +91,13 @@ public class DefaultDriveCommand extends Command {
               x * maxChassisVelocity.get(),
               y * maxChassisVelocity.get(),
               r * maxChassisRotation.get(),
-              drivetrainSubsystem.getHeading()));
+              drivetrainSubsystem.getHeading()), null);
     } else {
       drivetrainSubsystem.drive(
           new ChassisSpeeds(
               x * maxChassisVelocity.get(),
               y * maxChassisVelocity.get(),
-              r * maxChassisRotation.get()));
+              r * maxChassisRotation.get()), null);
     }
     // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented
     // movement
@@ -108,6 +108,6 @@ public class DefaultDriveCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0), null);
   }
 }

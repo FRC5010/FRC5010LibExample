@@ -105,7 +105,7 @@ public class JoystickToSwerve extends Command {
     // SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // output each module speed into subsystem
-    swerveDrive.drive(chassisSpeeds);
+    swerveDrive.drive(chassisSpeeds, null);
   }
 
   // Called once the command ends or is interrupted.

@@ -4,12 +4,9 @@
 
 package org.frc5010.common.config.json;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.RobotBase;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.sensors.camera.GenericCamera;
@@ -26,6 +23,11 @@ import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.VisibleTargetSystem;
 import org.frc5010.common.vision.AprilTags;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /** Add your docs here. */
 public class CameraConfigurationJson {
@@ -97,6 +99,7 @@ public class CameraConfigurationJson {
                       name,
                       column,
                       AprilTags.aprilTagFieldLayout,
+                    
                       PoseStrategy.valueOf(strategy),
                       robotToCamera,
                       robot.getPoseSupplier());

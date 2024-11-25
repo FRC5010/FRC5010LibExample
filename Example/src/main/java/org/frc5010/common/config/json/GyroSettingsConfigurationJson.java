@@ -1,10 +1,12 @@
 package org.frc5010.common.config.json;
 
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.sensors.gyro.NavXGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
+
+import com.studica.frc.AHRS.NavXComType;
+
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 
 public class GyroSettingsConfigurationJson implements DeviceConfiguration {
   public String type;
@@ -14,7 +16,7 @@ public class GyroSettingsConfigurationJson implements DeviceConfiguration {
   public Object configure(Mechanism2d mechanismSimulation) {
     switch (type) {
       case "navx":
-        return new NavXGyro(SPI.Port.kMXP);
+        return new NavXGyro(NavXComType.kMXP_SPI);
       case "pigeon2":
         return new PigeonGyro(id);
       default:

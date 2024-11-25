@@ -102,11 +102,11 @@ public class DriveByAngle extends Command {
               x * maxChassisVelocity,
               y * maxChassisVelocity,
               r * maxChassisRotation,
-              drivetrainSubsystem.getHeading()));
+              drivetrainSubsystem.getHeading()), null);
     } else {
       drivetrainSubsystem.drive(
           new ChassisSpeeds(
-              x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation));
+              x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation), null);
     }
     // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented
     // movement
@@ -117,6 +117,6 @@ public class DriveByAngle extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0), null);
   }
 }

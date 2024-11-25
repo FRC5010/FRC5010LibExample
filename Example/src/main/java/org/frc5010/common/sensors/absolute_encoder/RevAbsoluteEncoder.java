@@ -1,12 +1,16 @@
 package org.frc5010.common.sensors.absolute_encoder;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 import java.util.function.Supplier;
-import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
-import swervelib.telemetry.Alert;
+
+import org.frc5010.common.telemetry.Alert;
+
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.REVLibError;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 
 /**
  * SparkMax absolute encoder, attached through the data port. Credit: YAGSL for the original code
@@ -18,15 +22,18 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
   private Alert failureConfiguring;
   /** An {@link Alert} for if there is a failure configuring the encoder offset. */
   private Alert offsetFailure;
+  private final AbsoluteEncoderConfig config;
+  private final SparkBase motor;
 
   /**
-   * Create the {@link RevAbsoluteEncoder} object as a duty cycle from the {@link CANSparkMax}
+   * Create the {@link RevAbsoluteEncoder} object as a duty cycle from the {@link SparkMax}
    * motor.
    *
    * @param motor Motor to create the encoder from.
    * @param conversionFactor The conversion factor to set if the output is not from 0 to 360.
    */
-  public RevAbsoluteEncoder(GenericRevBrushlessMotor motor, int conversionFactor) {
+  public RevAbsoluteEncoder(SparkMax motor, int conversionFactor) {
+    config = new AbsoluteEncoderConfig();
     failureConfiguring =
         new Alert(
             "Encoders",
@@ -35,12 +42,13 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
     offsetFailure =
         new Alert(
             "Encoders", "Failure to set Absolute Encoder Offset", Alert.AlertType.WARNING_TRACE);
-    if (motor.getMotor() instanceof CANSparkMax) {
-      encoder = ((CANSparkMax) motor.getMotor()).getAbsoluteEncoder(Type.kDutyCycle);
-      configureSparkMax(() -> encoder.setVelocityConversionFactor(conversionFactor));
-      configureSparkMax(() -> encoder.setPositionConversionFactor(conversionFactor));
+    if (motor instanceof SparkMax) {
+      this.motor = motor;
+      encoder = this.motor.getAbsoluteEncoder();
+      setPositionConversion(conversionFactor);
+      setVelocityConversion(conversionFactor);
     } else {
-      throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a CANSparkMax");
+      throw new RuntimeException("Motor given to instantiate SparkMaxEncoder is not a SparkMax");
     }
   }
 
@@ -77,7 +85,7 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
    */
   @Override
   public void configure(boolean inverted) {
-    encoder.setInverted(inverted);
+    config.inverted(inverted);
   }
 
   /**
@@ -110,7 +118,7 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
   public boolean setEncoderOffset(double offset) {
     REVLibError error = null;
     for (int i = 0; i < maximumRetries; i++) {
-      error = encoder.setZeroOffset(offset);
+      config.zeroOffset(offset);
       if (error == REVLibError.kOk) {
         return true;
       }
@@ -132,22 +140,22 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
 
   @Override
   public void reset() {
-    encoder.setZeroOffset(0);
+    config.zeroOffset(0);
   }
 
   @Override
   public void setPositionConversion(double conversion) {
-    encoder.setPositionConversionFactor(conversion);
+    config.positionConversionFactor(conversion);
   }
 
   @Override
   public void setVelocityConversion(double conversion) {
-    encoder.setVelocityConversionFactor(conversion);
+    config.velocityConversionFactor(conversion);
   }
 
   @Override
   public void setPosition(double position) {
-    encoder.setZeroOffset(position - encoder.getPosition() + encoder.getZeroOffset());
+    throw new IllegalArgumentException();
   }
 
   @Override
@@ -155,6 +163,6 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
 
   @Override
   public void setInverted(boolean inverted) {
-    encoder.setInverted(inverted);
+    config.inverted(inverted);
   }
 }

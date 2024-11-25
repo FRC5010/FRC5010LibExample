@@ -4,15 +4,17 @@
 
 package org.frc5010.common.sensors.camera;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import java.util.Optional;
-import java.util.function.Supplier;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /** A camera using the PhotonVision library. */
 public class PhotonVisionPoseCamera extends PhotonVisionCamera {
@@ -44,13 +46,13 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     this.strategy = strategy;
     this.poseSupplier = poseSupplier;
     this.fieldLayout = fieldLayout;
-    poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, camera, cameraToRobot);
+    poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, cameraToRobot);
   }
 
   /** Update the camera and target with the latest result */
   @Override
   public void updateCameraInfo() {
-    camResult = camera.getLatestResult();
+    super.updateCameraInfo();
     if (camResult.hasTargets()) {
       target = Optional.ofNullable(camResult.getBestTarget());
     }
@@ -64,16 +66,8 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
   @Override
   public Optional<Pose3d> getRobotPose() {
     Pose3d robotPoseEst = null;
-    if (null != poseSupplier) {
-      if (strategy == PoseStrategy.CLOSEST_TO_REFERENCE_POSE) {
-        poseEstimator.setReferencePose(poseSupplier.get());
-      }
-      if (strategy == PoseStrategy.CLOSEST_TO_LAST_POSE) {
-        poseEstimator.setLastPose(poseSupplier.get());
-      }
-    }
     if (target.isPresent()) {
-      Optional<EstimatedRobotPose> result = poseEstimator.update();
+      Optional<EstimatedRobotPose> result = poseEstimator.update(camResult);
 
       if (result.isPresent()
           && result.get().estimatedPose != null
@@ -94,7 +88,8 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     Pose3d targetPoseEst = null;
     if (target.isPresent()) {
       if (target.get().getFiducialId() != 0) {
-        targetPoseEst = fieldLayout.getTagPose(target.get().getFiducialId()).orElse(null);
+        Transform3d robotToTarget = robotToCamera.plus(target.get().getBestCameraToTarget());
+        targetPoseEst = new Pose3d(robotToTarget.getTranslation(), robotToTarget.getRotation());
       }
     }
     return Optional.ofNullable(targetPoseEst);

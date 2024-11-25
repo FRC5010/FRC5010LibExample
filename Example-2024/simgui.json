@@ -1,0 +1,57 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Pose Field": "Field2d",
+      "/Shuffleboard/Vision/Vision Field": "Field2d",
+      "/Shuffleboard/baby_swerve/Auto Modes": "String Chooser",
+      "/Shuffleboard/basic_robot/Auto Modes": "String Chooser",
+      "/Shuffleboard/java.lang.Class/Auto Modes": "String Chooser",
+      "/SmartDashboard/Drive Visual": "Mechanism2d",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Pigeon 2 (v6) [13]": "Gyro",
+      "/SmartDashboard/Robot Visual": "Mechanism2d",
+      "/SmartDashboard/VisionSystemSim-main/Sim Field": "Field2d",
+      "/SmartDashboard/navX-Sensor[4]": "Gyro"
+    },
+    "windows": {
+      "/Shuffleboard/Pose/Pose Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Robot Visual": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      },
+      "Test": {
+        "Input": {
+          "open": true
+        },
+        "Output": {
+          "open": true
+        }
+      },
+      "angular": {
+        "open": true
+      },
+      "velocity_motor": {
+        "open": true
+      }
+    }
+  }
+}

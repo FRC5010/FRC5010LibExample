@@ -7,12 +7,33 @@ package org.frc5010.common.drive.swerve;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.constants.GenericDrivetrainConstants;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.pose.YAGSLSwervePose;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.util.DriveFeedforwards;
+
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -40,24 +61,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.commands.JoystickToSwerve;
-import org.frc5010.common.constants.Constants.AutonConstants;
-import org.frc5010.common.constants.GenericDrivetrainConstants;
-import org.frc5010.common.constants.MotorFeedFwdConstants;
-import org.frc5010.common.constants.RobotConstantsDef;
-import org.frc5010.common.constants.SwerveConstants;
-import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.drive.pose.YAGSLSwervePose;
-import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -166,26 +169,19 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   /** Setup AutoBuilder for PathPlanner. */
   public void setupPathPlanner() {
-    AutoBuilder.configureHolonomic(
+    AutoBuilder.configure(
         this::getPose, // Robot pose supplier
         this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting
         // pose)
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::setChassisSpeedsWithAngleSupplier, // Method that will drive the robot given ROBOT
         // RELATIVE ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in
-            // your Constants class
-            AutonConstants.TRANSLATION_PID,
-            // Translation PID constants
-            AutonConstants.ANGLE_PID,
-            // Rotation PID constants
-            4.5,
-            // Max module speed, in m/s
-            swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
-            // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig(false, false)
-            // Default path replanning config. See the API for the options here
-            ),
+        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
+                                        // drive trains
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+        ),
+        config, // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -254,10 +250,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     return AutoBuilder.pathfindToPose(
         pose,
         constraints,
-        0.0, // Goal end velocity in meters/sec
-        0.0 // Rotation delay distance in meters. This is how far the robot should travel
-        // before attempting to rotate.
-        );
+        0.0 // Goal end velocity in meters/sec
+    );
   }
 
   /**
@@ -325,7 +319,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public Command sysIdDriveMotorCommand() {
     return SwerveDriveTest.generateSysIdCommand(
         SwerveDriveTest.setDriveSysIdRoutine(
-            new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(12), Seconds.of(10)),
+            new Config(
+              Volts.of(1).div(Seconds.of(1)),
+              Volts.of(1), 
+              Seconds.of(10)),
             this,
             swerveDrive,
             12),
@@ -597,7 +594,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     angleSpeedSupplier = angDoubleSupplier;
   }
 
-  public void setChassisSpeedsWithAngleSupplier(ChassisSpeeds chassisSpeeds) {
+  public void setChassisSpeedsWithAngleSupplier(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     ChassisSpeeds angleSuppliedChassisSpeeds =
         new ChassisSpeeds(
             chassisSpeeds.vxMetersPerSecond,

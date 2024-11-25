@@ -6,14 +6,16 @@ package org.frc5010.common.sensors.encoder;
 
 import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+
 /** Add your docs here. */
 public class TalonFXEncoder implements GenericEncoder {
-  GenericTalonFXMotor motor;
+  TalonFX motor;
   double positionConversion = 1;
   double velocityConversion = 1;
 
   public TalonFXEncoder(GenericTalonFXMotor motor) {
-    this.motor = motor;
+    this.motor = (TalonFX)motor.getMotor();
   }
 
   private double nativeToActualPosition(double position) {

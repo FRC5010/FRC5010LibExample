@@ -67,8 +67,8 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     super(directory);
     try {
       parser = new RobotParser(directory, this);
-      parser.createRobot(this);
       subsystemParser = new SubsystemParser(directory, this);
+      parser.createRobot(this);
 
       driver = Optional.ofNullable(controllers.get("driver"));
       operator = Optional.ofNullable(controllers.get("operator"));

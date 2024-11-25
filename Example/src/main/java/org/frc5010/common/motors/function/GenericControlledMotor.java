@@ -4,16 +4,16 @@
 
 package org.frc5010.common.motors.function;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
-import org.frc5010.common.sensors.absolute_encoder.GenericAbsoluteEncoder;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.telemetry.DisplayDouble;
 import org.frc5010.common.telemetry.DisplayString;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Add your docs here. */
 public abstract class GenericControlledMotor extends GenericFunctionalMotor
@@ -240,8 +240,8 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   }
 
   @Override
-  public void configureAbsoluteControl(GenericAbsoluteEncoder encoder, double min, double max) {
-    pid.configureAbsoluteControl(encoder, min, max);
+  public void configureAbsoluteControl(double offset, boolean inverted, double min, double max) {
+    pid.configureAbsoluteControl(offset, inverted, min, max);
   }
 
   public abstract Command getSysIdCommand(SubsystemBase subsystemBase);

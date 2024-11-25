@@ -9,10 +9,11 @@ import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.function.AngularControlMotor;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.motors.function.VelocityControlMotor;
-import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 import org.frc5010.common.units.Angle;
 import org.frc5010.common.units.Length;
+
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -53,8 +54,7 @@ public class ExampleSubsystem extends GenericSubsystem {
                         Length.Inch(19), Angle.Degree(0), Angle.Degree(360),
                         false, 0, Angle.Degree(0), false, 0.1)
                 .setVisualizer(mechanismSimulation, new Pose3d(0.75, 0, 0.25, new Rotation3d()));
-        angularMotor.setEncoder(new RevAbsoluteEncoder(
-            ((GenericRevBrushlessMotor)angularMotor.getMotor()), 360));
+        angularMotor.setEncoder(new RevAbsoluteEncoder((SparkMax)angularMotor.getMotor(), 360));
         angularMotor.setValues(new GenericPID(0.01, 0.000025, 0.003));
         angularMotor.setMotorFeedFwd(new MotorFeedFwdConstants(0.0, 0.01, 0.0, false));
         angularMotor.setIZone(3);

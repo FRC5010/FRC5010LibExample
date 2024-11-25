@@ -231,13 +231,6 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
     return _motor.getMotor();
   }
 
-  /** Calls the factoryDefault method of the _motor object. This method does not return anything. */
-  @Override
-  public void factoryDefault() {
-    // Not sure if it needs to return anything
-    _motor.factoryDefault();
-  }
-
   public GenericFunctionalMotor setVisualizer(Mechanism2d visualizer, Pose3d robotToMotor) {
     _visualizer = visualizer;
     _robotToMotor = robotToMotor;
@@ -275,5 +268,42 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   @Override
   public double getMaxRPM() {
     throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
+  }
+
+  @Override
+  public MotorController5010 setVoltageCompensation(double nominalVoltage) {
+    _motor.setVoltageCompensation(nominalVoltage);
+    return this;
+  }
+
+  @Override
+  public void clearStickyFaults() {
+    _motor.clearStickyFaults();
+  }
+
+  @Override
+  public MotorController5010 setMotorBrake(boolean isBrakeMode) {
+    _motor.setMotorBrake(isBrakeMode);
+    return this;
+  }
+
+  @Override
+  public void burnFlash() {
+    _motor.burnFlash();
+  }
+
+  @Override
+  public double getVoltage() {
+    return _motor.getVoltage();
+  }
+
+  @Override
+  public double getAppliedOutput() {
+    return _motor.getAppliedOutput();
+  }
+
+  @Override
+  public void factoryDefaults() {
+    _motor.factoryDefaults();
   }
 }

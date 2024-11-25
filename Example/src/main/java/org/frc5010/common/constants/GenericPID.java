@@ -15,6 +15,12 @@ public class GenericPID {
   /** The derivative constant */
   private double kD;
 
+  /** The feedforward constant */
+  private double kF;
+
+  /** The integral zone */
+  private double iZone;
+
   /**
    * Constructor for GenericPID
    *
@@ -81,5 +87,41 @@ public class GenericPID {
    */
   public void setkD(double kD) {
     this.kD = kD;
+  }
+
+  /**
+   * Returns the value of the feedforward constant.
+   *
+   * @return the value of the feedforward constant
+   */
+  public double getkF() {
+    return kF;
+  }
+
+  /**
+   * Sets the value of the feedforward constant.
+   *
+   * @param kF the new value of the feedforward constant
+   */
+  public void setkF(double kF) {
+    this.kF = kF;
+  }
+
+  /**
+   * Returns the value of the integral zone.
+   *
+   * @return the value of the integral zone
+   */
+  public double getIZone() {
+    return iZone;
+  }
+
+  /**
+   * Sets the value of the integral zone.
+   *
+   * @param iZone the new value of the integral zone
+   */
+  public void setIZone(double iZone) {
+    this.iZone = iZone;
   }
 }

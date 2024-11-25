@@ -6,6 +6,7 @@ package org.frc5010.common.sensors.encoder;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
+
 import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
@@ -30,12 +31,12 @@ public class CanCoderEncoder implements GenericEncoder {
 
   @Override
   public double getPosition() {
-    return Units.degreesToRadians(canCoder.getAbsolutePosition().getValue());
+    return Units.degreesToRadians(canCoder.getAbsolutePosition().getValue().magnitude());
   }
 
   @Override
   public double getVelocity() {
-    return canCoder.getVelocity().getValue();
+    return canCoder.getVelocity().getValue().magnitude();
   }
 
   @Override

@@ -7,7 +7,7 @@ package org.frc5010.common.motors.hardware;
 import edu.wpi.first.math.system.plant.DCMotor;
 import org.frc5010.common.motors.MotorConstants;
 
-/** NEO550 extends CANSparkMax and applies code specific to a NEO550 */
+/** NEO550 extends SparkMax and applies code specific to a NEO550 */
 public class NEO550 extends GenericRevBrushlessMotor {
   public static final double MAXRPM = 11000;
 

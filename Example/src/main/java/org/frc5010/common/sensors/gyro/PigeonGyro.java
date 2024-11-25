@@ -30,17 +30,17 @@ public class PigeonGyro implements GenericGyro {
 
   @Override
   public double getAngleX() {
-    return pigeon2.getRoll().getValue();
+    return pigeon2.getRoll().getValue().magnitude();
   }
 
   @Override
   public double getAngleY() {
-    return pigeon2.getPitch().getValue();
+    return pigeon2.getPitch().getValue().magnitude();
   }
 
   @Override
   public double getAngleZ() {
-    return pigeon2.getYaw().getValue();
+    return pigeon2.getYaw().getValue().magnitude();
   }
 
   @Override

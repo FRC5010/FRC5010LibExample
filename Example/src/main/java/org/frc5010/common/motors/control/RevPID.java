@@ -4,55 +4,91 @@
 
 package org.frc5010.common.motors.control;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.SparkPIDController;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
-import org.frc5010.common.sensors.absolute_encoder.GenericAbsoluteEncoder;
-import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
+
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 /** Add your docs here. */
 public class RevPID extends GenericPIDController {
+  /** The motor for this controller */
   GenericRevBrushlessMotor motor;
-  SparkPIDController controller;
+  /** The PID controller */
+  SparkClosedLoopController controller;
+  /** The control type */
   ControlType sparkControlType = ControlType.kVoltage;
+  /** The reference */
   private double reference = 0.0;
+  /** The tolerance */
   private double tolerance = 0.0;
+  /**
+   * Configuration object for {@link SparkMax} motor.
+   */
+  private SparkMaxConfig cfg;
+  /** The PIDF configuration */
+  private GenericPID pidfConfig = new GenericPID(0, 0, 0);
 
   public RevPID(GenericRevBrushlessMotor motor) {
     this.motor = motor;
     controller = motor.getPIDController();
+    cfg = motor.getConfig();
   }
 
+  /**
+   * Set the proportional value of the PID controller.
+   *
+   * @param p Proportional value.
+   */
   @Override
   public void setP(double p) {
-    controller.setP(p);
+    cfg.closedLoop.p(p);
+    pidfConfig.setkP(p);
+    motor.updateConfig(cfg);
   }
 
   @Override
   public void setI(double i) {
-    controller.setI(i);
+    cfg.closedLoop.i(i);
+    pidfConfig.setkI(i);
+    motor.updateConfig(cfg);
   }
 
   @Override
   public void setD(double d) {
-    controller.setD(d);
-  }
+    cfg.closedLoop.d(d);
+    pidfConfig.setkD(d);
+    motor.updateConfig(cfg);  }
 
   @Override
   public void setF(double f) {
-    controller.setFF(f);
+    pidfConfig.setkF(f);
+    cfg.closedLoop.pidf(pidfConfig.getkP(), pidfConfig.getkI(), pidfConfig.getkD(), f);
+    motor.updateConfig(cfg);
   }
 
   @Override
   public void setIZone(double iZone) {
-    controller.setIZone(iZone);
+    pidfConfig.setIZone(iZone);
+    cfg.closedLoop.iZone(iZone);
+    motor.updateConfig(cfg);
   }
 
+  /**
+   * Set the output range for the PID controller.
+   *
+   * @param min Minimum output value.
+   * @param max Maximum output value.
+   */
   @Override
   public void setOutputRange(double min, double max) {
-    controller.setOutputRange(min, max);
+    // Configure the closed loop controller's output range
+    cfg.closedLoop.outputRange(min, max);
+    // Update the motor configuration to apply changes
+    motor.updateConfig(cfg);
   }
 
   @Override
@@ -72,9 +108,9 @@ public class RevPID extends GenericPIDController {
   public boolean isAtTarget() {
     switch (sparkControlType) {
       case kVelocity:
-        return Math.abs(getReference() - motor.getEncoder().getVelocity()) < tolerance;
+        return Math.abs(getReference() - motor.getMotorEncoder().getVelocity()) < tolerance;
       case kPosition:
-        return Math.abs(getReference() - motor.getEncoder().getPosition()) < tolerance;
+        return Math.abs(getReference() - motor.getMotorEncoder().getPosition()) < tolerance;
       default:
         return false;
     }
@@ -116,27 +152,27 @@ public class RevPID extends GenericPIDController {
 
   @Override
   public double getP() {
-    return controller.getP();
+    return pidfConfig.getkP();
   }
 
   @Override
   public double getI() {
-    return controller.getI();
+    return pidfConfig.getkI();
   }
 
   @Override
   public double getD() {
-    return controller.getD();
+    return pidfConfig.getkD();
   }
 
   @Override
   public double getF() {
-    return controller.getFF();
+    return pidfConfig.getkF();
   }
 
   @Override
   public double getIZone() {
-    return controller.getIZone();
+    return pidfConfig.getIZone();
   }
 
   @Override
@@ -175,10 +211,12 @@ public class RevPID extends GenericPIDController {
   }
 
   @Override
-  public void configureAbsoluteControl(GenericAbsoluteEncoder encoder, double min, double max) {
-    controller.setFeedbackDevice((AbsoluteEncoder) ((RevAbsoluteEncoder) encoder).getEncoder());
-    controller.setPositionPIDWrappingEnabled(true);
-    controller.setPositionPIDWrappingMinInput(min);
-    controller.setPositionPIDWrappingMaxInput(max);
+  public void configureAbsoluteControl(double offset, boolean inverted, double min, double max) {
+    cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
+    cfg.absoluteEncoder.zeroOffset(offset);
+    cfg.absoluteEncoder.inverted(inverted);
+    cfg.closedLoop
+        .positionWrappingEnabled(true)
+        .positionWrappingInputRange(min, max);
   }
 }

@@ -5,6 +5,7 @@
 package org.frc5010.common.motors.function;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
@@ -35,7 +36,9 @@ public class VelocityControlMotor extends GenericControlledMotor {
   }
 
   public VelocityControlMotor setupSimulatedMotor(double gearing, double jKgMetersSquared) {
-    simMotor = new FlywheelSim(_motor.getMotorSimulationType(), gearing, jKgMetersSquared);
+    simMotor = new FlywheelSim(
+        LinearSystemId.createFlywheelSystem(_motor.getMotorSimulationType(), jKgMetersSquared, gearing),
+        _motor.getMotorSimulationType());
     simEncoder =
         new SimulatedEncoder(
             MotorFactory.getNextSimEncoderPort(), MotorFactory.getNextSimEncoderPort());

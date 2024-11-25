@@ -4,14 +4,17 @@
 
 package org.frc5010.common.sensors.camera;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.Optional;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** A camera using the PhotonVision library. */
 public class PhotonVisionCamera extends GenericCamera {
@@ -23,6 +26,8 @@ public class PhotonVisionCamera extends GenericCamera {
   protected Optional<PhotonTrackedTarget> target = Optional.empty();
   /** The latest camera result */
   protected PhotonPipelineResult camResult;
+    /** The latest camera results */
+    protected List<PhotonPipelineResult> camResults;
 
   /**
    * Constructor
@@ -40,7 +45,8 @@ public class PhotonVisionCamera extends GenericCamera {
   /** Update the camera and target with the latest result */
   @Override
   public void updateCameraInfo() {
-    camResult = camera.getLatestResult();
+    camResults = camera.getAllUnreadResults();
+    camResult = camResults.stream().findFirst().orElse(new PhotonPipelineResult());
   }
 
   /**
@@ -90,7 +96,7 @@ public class PhotonVisionCamera extends GenericCamera {
    */
   @Override
   public double getLatency() {
-    return Timer.getFPGATimestamp() - (camResult.getLatencyMillis() / 1000.0);
+    return Timer.getFPGATimestamp() - (camResult.getTimestampSeconds());
   }
 
   /**
