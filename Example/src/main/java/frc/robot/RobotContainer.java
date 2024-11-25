@@ -18,7 +18,7 @@ public class RobotContainer implements WpiHelperInterface {
   public RobotContainer() {
     constants = new Constants();
 
-    robot = new ExampleRobot("basic_robot");
+    robot = new BabySwerve("baby_swerve");
     configureButtonBindings();
  		initAutoCommands();
 		WpiNetworkTableValuesHelper.loadRegisteredToNetworkTables();

@@ -12,8 +12,11 @@ import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.json.SubsystemJson;
 
 public class SubsystemParser {
+  /** The mechanism simulation */
   protected Mechanism2d mechanismSimulation;
+  /** The directory to read from */
   protected String robotDirectory;
+  /** The robot */
   protected GenericRobot robot;
 
   /**
@@ -29,10 +32,25 @@ public class SubsystemParser {
     this.robot = robot;
   }
 
+/**
+ * Checks if a specific configuration file exists in the given directory.
+ *
+ * @param directory the directory to check for the configuration file
+ * @param configFile the name of the configuration file to verify existence
+ */
   private void checkDirectory(File directory, String configFile) {
     assert new File(directory, configFile).exists();
   }
 
+  /**
+   * Parses a subsystem configuration from the given file and configures the subsystem.
+   *
+   * @param genericSubsystem the subsystem to configure
+   * @param configFile the name of the configuration file to read
+   * @throws StreamReadException if the file cannot be read
+   * @throws DatabindException if the file cannot be parsed
+   * @throws IOException if there is an error reading the file
+   */
   public void parseSubsystem(GenericSubsystem genericSubsystem, String configFile)
       throws StreamReadException, DatabindException, IOException {
     File directory = new File(Filesystem.getDeployDirectory(), robotDirectory + "/subsystems/");

@@ -8,23 +8,45 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.function.VelocityControlMotor;
 
+/** Configures a VelocityControlMotor with the given parameters and visualizes it. */
 public class VelocityMotorConfigurationJson implements DeviceConfiguration {
+/** The name of the motor */
   public String name;
+  /** The type of motor */
   public String type;
+  /** The ID of the motor */
   public int id;
+  /** The gearing of the motor */
   public double gearing;
+  /** The moment of inertia of the motor */
   public double momentOfInertiaKgMSq;
+  /** The x position */
   public double x;
+  /** The y position */
   public double y = 0.0;
+  /** The z position */
   public double z;
+  /** The kS value */
   public double kS = 0.0;
+  /** The kV value */
   public double kV = 0.0;
+  /** The kA value */
   public double kA = 0.0;
+  /** The kP value */
   public double kP = 0.0;
+  /** The kI value */
   public double kI = 0.0;
+  /** The kD value */
   public double kD = 0.0;
+  /** The iZone value */
   public double iZone = 0.0;
 
+  /**
+   * Configures a VelocityControlMotor with the given parameters and visualizes it.
+   *
+   * @param mechanismSimulation The Mechanism2d instance for visualization.
+   * @return A configured VelocityControlMotor object.
+   */
   @Override
   public Object configure(Mechanism2d mechanismSimulation) {
     VelocityControlMotor motor =
