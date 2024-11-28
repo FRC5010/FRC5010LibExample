@@ -1,0 +1,23 @@
+{
+  "NetworkTables": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pose/Pose Field": "Field2d",
+      "/Shuffleboard/baby_swerve/Auto Modes": "String Chooser",
+      "/SmartDashboard/Encoders": "Alerts",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/IMU": "Alerts",
+      "/SmartDashboard/JSON": "Alerts",
+      "/SmartDashboard/Motors": "Alerts",
+      "/SmartDashboard/Robot Visual": "Mechanism2d",
+      "/SmartDashboard/Swerve Drive": "Alerts"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "5010"
+  }
+}

@@ -179,7 +179,9 @@ public class LimeLightCamera extends GenericCamera {
   /** Get the current pose estimate of the robot */
   @Override
   public Optional<Pose3d> getRobotPose() {
-    return Optional.ofNullable(new Pose3d(poseEstimate.map(it -> it.pose).orElse(null)));
+    return Optional.ofNullable(poseEstimate.map(
+      it -> null != it.pose ? new Pose3d(it.pose) : null
+    ).orElse(null));
   }
 
   /** Get the target pose estimate relative to the robot */

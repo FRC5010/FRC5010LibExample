@@ -16,6 +16,7 @@ import java.util.function.DoubleSupplier;
 
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.commands.JoystickToSwerve;
+import org.frc5010.common.constants.Constants;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
@@ -122,11 +123,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
-      swerveDrive = new SwerveParser(swerveJsonDirectory)
-          .createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor); // Use
-      // correct
-      // angleMotorConversionFactor
-      // later
+      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, Pose2d.kZero);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException(e);
@@ -134,16 +131,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
 
-    // Disables cosine compensation for
-    // simulations since it causes discrepancies
-    // not seen in real life.
-    swerveDrive.setCosineCompensator(
-        !SwerveDriveTelemetry.isSimulation);
+    // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation);
     // Correct for skew that gets worse as angular velocity increases. Start with a
     // coefficient of 0.1.
     swerveDrive.setAngularVelocityCompensation(true,
         true,
         0.1);
+    swerveDrive.setModuleEncoderAutoSynchronize(true, 3); 
+    // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
+    swerveDrive.pushOffsetsToEncoders(); 
+    // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
 
     /** 5010 Code */
     SwerveConstants swerveConstants = (SwerveConstants) constants;
@@ -161,7 +159,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
               });
     }
 
-    poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(null, this), visionSystem);
+    poseEstimator = new DrivePoseEstimator(new YAGSLSwervePose(this), visionSystem);
     setDrivetrainPoseEstimator(poseEstimator);
 
     SmartDashboard.putString(
@@ -455,6 +453,17 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
    * @param velocity Robot oriented {@link ChassisSpeeds}
    */
   public void drive(ChassisSpeeds velocity) {
+    swerveDrive.drive(velocity);
+  }
+
+  /**
+   * Drive according to the chassis robot oriented velocity and drive feedforwards.
+   *
+   * @param velocity Robot oriented {@link ChassisSpeeds}
+   * @param feedforwards {@link DriveFeedforwards}
+   */
+  @Override
+  public void drive(ChassisSpeeds velocity, DriveFeedforwards feedforwards) {
     swerveDrive.drive(velocity);
   }
 
