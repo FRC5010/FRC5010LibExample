@@ -421,4 +421,15 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   public void stopMotor() {
     motor.stopMotor();
   }
+
+  /**
+   * Get the current output of the motor controller.
+   * 
+   * @return Current output.
+   */
+  @Override
+  public double getOutputCurrent() {
+    return motor.getOutputCurrent();
+  }
+
 }

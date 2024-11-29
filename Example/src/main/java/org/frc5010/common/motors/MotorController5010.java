@@ -152,4 +152,12 @@ public interface MotorController5010 extends MotorController {
    * @return Applied dutycycle output to the motor.
    */
   public double getAppliedOutput();
+
+
+  /**
+   * Get the current output of the motor controller.
+   * 
+   * @return Current output.
+   */
+  public double getOutputCurrent();
 }
