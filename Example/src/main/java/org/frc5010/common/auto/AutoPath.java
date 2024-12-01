@@ -7,13 +7,20 @@ package org.frc5010.common.auto;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
+import org.frc5010.common.telemetery.WpiDataLogging;
+import org.frc5010.common.telemetry.Alert;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
-/** Add your docs here. */
+/**
+ * A class that represents a path that the robot can follow
+ */
 public class AutoPath {
     PathPlannerPath pathplannerPath;
 
@@ -96,7 +103,7 @@ public class AutoPath {
             poseResetCommand.setName("Reset Odometry to Start of Path " + pathplannerPath.name);
             return poseResetCommand;
         }
-        return null;
+        return Commands.none();
     }
 
     /**
@@ -106,13 +113,9 @@ public class AutoPath {
      * @return the command that resets the odometry
      */
     public Command resetOdometryToStart(double distanceToTrigger) {
-        Command resetCommand = resetOdometryToStart();
-        if (null == resetCommand) {
-            return null;
-        } else {
-            resetCommand.setName("Reset Odometry to Start of Path " + pathplannerPath.name + " if far from start");
-            return resetCommand.onlyIf(robotFarFromStart(distanceToTrigger));
-        }
+        Command resetCommand = resetOdometryToStart().onlyIf(robotFarFromStart(distanceToTrigger));
+        resetCommand.setName("Reset Odometry to Start of Path " + pathplannerPath.name + " if far from start");
+        return resetCommand;
     }
 
     /**

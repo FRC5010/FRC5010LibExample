@@ -84,7 +84,7 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
   }
 
   @Override
-  public final void execute() {
+  public void execute() {
     if (m_commands.isEmpty()) {
       return;
     }
@@ -103,7 +103,7 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
   }
 
   @Override
-  public final void end(boolean interrupted) {
+  public void end(boolean interrupted) {
     if (interrupted
         && !m_commands.isEmpty()
         && m_currentCommandIndex > -1
@@ -115,7 +115,7 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
   }
 
   @Override
-  public final boolean isFinished() {
+  public boolean isFinished() {
     return m_currentCommandIndex == m_commands.size();
   }
 
