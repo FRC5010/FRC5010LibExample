@@ -24,7 +24,7 @@ import org.frc5010.common.telemetery.WpiDataLogging;
 
 /** Robots should extend this class as the entry point into using the library */
 public abstract class GenericRobot extends GenericMechanism implements GenericDeviceHandler {
-  /** Selector for autonmous modes */
+  /** Selector for autonomous modes */
   protected SendableChooser<Command> selectableCommand;
   /** The driver controller */
   protected Optional<Controller> driver;
@@ -194,6 +194,20 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
         shuffleTab.add("Auto Modes", selectableCommand).withSize(2, 1);
       }
     }
+  }
+
+  /**
+   * Adds auto commands to the auto selector
+   * 
+   * @param name the name of the command  
+   * @param command the command to add
+   * @throws IllegalStateException if the auto chooser is not initialized
+   */
+  public void addAutoToChooser(String name, Command command) {
+    if (null == selectableCommand) {
+      throw new IllegalStateException("Auto chooser not initialized. Call buildAutoCommands() first");
+    }
+    selectableCommand.addOption(name, command);
   }
 
   /**
