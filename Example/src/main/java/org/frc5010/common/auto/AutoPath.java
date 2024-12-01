@@ -5,6 +5,7 @@
 package org.frc5010.common.auto;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -96,6 +97,32 @@ public class AutoPath {
             return poseResetCommand;
         }
         return null;
+    }
+
+    /**
+     * gets a command which can be used to reset the robot's odometry to the start of the path if the robot is far from the start
+     * 
+     * @param distanceToTrigger the distance from the start of the path to trigger the reset
+     * @return the command that resets the odometry
+     */
+    public Command resetOdometryToStart(double distanceToTrigger) {
+        Command resetCommand = resetOdometryToStart();
+        if (null == resetCommand) {
+            return null;
+        } else {
+            resetCommand.setName("Reset Odometry to Start of Path " + pathplannerPath.name + " if far from start");
+            return resetCommand.onlyIf(robotFarFromStart(distanceToTrigger));
+        }
+    }
+
+    /**
+     * gets a BooleanSupplier that returns true if the robot is far from the start of the path. mainly used to determine if certain auto correction procedures should be run.
+     * 
+     * @param distance the distance from the start of the path to trigger the BooleanSupplier
+     * @return the BooleanSupplier
+     */
+    public BooleanSupplier robotFarFromStart(double distance) {
+        return () -> pathplannerPath.getStartingHolonomicPose().get().getTranslation().getDistance(AutoBuilder.getCurrentPose().getTranslation()) > distance;
     }
 
 }
