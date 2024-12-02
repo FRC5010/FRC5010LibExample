@@ -87,6 +87,9 @@ public class AutoSequence extends GenericCommandSequence {
         });
     }
 
+    /**
+     * Constructs a trigger which mirrors the state of an event marker. Used with the EventMarkerFlag command.
+     */
     public Trigger EventMarker(String name) {
         return EventMarkerFlag.getTrigger(name, getAutonomousEventLoop());
     }
