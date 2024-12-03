@@ -2,6 +2,8 @@ package org.frc5010.common.telemetry;
 
 import java.util.EnumSet;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.IntegerTopic;
@@ -37,10 +39,10 @@ public class DisplayLong {
    * @param table        the table
    */
   public DisplayLong(final long defaultValue, final String name, final String table) {
-    this(defaultValue, name, table, false);
+    this(defaultValue, name, table, LogLevel.COMPETITION);
   }
 
-   /**
+  /**
    * Add a long to the dashboard
    *
    * @param defaultValue the default value
@@ -48,23 +50,24 @@ public class DisplayLong {
    * @param table        the table
    * @param debug        which log level to dipslay at
    */
-  public DisplayLong(final long defaultValue, final String name, final String table, final boolean debug) {
+  public DisplayLong(final long defaultValue, final String name, final String table, final LogLevel logLevel) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
-    if (!isDisplayed_) {
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getIntegerTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(value_);
-      listenerHandle_ = NetworkTableInstance.getDefault()
-          .addListener(
-              subscriber_,
-              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-              event -> {
-                setValue(event.valueData.value.getInteger(), false);
-              });
-
+      if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+        subscriber_ = topic_.subscribe(value_);
+        listenerHandle_ = NetworkTableInstance.getDefault()
+            .addListener(
+                subscriber_,
+                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                event -> {
+                  setValue(event.valueData.value.getInteger(), false);
+                });
+      }
       publisher_.setDefault(value_);
     }
   }

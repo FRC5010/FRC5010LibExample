@@ -1,6 +1,6 @@
 {
     "userConfig": "demo_mode.json",
-    "logLevel": "DEBUG",
+    "logLevel": "CONFIG",
     "driveType": "YAGSL_SWERVE_DRIVE",
     "trackWidth": 16.8,
     "trackWidthUom": "in",

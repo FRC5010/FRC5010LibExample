@@ -2,8 +2,14 @@ package org.frc5010.common.telemetry;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.EnumSet;
+
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
@@ -27,6 +33,10 @@ public class DisplayAngle {
   protected DoublePublisher publisher_;
   /** Widget for the angle */
   protected SuppliedValueWidget<Double> component_;
+  /** Subscriber for the angle */
+  protected DoubleSubscriber subscriber_;
+  /** Listener handle */
+  protected int listenerHandle_;
   /** Display mode */
   protected final boolean isDisplayed_;
 
@@ -40,7 +50,7 @@ public class DisplayAngle {
    */
   public DisplayAngle(
       final double angle, AngleUnit unit, final String name, final String table) {
-    this(angle, unit, name, table, false);
+    this(angle, unit, name, table, LogLevel.COMPETITION);
   }
 
   /**
@@ -52,17 +62,17 @@ public class DisplayAngle {
    * @param table - name of the table
    */
   public DisplayAngle(
-      final double angle, AngleUnit unit, final String name, final String table, boolean debug) {
+      final double angle, AngleUnit unit, final String name, final String table, LogLevel logLevel) {
     angle_ = new MutAngle(angle, unit.getBaseUnit().convertFrom(angle, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
+      init();
     }
-    init();
   }
 
   /**
@@ -74,7 +84,7 @@ public class DisplayAngle {
    */
   public DisplayAngle(
       final Angle angle, final String name, final String table) {
-    this(angle, name, table, false);
+    this(angle, name, table, LogLevel.COMPETITION);
   }
 
   /**
@@ -86,17 +96,17 @@ public class DisplayAngle {
    * @param debug - whether or not to debug
    */
   public DisplayAngle(
-      final Angle angle, final String name, final String table, boolean debug) {
+      final Angle angle, final String name, final String table, LogLevel logLevel) {
     angle_ = angle.mutableCopy();
     unit_ = angle.unit();
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
+      init();
     }
-    init();
   }
 
   /**
@@ -104,8 +114,16 @@ public class DisplayAngle {
    * setting the default value of the publisher
    */
   protected void init() {
-    if (isDisplayed_) {
-      publisher_.setDefault(angle_.in(unit_));
+    publisher_.setDefault(angle_.in(unit_));
+    if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      subscriber_ = topic_.subscribe(angle_.in(unit_));
+      listenerHandle_ = NetworkTableInstance.getDefault()
+          .addListener(
+              subscriber_,
+              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+              event -> {
+                setAngle(event.valueData.value.getDouble(), unit_, false);
+              });
     }
   }
 
