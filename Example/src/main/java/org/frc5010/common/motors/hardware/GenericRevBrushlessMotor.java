@@ -28,6 +28,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -295,7 +296,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   @Override
-  public double getMaxRPM() {
+  public AngularVelocity getMaxRPM() {
     throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
   }
 

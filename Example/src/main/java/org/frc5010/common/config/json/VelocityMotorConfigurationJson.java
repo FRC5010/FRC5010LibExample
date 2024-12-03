@@ -1,12 +1,13 @@
 package org.frc5010.common.config.json;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import org.frc5010.common.arch.GenericDeviceHandler;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.function.VelocityControlMotor;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 /** Configures a VelocityControlMotor with the given parameters and visualizes it. */
 public class VelocityMotorConfigurationJson implements DeviceConfiguration {
@@ -48,11 +49,11 @@ public class VelocityMotorConfigurationJson implements DeviceConfiguration {
    * @return A configured VelocityControlMotor object.
    */
   @Override
-  public Object configure(Mechanism2d mechanismSimulation) {
+  public Object configure(GenericDeviceHandler deviceHandler) {
     VelocityControlMotor motor =
-        new VelocityControlMotor(DeviceConfigReader.getMotor(type, id), name)
+        new VelocityControlMotor(DeviceConfigReader.getMotor(type, id), name, deviceHandler.getDisplayValuesHelper())
             .setupSimulatedMotor(gearing, momentOfInertiaKgMSq)
-            .setVisualizer(mechanismSimulation, new Pose3d(x, y, z, new Rotation3d()));
+            .setVisualizer(deviceHandler.getMechVisual(), new Pose3d(x, y, z, new Rotation3d()));
     if (kP != 0.0 || kI != 0.0 || kD != 0.0) {
       motor.setValues(new GenericPID(kP, kI, kD));
     }

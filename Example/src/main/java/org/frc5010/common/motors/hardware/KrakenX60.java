@@ -5,6 +5,11 @@
 package org.frc5010.common.motors.hardware;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
+
+import static edu.wpi.first.units.Units.Minute;
+import static edu.wpi.first.units.Units.Rotations;
+
 import org.frc5010.common.motors.MotorConstants;
 
 /** Add your docs here. */
@@ -22,7 +27,7 @@ public class KrakenX60 extends GenericTalonFXMotor {
   }
 
   @Override
-  public double getMaxRPM() {
-    return MAXRPM;
+  public AngularVelocity getMaxRPM() {
+    return Rotations.per(Minute).of(MAXRPM);
   }
 }

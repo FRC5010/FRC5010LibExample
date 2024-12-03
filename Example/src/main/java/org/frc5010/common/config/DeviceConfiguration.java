@@ -1,7 +1,7 @@
 package org.frc5010.common.config;
 
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import org.frc5010.common.arch.GenericDeviceHandler;
 
 public interface DeviceConfiguration {
-  public Object configure(Mechanism2d mechanismSimulation);
+  public Object configure(GenericDeviceHandler deviceHandler);
 }

@@ -1,6 +1,20 @@
 package org.frc5010.common.arch;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.frc5010.common.config.RobotParser;
+import org.frc5010.common.config.SubsystemParser;
+import org.frc5010.common.constants.GenericDrivetrainConstants;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.telemetery.WpiDataLogging;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -11,16 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-import org.frc5010.common.config.RobotParser;
-import org.frc5010.common.config.SubsystemParser;
-import org.frc5010.common.constants.GenericDrivetrainConstants;
-import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.subsystems.Color;
-import org.frc5010.common.telemetery.WpiDataLogging;
 
 /** Robots should extend this class as the entry point into using the library */
 public abstract class GenericRobot extends GenericMechanism implements GenericDeviceHandler {
@@ -46,17 +50,23 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   protected Supplier<Pose2d> poseSupplier = () -> new Pose2d();
   /** The subsystem parser */
   public static SubsystemParser subsystemParser;
+  /** Values that can be displayed on the dashboard */
+  protected DisplayValuesHelper displayValues;
 
   /** The log level enums */
   public enum LogLevel {
     /** The debug log level */
     DEBUG,
+    /** The configuration log level */
+    CONFIG,
+    /** The info log level */
+    INFO,
     /** The competition log level */
     COMPETITION
   }
 
   /** The current log level */
-  public static LogLevel logLevel = LogLevel.DEBUG;
+  public static LogLevel logLevel = LogLevel.COMPETITION;
 
   /**
    * Creates a new robot using the provided configuration directory
@@ -69,6 +79,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
       parser = new RobotParser(directory, this);
       subsystemParser = new SubsystemParser(directory, this);
       parser.createRobot(this);
+      displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
 
       driver = Optional.ofNullable(controllers.get("driver"));
       operator = Optional.ofNullable(controllers.get("operator"));
@@ -93,6 +104,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /** Creates a new robot using a programmatic configuration */
   public GenericRobot() {
     super("Robot");
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
 
     // Setup controllers
     driver = Optional.of(new Controller(Controller.JoystickPorts.ZERO.ordinal()));
@@ -342,5 +354,15 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    */
   public void setDrivetrainConstants(GenericDrivetrainConstants constants) {
     this.drivetrainConstants = constants;
+  }
+
+  /**
+   * Get the display values helper
+   *
+   * @return the display values helper
+   */
+  @Override
+  public DisplayValuesHelper getDisplayValuesHelper() {
+    return displayValues;
   }
 }

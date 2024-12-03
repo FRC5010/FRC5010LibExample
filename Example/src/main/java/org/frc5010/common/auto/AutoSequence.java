@@ -4,14 +4,16 @@
 
 package org.frc5010.common.auto;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.function.BooleanSupplier;
 
 import org.frc5010.common.arch.GenericCommandSequence;
-import org.frc5010.common.units.Length;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -67,10 +69,10 @@ public class AutoSequence extends GenericCommandSequence {
      * @param radius The radius of the circular region.
      * @return The trigger which is active when the robot is within the circular region.
      */
-    public Trigger robotWithinCircularRegion(Pose2d center, Length radius) {
+    public Trigger robotWithinCircularRegion(Pose2d center, Distance radius) {
         return autonTrigger(() -> {
             Pose2d robotPose = AutoBuilder.getCurrentPose();
-            return robotPose.getTranslation().getDistance(center.getTranslation()) <= radius.getMeters();
+            return robotPose.getTranslation().getDistance(center.getTranslation()) <= radius.in(Meters);
         }); 
     }
 
@@ -80,10 +82,10 @@ public class AutoSequence extends GenericCommandSequence {
      * @param distance The distance from the location at which the trigger should be active.
      * @return The trigger which is active when the robot is near the location.
      */
-    public Trigger robotNearLocation(Pose2d location, Length distance) {
+    public Trigger robotNearLocation(Pose2d location, Distance distance) {
         return autonTrigger(() -> {
             Pose2d robotPose = AutoBuilder.getCurrentPose();
-            return robotPose.getTranslation().getDistance(location.getTranslation()) <= distance.getMeters();
+            return robotPose.getTranslation().getDistance(location.getTranslation()) <= distance.in(Meters);
         });
     }
 

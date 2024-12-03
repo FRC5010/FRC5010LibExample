@@ -22,6 +22,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -322,7 +323,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
  * @throws UnsupportedOperationException if the method is not implemented.
  */
   @Override
-  public double getMaxRPM() {
+  public AngularVelocity getMaxRPM() {
     throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
   }
 

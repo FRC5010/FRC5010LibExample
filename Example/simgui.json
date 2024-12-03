@@ -43,10 +43,67 @@
   },
   "NetworkTables": {
     "transitory": {
+      "DisplayValueSubsystem": {
+        "Input": {
+          "open": true
+        },
+        "open": true
+      },
       "Shuffleboard": {
+        "DisplayValueSubsystem": {
+          "Default": {
+            "open": true
+          },
+          "DisplayValueSubsystem": {
+            "open": true
+          },
+          "Input": {
+            "open": true
+          },
+          "Output": {
+            "open": true
+          },
+          "Output 2": {
+            "open": true
+          },
+          "open": true
+        },
+        "Test": {
+          "Input": {
+            "open": true
+          },
+          "Output": {
+            "open": true
+          },
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {
+        "DisplayValueSubsystem": {
+          "Default": {
+            "open": true
+          },
+          "DisplayValueSubsystem": {
+            "open": true
+          },
+          "Input": {
+            "open": true
+          },
+          "Output": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      },
+      "Test": {
+        "Input": {
+          "open": true
+        },
+        "Output": {
+          "open": true
+        },
         "open": true
       },
       "swerve": {
@@ -59,8 +116,5 @@
         "open": true
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   }
 }

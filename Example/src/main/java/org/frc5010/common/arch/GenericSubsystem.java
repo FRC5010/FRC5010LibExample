@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.motors.function.GenericFunctionalMotor;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
 
 /** Base class for subsystems that provides default logging and network table support */
 public class GenericSubsystem extends SubsystemBase
     implements WpiHelperInterface, GenericDeviceHandler {
   /** The network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
+  protected final DisplayValuesHelper displayValues;
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
   /** The mechanism simulation */
@@ -26,10 +28,12 @@ public class GenericSubsystem extends SubsystemBase
   /** Creates a new LoggedSubsystem. */
   public GenericSubsystem(Mechanism2d mechanismSimulation) {
     this.mechanismSimulation = mechanismSimulation;
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem() {
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
@@ -40,6 +44,7 @@ public class GenericSubsystem extends SubsystemBase
       e.printStackTrace();
       System.exit(1);
     }
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
@@ -114,5 +119,10 @@ public class GenericSubsystem extends SubsystemBase
                 ((GenericFunctionalMotor) it).simulationUpdate();
               }
             });
+  }
+
+  @Override
+  public DisplayValuesHelper getDisplayValuesHelper() {
+    return displayValues;
   }
 }

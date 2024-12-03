@@ -2,15 +2,13 @@ package org.frc5010.common.sensors.absolute_encoder;
 
 import java.util.function.Supplier;
 
-import org.frc5010.common.telemetry.Alert;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+
+import edu.wpi.first.wpilibj.Alert;
 
 /**
  * SparkMax absolute encoder, attached through the data port. Credit: YAGSL for the original code
@@ -38,10 +36,10 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
         new Alert(
             "Encoders",
             "Failure configuring SparkMax Analog Encoder",
-            Alert.AlertType.WARNING_TRACE);
+            Alert.AlertType.kWarning);
     offsetFailure =
         new Alert(
-            "Encoders", "Failure to set Absolute Encoder Offset", Alert.AlertType.WARNING_TRACE);
+            "Encoders", "Failure to set Absolute Encoder Offset", Alert.AlertType.kWarning);
     if (motor instanceof SparkMax) {
       this.motor = motor;
       encoder = this.motor.getAbsoluteEncoder();

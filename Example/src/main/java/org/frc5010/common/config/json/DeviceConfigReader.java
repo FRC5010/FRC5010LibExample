@@ -49,19 +49,19 @@ public class DeviceConfigReader {
       case "gyro":
         GyroSettingsConfigurationJson gyroConfig =
             new ObjectMapper().readValue(deviceFile, GyroSettingsConfigurationJson.class);
-        system.addDevice(ConfigConstants.GYRO, gyroConfig.configure(system.getMechVisual()));
+        system.addDevice(ConfigConstants.GYRO, gyroConfig.configure(system));
         break;
       case "percent_motor":
         PercentMotorConfigurationJson percentMotorConfig =
             new ObjectMapper().readValue(deviceFile, PercentMotorConfigurationJson.class);
         system.addDevice(
-            percentMotorConfig.name, percentMotorConfig.configure(system.getMechVisual()));
+            percentMotorConfig.name, percentMotorConfig.configure(system));
         break;
       case "velocity_motor":
         VelocityMotorConfigurationJson motorConfigurationJson =
             new ObjectMapper().readValue(deviceFile, VelocityMotorConfigurationJson.class);
         system.addDevice(
-            motorConfigurationJson.name, motorConfigurationJson.configure(system.getMechVisual()));
+            motorConfigurationJson.name, motorConfigurationJson.configure(system));
         break;
       default:
         break;

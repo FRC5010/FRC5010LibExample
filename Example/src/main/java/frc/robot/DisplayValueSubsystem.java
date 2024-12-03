@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.telemetry.DisplayAngle;
 import org.frc5010.common.telemetry.DisplayBoolean;
@@ -13,36 +15,72 @@ import org.frc5010.common.telemetry.DisplayLength;
 import org.frc5010.common.telemetry.DisplayLong;
 import org.frc5010.common.telemetry.DisplayString;
 import org.frc5010.common.telemetry.DisplayTime;
-import org.frc5010.common.units.Angle.AngleUnit;
-import org.frc5010.common.units.Length.LengthUnit;
-import org.frc5010.common.units.Time.TimeUnit;
 
 /**
  * Tests the classes in the {@link org.frc5010.common.telemetry} package that
  * Display values
  */
 public class DisplayValueSubsystem extends GenericSubsystem {
-    public final String TAB = "Test";
-    public final String INPUT_TABLE = "Test/Input";
-    public final String OUTPUT_TABLE = "Test/Output";
+    public final String INPUT_TABLE = "Input";
+    public final String OUTPUT_TABLE = "Output";
 
-    DisplayAngle inputAngle = new DisplayAngle(AngleUnit.TURN, 0.0, "Input Angle", INPUT_TABLE);
-    DisplayAngle outputAngle = new DisplayAngle(AngleUnit.DEGREE, 0.0, "Output Angle", OUTPUT_TABLE);
-    DisplayBoolean inputBoolean = new DisplayBoolean(false, "Input Boolean", INPUT_TABLE);
-    DisplayBoolean outputBoolean = new DisplayBoolean(false, "Output Boolean", OUTPUT_TABLE);
-    DisplayDouble inputDouble = new DisplayDouble(0.0, "Input Double", INPUT_TABLE);
-    DisplayDouble outputDouble = new DisplayDouble(0.0, "Output Double", OUTPUT_TABLE);
-    DisplayFloat inputFloat = new DisplayFloat(0, "Input Float", INPUT_TABLE);
-    DisplayFloat outputFloat = new DisplayFloat(0, "Output Float", OUTPUT_TABLE);
-    DisplayLength inputLength = new DisplayLength(LengthUnit.FOOT, 0.0, "Input Length", INPUT_TABLE);
-    DisplayLength outputLength = new DisplayLength(LengthUnit.METER, 0.0, "Output Length", OUTPUT_TABLE);
-    DisplayLong inputLong = new DisplayLong(0, "Input Long", INPUT_TABLE);
-    DisplayLong outputLong = new DisplayLong(0, "Output Long", OUTPUT_TABLE);
-    DisplayString inputString = new DisplayString("default", "Input String", INPUT_TABLE);
-    DisplayString outputString = new DisplayString("default", "Output String", OUTPUT_TABLE);
-    DisplayTime inputTime = new DisplayTime(TimeUnit.SECOND, 0.0, "Input Time", INPUT_TABLE);
-    DisplayTime outputTime = new DisplayTime(TimeUnit.MILLISECOND, 0.0, "Output Time", OUTPUT_TABLE);
+    public final String INPUT_ANGLE = "Input Angle";
+    public final String OUTPUT_ANGLE = "Output Angle";
+    public final String INPUT_BOOLEAN = "Input Boolean";
+    public final String OUTPUT_BOOLEAN = "Output Boolean";
+    public final String INPUT_DOUBLE = "Input Double";
+    public final String OUTPUT_DOUBLE = "Output Double";
+    public final String INPUT_FLOAT = "Input Float";
+    public final String OUTPUT_FLOAT = "Output Float";
+    public final String INPUT_LENGTH = "Input Length";
+    public final String OUTPUT_LENGTH = "Output Length";
+    public final String INPUT_LONG = "Input Long";
+    public final String OUTPUT_LONG = "Output Long";
+    public final String INPUT_STRING = "Input String";
+    public final String OUTPUT_STRING = "Output String";
+    public final String INPUT_TIME = "Input Time";
+    public final String OUTPUT_TIME = "Output Time";
+    DisplayAngle inputAngle;
+    DisplayAngle outputAngle;
+    DisplayBoolean inputBoolean;
+    DisplayBoolean outputBoolean;
+    DisplayDouble inputDouble;
+    DisplayDouble outputDouble;
+    DisplayFloat inputFloat;
+    DisplayFloat outputFloat;
+    DisplayLength inputLength;
+    DisplayLength outputLength;
+    DisplayLong inputLong;
+    DisplayLong outputLong;
+    DisplayString inputString;
+    DisplayString outputString;
+    DisplayTime inputTime;
+    DisplayTime outputTime;
+    DisplayAngle outAngle;
 
+    public DisplayValueSubsystem() {
+        super();
+        outAngle = displayValues.makeInfoAngle("Out Angle");
+        inputAngle = displayValues.makeConfigAngle(INPUT_ANGLE);
+        inputBoolean = displayValues.makeConfigBoolean(INPUT_BOOLEAN);
+        inputDouble = displayValues.makConfigDouble(INPUT_DOUBLE);
+        inputFloat = displayValues.makeFloat(INPUT_FLOAT);
+        displayValues.nextColumn(INPUT_TABLE);
+        inputLength = displayValues.makeLength(INPUT_LENGTH);
+        inputLong = displayValues.makeLong(INPUT_LONG);
+        inputString = displayValues.makeString(INPUT_STRING);
+        inputTime = displayValues.makeTime(INPUT_TIME);
+        displayValues.nextColumn(OUTPUT_TABLE);
+        outputAngle = displayValues.makeDisplayAngle(OUTPUT_ANGLE);
+        outputBoolean = displayValues.makeDisplayBoolean(OUTPUT_BOOLEAN);
+        outputDouble = displayValues.makeDisplayDouble(OUTPUT_DOUBLE);
+        outputFloat = displayValues.makeFloat(OUTPUT_FLOAT);
+        displayValues.nextColumn(OUTPUT_TABLE + " 2");
+        outputLength = displayValues.makeLength(OUTPUT_LENGTH);
+        outputLong = displayValues.makeLong(OUTPUT_LONG);
+        outputString = displayValues.makeString(OUTPUT_STRING);
+        outputTime = displayValues.makeTime(OUTPUT_TIME);
+    }
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
@@ -54,5 +92,6 @@ public class DisplayValueSubsystem extends GenericSubsystem {
         outputLong.setValue(inputLong.getValue());
         outputString.setValue(inputString.getValue());
         outputTime.setTime(inputTime);
+        outAngle.setAngle(Degrees.of(Math.random() * 360.0));
     }
 }
