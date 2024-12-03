@@ -7,14 +7,10 @@ package org.frc5010.common.auto;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import org.frc5010.common.telemetery.WpiDataLogging;
-import org.frc5010.common.telemetry.Alert;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 

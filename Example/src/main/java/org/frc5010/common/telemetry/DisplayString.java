@@ -1,11 +1,12 @@
 package org.frc5010.common.telemetry;
 
+import java.util.EnumSet;
+
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StringTopic;
-import java.util.EnumSet;
 
 /** Add a string to the dashboard */
 public class DisplayString {
@@ -17,39 +18,55 @@ public class DisplayString {
   /** The name of the table */
   protected final String table_;
   /** The topic */
-  protected final StringTopic topic_;
+  protected StringTopic topic_;
   /** The publisher */
-  protected final StringPublisher publisher_;
+  protected StringPublisher publisher_;
   /** The subscriber */
-  protected final StringSubscriber subscriber_;
+  protected StringSubscriber subscriber_;
   /** The listener handle */
   protected int listenerHandle_;
+  /** Display mode */
+  protected final boolean isDisplayed_;
 
   // Constructor
   /**
    * Add a string to the dashboard
    *
    * @param defaultValue the default value
-   * @param name the name of the variable
-   * @param table the name of the table
+   * @param name         the name of the variable
+   * @param table        the name of the table
    */
   public DisplayString(final String defaultValue, final String name, final String table) {
+    this(defaultValue, name, table, false);
+  }
+
+   /**
+   * Add a string to the dashboard
+   *
+   * @param defaultValue the default value
+   * @param name         the name of the variable
+   * @param table        the name of the table
+   * @param debug        the debug mode
+   */
+  public DisplayString(final String defaultValue, final String name, final String table, final boolean debug) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
-    topic_ = NetworkTableInstance.getDefault().getTable(table_).getStringTopic(name_);
-    publisher_ = topic_.publish();
-    subscriber_ = topic_.subscribe(value_);
-    listenerHandle_ =
-        NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setValue(event.valueData.value.getString(), false);
-                });
+    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    if (isDisplayed_) {
+      topic_ = NetworkTableInstance.getDefault().getTable(table_).getStringTopic(name_);
+      publisher_ = topic_.publish();
+      subscriber_ = topic_.subscribe(value_);
+      listenerHandle_ = NetworkTableInstance.getDefault()
+          .addListener(
+              subscriber_,
+              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+              event -> {
+                setValue(event.valueData.value.getString(), false);
+              });
 
-    publisher_.setDefault(value_);
+      publisher_.setDefault(value_);
+    }
   }
 
   // Getters
@@ -75,12 +92,12 @@ public class DisplayString {
   /**
    * Set the value
    *
-   * @param value the value to set
+   * @param value   the value to set
    * @param publish whether or not to publish the value
    */
   public synchronized void setValue(final String value, final boolean publish) {
     value_ = value;
-    if (publish) {
+    if (publish && isDisplayed_) {
       publisher_.set(value_);
     }
   }

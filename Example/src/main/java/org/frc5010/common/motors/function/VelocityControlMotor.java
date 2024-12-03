@@ -4,6 +4,17 @@
 
 package org.frc5010.common.motors.function;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Minute;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
+
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.MotorFactory;
+import org.frc5010.common.motors.SystemIdentification;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -16,11 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.MotorFactory;
-import org.frc5010.common.motors.SystemIdentification;
-import org.frc5010.common.sensors.encoder.SimulatedEncoder;
-import org.frc5010.common.units.Length;
 
 /** Add your docs here. */
 public class VelocityControlMotor extends GenericControlledMotor {
@@ -30,8 +36,8 @@ public class VelocityControlMotor extends GenericControlledMotor {
   protected FlywheelSim simMotor;
   protected SimulatedEncoder simEncoder;
 
-  public VelocityControlMotor(MotorController5010 motor, String visualName) {
-    super(motor, visualName);
+  public VelocityControlMotor(MotorController5010 motor, String visualName, DisplayValuesHelper display) {
+    super(motor, visualName, display);
     pid.setControlType(PIDControlType.VELOCITY);
   }
 
@@ -52,8 +58,8 @@ public class VelocityControlMotor extends GenericControlledMotor {
     root =
         visualizer.getRoot(
             _visualName,
-            getSimX(Length.Meter(robotToMotor.getX())),
-            getSimY(Length.Meter(robotToMotor.getZ())));
+            getSimX(Meters.of(robotToMotor.getX())),
+            getSimY(Meters.of(robotToMotor.getZ())));
     speedometer =
         new MechanismLigament2d(
             _visualName + "-velocity", 0.1, 0, 5, new Color8Bit(MotorFactory.getNextVisualColor()));
@@ -75,14 +81,14 @@ public class VelocityControlMotor extends GenericControlledMotor {
     }
     velocity.setValue(currentVelocity);
     reference.setValue(getReference());
-    speedometer.setAngle(270 - currentVelocity / _motor.getMaxRPM() * 180);
-    setpoint.setAngle(270 - getReference() / _motor.getMaxRPM() * 180);
+    speedometer.setAngle(270 - currentVelocity / _motor.getMaxRPM().in(Rotations.per(Minute)) * 180);
+    setpoint.setAngle(270 - getReference() / _motor.getMaxRPM().in(Rotations.per(Minute)) * 180);
   }
 
   @Override
   public void simulationUpdate() {
-    effort.setValue(calculateControlEffort(simEncoder.getVelocity()));
-    simMotor.setInput(effort.getValue());
+    effort.setVoltage(calculateControlEffort(simEncoder.getVelocity()), Volts);
+    simMotor.setInput(effort.getVoltage().in(Volts));
     simMotor.update(0.020);
     simEncoder.setRate(simMotor.getAngularVelocityRPM());
     RoboRioSim.setVInVoltage(

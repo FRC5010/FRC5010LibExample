@@ -420,7 +420,7 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
               key, () -> Boolean.valueOf(Preferences.getBoolean(key, (Boolean) value.getSecond())));
       }
     } else if (sendables.containsKey(key)) {
-      Pair<String, Object> value = persisted.get(key);
+      Pair<String, Object> value = sendables.get(key);
       switch (value.getFirst()) {
         case "Double":
           tab.addDouble(key, () -> (Double) (sendables.get(key).getSecond()));
@@ -461,7 +461,7 @@ public class WpiNetworkTableValuesHelper implements WpiHelperInterface {
               key, () -> Boolean.valueOf(Preferences.getBoolean(key, (Boolean) value.getSecond())));
       }
     } else if (sendables.containsKey(key)) {
-      Pair<String, Object> value = persisted.get(key);
+      Pair<String, Object> value = sendables.get(key);
       switch (value.getFirst()) {
         case "Double":
           layout.addDouble(key, () -> (Double) (sendables.get(key).getSecond()));

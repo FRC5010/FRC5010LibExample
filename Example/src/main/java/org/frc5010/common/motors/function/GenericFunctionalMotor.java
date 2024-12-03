@@ -4,18 +4,23 @@
 
 package org.frc5010.common.motors.function;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import static edu.wpi.first.units.Units.Meters;
+
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.units.Length;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /** A class that wraps a motor controller with functionality */
 public class GenericFunctionalMotor implements MotorController5010, WpiHelperInterface {
@@ -25,6 +30,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   protected Mechanism2d _visualizer;
   protected Pose3d _robotToMotor;
   protected String _visualName;
+  protected DisplayValuesHelper _displayValuesHelper;
+
   /**
    * Constructor for a motor
    *
@@ -38,7 +45,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   /**
    * Constructor for a motor
    *
-   * @param motor The motor
+   * @param motor    The motor
    * @param slewRate The slew rate
    */
   public GenericFunctionalMotor(MotorController5010 motor, double slewRate) {
@@ -47,7 +54,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   }
 
   /**
-   * Duplicates the motor controller and returns a new instance with the specified port.
+   * Duplicates the motor controller and returns a new instance with the specified
+   * port.
    *
    * @param port the port number for the new motor controller
    * @return a new instance of MotorController5010 with the specified port
@@ -104,7 +112,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   /**
    * Sets the inversion of the motor.
    *
-   * @param isInverted a boolean indicating whether the motor should be inverted or not
+   * @param isInverted a boolean indicating whether the motor should be inverted
+   *                   or not
    */
   @Override
   public void setInverted(boolean isInverted) {
@@ -122,7 +131,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   }
 
   /**
-   * Disables the motor by calling the disable method on the underlying motor object.
+   * Disables the motor by calling the disable method on the underlying motor
+   * object.
    *
    * @see MotorController5010#disable()
    */
@@ -132,7 +142,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   }
 
   /**
-   * Stops the motor by calling the stopMotor method on the underlying motor object.
+   * Stops the motor by calling the stopMotor method on the underlying motor
+   * object.
    *
    * @see MotorController5010#stopMotor()
    */
@@ -154,9 +165,10 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   }
 
   /**
-   * Sets the motor as a follower of another motor, with the option to invert the follower.
+   * Sets the motor as a follower of another motor, with the option to invert the
+   * follower.
    *
-   * @param motor the motor to follow
+   * @param motor    the motor to follow
    * @param inverted whether the follower should be inverted or not
    * @return a reference to the current MotorController5010 instance
    */
@@ -203,7 +215,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * Retrieves the PIDController5010 for this motor.
    *
    * @return the PIDController5010 for this motor
-   * @throws UnsupportedOperationException if the motor does not support PIDController5010
+   * @throws UnsupportedOperationException if the motor does not support
+   *                                       PIDController5010
    */
   @Override
   public PIDController5010 getPIDController5010() {
@@ -213,7 +226,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   /**
    * Returns the default SysIdRoutine using the given subsystem.
    *
-   * @param subsystemBase the subsystem for which to create the default SysIdRoutine
+   * @param subsystemBase the subsystem for which to create the default
+   *                      SysIdRoutine
    * @return the default SysIdRoutine for the given subsystem
    */
   @Override
@@ -241,62 +255,127 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
     return _visualizer;
   }
 
-  /** Needs to be overridden by subclasses to draw the motor behavior on the visualizer */
-  public void draw() {}
+  /**
+   * Needs to be overridden by subclasses to draw the motor behavior on the
+   * visualizer
+   */
+  public void draw() {
+  }
 
+  /**
+   * Returns the pose of the motor relative to the robot's origin.
+   *
+   * @return the pose of the motor relative to the robot's origin
+   */
   public Pose3d getRobotToMotor() {
     return _robotToMotor;
   }
 
-  /** Needs to be overridden by subclasses to update the motor behavior during simulation */
-  public void simulationUpdate() {}
+  /**
+   * Needs to be overridden by subclasses to update the motor behavior during
+   * simulation
+   */
+  public void simulationUpdate() {
+  }
 
+  /** Needs to be overridden by subclasses to return the motor simulation type */
   @Override
   public DCMotor getMotorSimulationType() {
     throw new UnsupportedOperationException("Unimplemented method 'getMotorSimulationType'");
   }
 
-  public double getSimX(Length x) {
-    return x.getMeters() * RobotConstantsDef.robotVisualH / 2.0
+  /**
+   * Converts a given distance in the x-direction to a x-coordinate appropriate
+   * for visualizing on a Mechanism2d.
+   *
+   * @param x the distance in the x-direction
+   * @return the x-coordinate for visualizing on a Mechanism2d
+   */
+  public double getSimX(Distance x) {
+    return x.in(Meters) * RobotConstantsDef.robotVisualH / 2.0
         + RobotConstantsDef.robotVisualH / 2.0;
   }
 
-  public double getSimY(Length y) {
-    return y.getMeters();
+  /**
+   * Converts a given distance in the y-direction to a y-coordinate appropriate
+   * for visualizing on a Mechanism2d.
+   *
+   * @param y the distance in the y-direction
+   * @return the y-coordinate for visualizing on a Mechanism2d
+   */
+  public double getSimY(Distance y) {
+    return y.in(Meters);
   }
 
+  /**
+   * Retrieves the maximum angular velocity of the motor in rotations per minute
+   *
+   * @return the maximum angular velocity of the motor in rotations per minute
+   */
   @Override
-  public double getMaxRPM() {
+  public AngularVelocity getMaxRPM() {
     throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
   }
 
+  /**
+   * Sets the voltage compensation for the swerve module motor.
+   *
+   * @param nominalVoltage Nominal voltage for operation to output to.
+   * @return This motor controller.
+   */
   @Override
   public MotorController5010 setVoltageCompensation(double nominalVoltage) {
     _motor.setVoltageCompensation(nominalVoltage);
     return this;
   }
 
+  /**
+   * Clears any sticky faults on the motor controller.
+   */
   @Override
   public void clearStickyFaults() {
     _motor.clearStickyFaults();
   }
 
+  /**
+   * Sets the idle mode of the motor to either brake or coast.
+   *
+   * @param isBrakeMode If true, sets the motor to brake mode; otherwise, sets it
+   *                    to coast mode.
+   * @return This motor controller instance.
+   */
   @Override
   public MotorController5010 setMotorBrake(boolean isBrakeMode) {
     _motor.setMotorBrake(isBrakeMode);
     return this;
   }
 
+  /**
+   * Saves the motor controller's configuration to flash memory. This must be
+   * called after setting the motor controller's configuration in order to
+   * persist the changes after the robot is restarted.
+   */
   @Override
   public void burnFlash() {
     _motor.burnFlash();
   }
 
+  /**
+   * Get the voltage output of the motor controller.
+   *
+   * @return Voltage output.
+   */
   @Override
   public double getVoltage() {
     return _motor.getVoltage();
   }
 
+  /**
+   * Get the applied output of the motor controller. This is the output as a
+   * value from -1 to 1 that is actually being applied to the motor.
+   *
+   * @return The applied output of the motor.
+   */
   @Override
   public double getAppliedOutput() {
     return _motor.getAppliedOutput();
@@ -307,8 +386,34 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
     return _motor.getOutputCurrent();
   }
 
+  /**
+   * Resets the motor controller to its factory default settings.
+   */
   @Override
   public void factoryDefaults() {
     _motor.factoryDefaults();
+  }
+
+  /**
+   * Sets the DisplayValuesHelper that this motor will use to display
+   * information on the dashboard. If this is not set, the motor will not be
+   * visible on the dashboard.
+   *
+   * @param displayValuesHelper the display values helper to use
+   */
+  public void setDisplayValuesHelper(DisplayValuesHelper displayValuesHelper) {
+    _displayValuesHelper = displayValuesHelper;
+    _displayValuesHelper.nextColumn(_visualName);
+    initiateDisplayValues();
+  }
+
+  /**
+   * Initializes the display values for the motor. This method should be
+   * implemented to set up the display values on the dashboard using the
+   * DisplayValuesHelper. It is called after setting the DisplayValuesHelper
+   * with {@link #setDisplayValuesHelper(DisplayValuesHelper)}.
+   */
+  protected void initiateDisplayValues() {
+    throw new UnsupportedOperationException("Unimplemented method 'initiateDisplayValues'");
   }
 }

@@ -1,11 +1,8 @@
 package org.frc5010.common.telemetry;
 
 import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
-import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import java.util.EnumSet;
 
 /** Add a double to the dashboard */
 public class DisplayDouble {
@@ -17,39 +14,42 @@ public class DisplayDouble {
   /** The table */
   protected final String table_;
   /** The topic */
-  protected final DoubleTopic topic_;
+  protected DoubleTopic topic_;
   /** The publisher */
-  protected final DoublePublisher publisher_;
-  /** The subscriber */
-  protected final DoubleSubscriber subscriber_;
-  /** The listener handle */
-  protected int listenerHandle_;
+  protected DoublePublisher publisher_;
+  /** Display mode */
+  protected final boolean isDisplayed_;
 
   // Constructor
   /**
    * Add a double to the dashboard
    *
    * @param defaultValue the default value
-   * @param name the name
-   * @param table the table
+   * @param name         the name
+   * @param table        the table
    */
   public DisplayDouble(final double defaultValue, final String name, final String table) {
+    this(defaultValue, name, table, false);
+  }
+
+  /**
+   * Add a double to the dashboard
+   *
+   * @param defaultValue the default value
+   * @param name         the name
+   * @param table        the table
+   * @param debug        debug
+   */
+  public DisplayDouble(final double defaultValue, final String name, final String table, final boolean debug) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
-    topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
-    publisher_ = topic_.publish();
-    subscriber_ = topic_.subscribe(value_);
-    listenerHandle_ =
-        NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setValue(event.valueData.value.getDouble(), false);
-                });
-
-    publisher_.setDefault(value_);
+    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    if (!isDisplayed_) {
+      topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
+      publisher_ = topic_.publish();
+      publisher_.setDefault(value_);
+    }
   }
 
   // Getters
@@ -75,12 +75,12 @@ public class DisplayDouble {
   /**
    * Set the value
    *
-   * @param value the value to set
+   * @param value   the value to set
    * @param publish whether or not to publish the value
    */
   public synchronized void setValue(final double value, final boolean publish) {
     value_ = value;
-    if (publish) {
+    if (publish && isDisplayed_) {
       publisher_.set(value_);
     }
   }

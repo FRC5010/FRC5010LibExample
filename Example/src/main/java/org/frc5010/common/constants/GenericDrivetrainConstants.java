@@ -4,12 +4,16 @@
 
 package org.frc5010.common.constants;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import edu.wpi.first.units.measure.Distance;
+
 /** Constants used to define drivetrains */
 public class GenericDrivetrainConstants {
   /** The drive train track width in metere */
-  protected double DRIVETRAIN_TRACKWIDTH_METERS;
+  protected Distance DRIVETRAIN_TRACKWIDTH;
   /** The drive train wheel base in meters */
-  protected double DRIVETRAIN_WHEELBASE_METERS;
+  protected Distance DRIVETRAIN_WHEELBASE;
   /** The drive train wheel diameter in meters */
   protected double kWheelDiameterMeters; // = Units.inchesToMeters(3);
   /** The drive train gear ratio */
@@ -35,8 +39,8 @@ public class GenericDrivetrainConstants {
 
   /** Instantiates a new GenericDrivetrainConstants */
   public GenericDrivetrainConstants() {
-    this.DRIVETRAIN_TRACKWIDTH_METERS = 0.0;
-    this.DRIVETRAIN_WHEELBASE_METERS = 0.0;
+    this.DRIVETRAIN_TRACKWIDTH = Meters.of(0.0);
+    this.DRIVETRAIN_WHEELBASE = Meters.of(0.0);
     this.kWheelDiameterMeters = 0.0;
     this.kDriveMotorGearRatio = 0.0;
     this.kPhysicalMaxAngularSpeedRadiansPerSecond = 0.0;
@@ -53,8 +57,8 @@ public class GenericDrivetrainConstants {
    * @param constants the other GenericDrivetrainConstants
    */
   public GenericDrivetrainConstants(GenericDrivetrainConstants constants) {
-    this.DRIVETRAIN_TRACKWIDTH_METERS = constants.DRIVETRAIN_TRACKWIDTH_METERS;
-    this.DRIVETRAIN_WHEELBASE_METERS = constants.DRIVETRAIN_WHEELBASE_METERS;
+    this.DRIVETRAIN_TRACKWIDTH = constants.DRIVETRAIN_TRACKWIDTH;
+    this.DRIVETRAIN_WHEELBASE = constants.DRIVETRAIN_WHEELBASE;
     this.kWheelDiameterMeters = constants.kWheelDiameterMeters;
     this.kDriveMotorGearRatio = constants.kDriveMotorGearRatio;
     this.kPhysicalMaxAngularSpeedRadiansPerSecond =
@@ -74,8 +78,8 @@ public class GenericDrivetrainConstants {
    *
    * @param trackWidth the new track width in meters
    */
-  public void setTrackWidth(double trackWidth) {
-    this.DRIVETRAIN_TRACKWIDTH_METERS = trackWidth;
+  public void setTrackWidth(Distance trackWidth) {
+    this.DRIVETRAIN_TRACKWIDTH = trackWidth;
   }
 
   /**
@@ -83,8 +87,8 @@ public class GenericDrivetrainConstants {
    *
    * @return the track width in meters
    */
-  public double getTrackWidth() {
-    return DRIVETRAIN_TRACKWIDTH_METERS;
+  public Distance getTrackWidth() {
+    return DRIVETRAIN_TRACKWIDTH;
   }
 
   /**
@@ -92,8 +96,8 @@ public class GenericDrivetrainConstants {
    *
    * @param wheelBase the new wheel base in meters
    */
-  public void setWheelBase(double wheelBase) {
-    this.DRIVETRAIN_WHEELBASE_METERS = wheelBase;
+  public void setWheelBase(Distance wheelBase) {
+    this.DRIVETRAIN_WHEELBASE = wheelBase;
   }
 
   /**
@@ -101,8 +105,8 @@ public class GenericDrivetrainConstants {
    *
    * @return the wheel base in meters
    */
-  public double getWheelBase() {
-    return DRIVETRAIN_WHEELBASE_METERS;
+  public Distance getWheelBase() {
+    return DRIVETRAIN_WHEELBASE;
   }
 
   /**

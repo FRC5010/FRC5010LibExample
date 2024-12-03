@@ -1,10 +1,11 @@
 package org.frc5010.common.config.json;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import org.frc5010.common.arch.GenericDeviceHandler;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.motors.function.PercentControlMotor;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 
 /** Configures a PercentControlMotor with the given parameters and visualizes it. */
 public class PercentMotorConfigurationJson implements DeviceConfiguration {
@@ -32,9 +33,9 @@ public class PercentMotorConfigurationJson implements DeviceConfiguration {
  * @return A configured PercentControlMotor object.
  */
   @Override
-  public Object configure(Mechanism2d mechanismSimulation) {
+  public Object configure(GenericDeviceHandler deviceHandler) {
     return new PercentControlMotor(DeviceConfigReader.getMotor(type, id), name)
         .setupSimulatedMotor(gearing, momentOfInertiaKgMSq)
-        .setVisualizer(mechanismSimulation, new Pose3d(x, y, z, new Rotation3d()));
+        .setVisualizer(deviceHandler.getMechVisual(), new Pose3d(x, y, z, new Rotation3d()));
   }
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 import org.frc5010.common.arch.GenericDeviceHandler;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
+import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 
 /** The base JSON class for robot configurations */
@@ -29,14 +30,26 @@ public class RobotJson {
   /** Drivetrain width between wheel centers */
   public double trackWidth = 0.0;
 
+  /** Drivetrain width units */
+  public String trackWidthUom = "m";
+
   /** Drivetrain length between wheel centers */
   public double wheelBase = 0.0;
+
+  /** Drivetrain length units */
+  public String wheelBaseUom = "m";
 
   /** Drivetrain wheel diameter */
   public double wheelDiameter = 0.0;
 
+  /** Drivetrain wheel diameter units */
+  public String wheelDiameterUom = "m";
+
   /** Drivetrain physical max speed */
   public double physicalMaxSpeed = 0.0;
+
+  /** Drivetrain physical max speed units */
+  public String physicalMaxSpeedUom = "m/s";
 
   /** Drivetrain gear ratio between drive motor and wheels */
   public double driveMotorGearRatio = 1.0;
@@ -54,8 +67,8 @@ public class RobotJson {
   public void configureRobot(GenericRobot robot, File directory) throws IOException {
     GenericRobot.setLoggingLevel(LogLevel.valueOf(logLevel));
     GenericDrivetrainConstants drivetrainConstants = robot.getDrivetrainConstants();
-    drivetrainConstants.setTrackWidth(trackWidth);
-    drivetrainConstants.setWheelBase(wheelBase);
+    drivetrainConstants.setTrackWidth(UnitsParser.parseDistance(trackWidth, trackWidthUom));
+    drivetrainConstants.setWheelBase(UnitsParser.parseDistance(wheelBase, wheelBaseUom));
     drivetrainConstants.setWheelDiameter(wheelDiameter);
     drivetrainConstants.setkPhysicalMaxSpeedMetersPerSecond(physicalMaxSpeed);
 
