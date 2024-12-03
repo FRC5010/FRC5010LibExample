@@ -302,6 +302,11 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
     return _motor.getAppliedOutput();
   }
 
+  @Override 
+  public double getOutputCurrent() {
+    return _motor.getOutputCurrent();
+  }
+
   @Override
   public void factoryDefaults() {
     _motor.factoryDefaults();

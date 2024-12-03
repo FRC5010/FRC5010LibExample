@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import static edu.wpi.first.units.Units.Kilogram;
 
@@ -196,11 +197,16 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    * @return the generated auto command
    */
   public Command generateAutoCommand(Command autoCommand) {
-    return autoCommand
+    if (CommandScheduler.getInstance().isComposed(autoCommand)) {
+      return autoCommand;
+    } else {
+      return autoCommand
         .beforeStarting(
             () -> {
               resetEncoders();
             })
         .until(() -> hasIssues());
+    }
+    
   }
 }

@@ -443,4 +443,14 @@ public class GenericTalonFXMotor implements MotorController5010 {
     motor.stopMotor();
   }
 
+  /**
+   * Get the current output of the motor controller.
+   *
+   * @return Current output.
+   */
+  @Override
+  public double getOutputCurrent() {
+    return motor.getTorqueCurrent().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValueAsDouble();
+  }
+
 }
