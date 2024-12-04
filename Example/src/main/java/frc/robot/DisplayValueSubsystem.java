@@ -56,7 +56,7 @@ public class DisplayValueSubsystem extends GenericSubsystem {
         inputLong = displayValues.makeConfigLong("INPUT_LONG");
         inputString = displayValues.makeConfigString("INPUT_STRING");
         inputTime = displayValues.makeConfigTime("INPUT_TIME");
-        displayValues.nextColumn("Debug/Info");
+        displayValues.nextColumn("Debug-Info");
         outputLength = displayValues.makeInfoLength("OUTPUT_LENGTH");
         outputLong = displayValues.makeInfoLong("OUTPUT_LONG");
         outputString = displayValues.makeInfoString("OUTPUT_STRING");
