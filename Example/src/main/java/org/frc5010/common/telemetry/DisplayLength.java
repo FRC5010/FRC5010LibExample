@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Meters;
 
 import java.util.EnumSet;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -44,7 +46,7 @@ public class DisplayLength {
    * @param table      - name of the table
    */
   public DisplayLength(final double length, final DistanceUnit unit, final String name, final String table) {
-    this(length, unit, name, table, false);
+    this(length, unit, name, table, LogLevel.COMPETITION);
   }
 
   /**
@@ -57,16 +59,15 @@ public class DisplayLength {
    * @param debug      - debug mode
    */
   public DisplayLength(
-      final double length, final DistanceUnit unit, final String name, final String table, boolean debug) {
+      final double length, final DistanceUnit unit, final String name, final String table, LogLevel logLevel) {
     length_ = new MutDistance(length, unit.getBaseUnit().convertFrom(length, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(length_.in(unit_));
       init();
     }
   }
@@ -80,7 +81,7 @@ public class DisplayLength {
    * @param table - name of the table
    */
   public DisplayLength(final Distance length, final String name, final String table) {
-    this(length, name, table, false);
+    this(length, name, table, LogLevel.COMPETITION);
   }
 
   /**
@@ -91,30 +92,31 @@ public class DisplayLength {
    * @param table - name of the table
    */
   public DisplayLength(
-      final Distance length, final String name, final String table, boolean debug) {
+      final Distance length, final String name, final String table, LogLevel logLevel) {
     length_ = length.mutableCopy();
     unit_ = length.unit();
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(length_.in(unit_));
       init();
     }
   }
 
   protected void init() {
-    listenerHandle_ = NetworkTableInstance.getDefault()
-        .addListener(
-            subscriber_,
-            EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-            event -> {
-              setLength(event.valueData.value.getDouble(), unit_, false);
-            });
-
     publisher_.setDefault(length_.in(unit_));
+    if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      subscriber_ = topic_.subscribe(length_.in(unit_));
+      listenerHandle_ = NetworkTableInstance.getDefault()
+          .addListener(
+              subscriber_,
+              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+              event -> {
+                setLength(event.valueData.value.getDouble(), unit_, false);
+              });
+    }
   }
 
   // Setters

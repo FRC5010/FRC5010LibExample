@@ -50,6 +50,11 @@
         "open": true
       },
       "Shuffleboard": {
+        "BabySwerve": {
+          "BabySwerve": {
+            "open": true
+          }
+        },
         "DisplayValueSubsystem": {
           "Default": {
             "open": true
@@ -65,8 +70,16 @@
           },
           "Output 2": {
             "open": true
+          }
+        },
+        "ExampleSubsystem": {
+          "angular": {
+            "open": true
           },
-          "open": true
+          "open": true,
+          "velocity_motor": {
+            "open": true
+          }
         },
         "Test": {
           "Input": {
@@ -92,8 +105,7 @@
           },
           "Output": {
             "open": true
-          },
-          "open": true
+          }
         },
         "open": true
       },

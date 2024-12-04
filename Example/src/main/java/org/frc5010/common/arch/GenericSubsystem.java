@@ -38,13 +38,13 @@ public class GenericSubsystem extends SubsystemBase
   }
 
   public GenericSubsystem(String configFile) {
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     try {
       GenericRobot.subsystemParser.parseSubsystem(this, configFile);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
     }
-    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 

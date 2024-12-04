@@ -91,10 +91,10 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
     reference = _displayValuesHelper.makeDisplayDouble(REFERENCE);
     tolerance = _displayValuesHelper.makConfigDouble(TOLERANCE);
     feedForward = _displayValuesHelper.makeDisplayDouble(FEEDFORWARD);
-    controlType = _displayValuesHelper.makeString(CONTROL_TYPE);
+    controlType = _displayValuesHelper.makeDisplayString(CONTROL_TYPE);
     position = _displayValuesHelper.makeDisplayDouble(POSITION);
     velocity = _displayValuesHelper.makeDisplayDouble(VELOCITY);
-    effort = _displayValuesHelper.makeVoltage(EFFORT);
+    effort = _displayValuesHelper.makeDisplayVoltage(EFFORT);
   }
   
   @Override

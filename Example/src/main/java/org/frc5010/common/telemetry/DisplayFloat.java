@@ -2,6 +2,8 @@ package org.frc5010.common.telemetry;
 
 import java.util.EnumSet;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.FloatPublisher;
 import edu.wpi.first.networktables.FloatSubscriber;
 import edu.wpi.first.networktables.FloatTopic;
@@ -35,12 +37,12 @@ public class DisplayFloat {
    * @param defaultValue the default value
    * @param name         the name of the variable
    * @param table        the name of the table
-  */
+   */
   public DisplayFloat(final float defaultValue, final String name, final String table) {
-    this(defaultValue, name, table, false);
+    this(defaultValue, name, table, LogLevel.COMPETITION);
   }
 
-   /**
+  /**
    * Add a float to the dashboard
    *
    * @param defaultValue the default value
@@ -48,14 +50,17 @@ public class DisplayFloat {
    * @param table        the name of the table
    * @param debug        the debug mode
    */
-  public DisplayFloat(final float defaultValue, final String name, final String table, final boolean debug) {
+  public DisplayFloat(final float defaultValue, final String name, final String table, final LogLevel logLevel) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
-    if (!isDisplayed_) {
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getFloatTopic(name_);
       publisher_ = topic_.publish();
+      publisher_.setDefault(value_);
+    }
+    if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
       subscriber_ = topic_.subscribe(value_);
       listenerHandle_ = NetworkTableInstance.getDefault()
           .addListener(
@@ -64,11 +69,8 @@ public class DisplayFloat {
               event -> {
                 setValue(event.valueData.value.getFloat(), false);
               });
-
-      publisher_.setDefault(value_);
     }
   }
-
 
   // Getters
   /**

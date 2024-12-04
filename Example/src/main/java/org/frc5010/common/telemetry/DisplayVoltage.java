@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.EnumSet;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -45,7 +47,7 @@ public class DisplayVoltage {
    */
   public DisplayVoltage(
       final double voltage, final VoltageUnit unit, final String name, final String table) {
-    this(voltage, unit, name, table, false);
+    this(voltage, unit, name, table, LogLevel.COMPETITION);
   }
 
   /**
@@ -58,16 +60,15 @@ public class DisplayVoltage {
    * @param debug      - debug mode
    */
   public DisplayVoltage(
-      final double voltage, final VoltageUnit unit, final String name, final String table, boolean debug) {
+      final double voltage, final VoltageUnit unit, final String name, final String table, LogLevel logLevel) {
     voltage_ = new MutVoltage(voltage, unit.getBaseUnit().convertFrom(voltage, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
-    if (!isDisplayed_) {
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(voltage_.in(unit_));
       init();
     }
   }
@@ -79,32 +80,44 @@ public class DisplayVoltage {
    * @param unit  - voltage with units
    * @param name  - name of the variable
    * @param table - name of the table
+   */
+  public DisplayVoltage(final Voltage voltage, final String name, final String table) {
+    this(voltage, name, table, LogLevel.COMPETITION);
+  }
+
+  /**
+   * Add a voltage to the dashboard
+   *
+   * @param unit  - voltage with units
+   * @param name  - name of the variable
+   * @param table - name of the table
    * @param debug - debug mode
    */
   public DisplayVoltage(
-      final Voltage voltage, final String name, final String table, boolean debug) {
+      final Voltage voltage, final String name, final String table, LogLevel logLevel) {
     voltage_ = voltage.mutableCopy();
     unit_ = voltage.unit();
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
-    if (!isDisplayed_) {
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(voltage_.in(unit_));
       init();
     }
   }
 
   protected void init() {
-    listenerHandle_ = NetworkTableInstance.getDefault()
-        .addListener(
-            subscriber_,
-            EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-            event -> {
-              setVoltage(event.valueData.value.getDouble(), unit_, false);
-            });
-
+    if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      subscriber_ = topic_.subscribe(voltage_.in(unit_));
+      listenerHandle_ = NetworkTableInstance.getDefault()
+          .addListener(
+              subscriber_,
+              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+              event -> {
+                setVoltage(event.valueData.value.getDouble(), unit_, false);
+              });
+    }
     publisher_.setDefault(voltage_.in(unit_));
   }
 

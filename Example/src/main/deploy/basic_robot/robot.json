@@ -1,6 +1,6 @@
 {
     "userConfig": "competition_mode.json",
-    "logLevel": "COMPETITION",
+    "logLevel": "DEBUG",
     "driveType": "YAGSL_SWERVE_DRIVE",
     "trackWidth": 16.8,
     "wheelBase": 18.5,

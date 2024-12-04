@@ -2,6 +2,8 @@ package org.frc5010.common.telemetry;
 
 import java.util.EnumSet;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -37,10 +39,10 @@ public class DisplayString {
    * @param table        the name of the table
    */
   public DisplayString(final String defaultValue, final String name, final String table) {
-    this(defaultValue, name, table, false);
+    this(defaultValue, name, table, LogLevel.COMPETITION);
   }
 
-   /**
+  /**
    * Add a string to the dashboard
    *
    * @param defaultValue the default value
@@ -48,23 +50,24 @@ public class DisplayString {
    * @param table        the name of the table
    * @param debug        the debug mode
    */
-  public DisplayString(final String defaultValue, final String name, final String table, final boolean debug) {
+  public DisplayString(final String defaultValue, final String name, final String table, final LogLevel logLevel) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getStringTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(value_);
-      listenerHandle_ = NetworkTableInstance.getDefault()
-          .addListener(
-              subscriber_,
-              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-              event -> {
-                setValue(event.valueData.value.getString(), false);
-              });
-
+      if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+        subscriber_ = topic_.subscribe(value_);
+        listenerHandle_ = NetworkTableInstance.getDefault()
+            .addListener(
+                subscriber_,
+                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                event -> {
+                  setValue(event.valueData.value.getString(), false);
+                });
+      }
       publisher_.setDefault(value_);
     }
   }

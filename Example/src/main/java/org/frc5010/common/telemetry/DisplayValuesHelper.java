@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.WpiHelperInterface;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -34,104 +35,161 @@ public class DisplayValuesHelper implements WpiHelperInterface {
     }
 
     private String getNtName() {
-        return "SmartDashboard/" + tab.getTitle() + "/" + table.getTitle();
+        return "Shuffleboard/" + tab.getTitle() + "/" + table.getTitle();
     }
 
-    public static boolean isDisplayed(boolean debug) {
-        return debug || GenericRobot.logLevel == GenericRobot.LogLevel.INFO
-                || GenericRobot.logLevel == GenericRobot.LogLevel.DEBUG;
+    public static boolean robotIsAtLogLevel(LogLevel logLevel) {
+        switch (logLevel) {
+            case DEBUG: {
+                return GenericRobot.logLevel == LogLevel.DEBUG || GenericRobot.logLevel == LogLevel.INFO;
+            }
+            case INFO: {
+                return GenericRobot.logLevel == LogLevel.INFO || GenericRobot.logLevel == LogLevel.DEBUG;
+            }
+            case CONFIG: {
+                return GenericRobot.logLevel == LogLevel.CONFIG || GenericRobot.logLevel == LogLevel.DEBUG;
+            }
+            case COMPETITION: {
+                return true;
+            }
+            default: {
+                return true;
+            }
+        }
     }
 
     public DisplayAngle makeDisplayAngle(String name) {
         DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtName());
-        table.addDouble(name, () -> angle.getAngleInDegrees());
         return angle;
     }
 
     public DisplayAngle makeInfoAngle(String name) {
-        DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtName(), true);
-        if (isDisplayed(true)) {
-            table.addDouble(name, () -> angle.getAngleInDegrees());
-        }
+        DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtName(), LogLevel.INFO);
         return angle;
     }
 
-    public ConfigAngle makeConfigAngle(String name) {
-        ConfigAngle angle = new ConfigAngle(0, Degrees, name, getNtName());
+    public DisplayAngle makeConfigAngle(String name) {
+        DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtName(), LogLevel.CONFIG);
         return angle;
     }
 
-    public DisplayLength makeLength(String name) {
+    public DisplayLength makeDisplayLength(String name) {
         DisplayLength length = new DisplayLength(0, Meters, name, getNtName());
-        table.addDouble(name, () -> length.getLengthInMeters());
         return length;
     }
 
-    public DisplayTime makeTime(String name) {
+    public DisplayLength makeInfoLength(String name) {
+        DisplayLength length = new DisplayLength(0, Meters, name, getNtName(), LogLevel.INFO);
+        return length;
+    }
+
+    public DisplayLength makeConfigLength(String name) {
+        DisplayLength length = new DisplayLength(0, Meters, name, getNtName(), LogLevel.CONFIG);
+        return length;
+    }
+
+    public DisplayTime makeDisplayTime(String name) {
         DisplayTime time = new DisplayTime(0, Seconds, name, getNtName());
-        table.addDouble(name, () -> time.getTimeInSeconds());
         return time;
     }
 
-    public DisplayVoltage makeVoltage(String name) {
+    public DisplayTime makeInfoTime(String name) {
+        DisplayTime time = new DisplayTime(0, Seconds, name, getNtName(), LogLevel.INFO);
+        return time;
+    }
+
+    public DisplayTime makeConfigTime(String name) {
+        DisplayTime time = new DisplayTime(0, Seconds, name, getNtName(), LogLevel.CONFIG);
+        return time;
+    }
+
+    public DisplayVoltage makeDisplayVoltage(String name) {
         DisplayVoltage voltage = new DisplayVoltage(0, Volts, name, getNtName());
-        table.addDouble(name, () -> voltage.getVoltageInVolts());
+        return voltage;
+    }
+
+    public DisplayVoltage makeInfoVoltage(String name) {
+        DisplayVoltage voltage = new DisplayVoltage(0, Volts, name, getNtName(), LogLevel.INFO);
+        return voltage;
+    }
+
+    public DisplayVoltage makeConfigVoltage(String name) {
+        DisplayVoltage voltage = new DisplayVoltage(0, Volts, name, getNtName(), LogLevel.CONFIG);
         return voltage;
     }
 
     public DisplayBoolean makeDisplayBoolean(String name) {
         DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtName());
-        table.addBoolean(name, () -> booleanValue.getValue());
         return booleanValue;
     }
 
     public DisplayBoolean makeInfoBoolean(String name) {
-        DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtName(), true);
-        if (isDisplayed(true)) {
-            table.addBoolean(name, () -> booleanValue.getValue());
-        }
+        DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtName(), LogLevel.INFO);
         return booleanValue;
     }
 
-    public ConfigBoolean makeConfigBoolean(String name) {
-        ConfigBoolean booleanValue = new ConfigBoolean(false, name, getNtName());
+    public DisplayBoolean makeConfigBoolean(String name) {
+        DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtName(), LogLevel.CONFIG);
         return booleanValue;
     }
 
     public DisplayDouble makeDisplayDouble(String name) {
         DisplayDouble doubleValue = new DisplayDouble(0, name, getNtName());
-        table.addDouble(name, () -> doubleValue.getValue());
         return doubleValue;
     }
 
     public DisplayDouble makeInfoDouble(String name) {
-        DisplayDouble doubleValue = new DisplayDouble(0, name, getNtName(), true);
-        if (isDisplayed(true)) {
-            table.addDouble(name, () -> doubleValue.getValue());
-        }
+        DisplayDouble doubleValue = new DisplayDouble(0, name, getNtName(), LogLevel.INFO);
         return doubleValue;
     }
 
-    public ConfigDouble makConfigDouble(String name) {
-        ConfigDouble doubleValue = new ConfigDouble(0, name, getNtName());
+    public DisplayDouble makConfigDouble(String name) {
+        DisplayDouble doubleValue = new DisplayDouble(0, name, getNtName(), LogLevel.CONFIG);
         return doubleValue;
     }
 
-    public DisplayString makeString(String name) {
+    public DisplayString makeDisplayString(String name) {
         DisplayString stringValue = new DisplayString("", name, getNtName());
-        table.addString(name, () -> stringValue.getValue());
         return stringValue;
     }
 
-    public DisplayLong makeLong(String name) {
+    public DisplayString makeInfoString(String name) {
+        DisplayString stringValue = new DisplayString("", name, getNtName(), LogLevel.INFO);
+        return stringValue;
+    }
+
+    public DisplayString makeConfigString(String name) {
+        DisplayString stringValue = new DisplayString("", name, getNtName(), LogLevel.CONFIG);
+        return stringValue;
+    }
+
+    public DisplayLong makeDisplayLong(String name) {
         DisplayLong longValue = new DisplayLong(0, name, getNtName());
-        table.addNumber(name, () -> longValue.getValue());
         return longValue;
     }
 
-    public DisplayFloat makeFloat(String name) {
+    public DisplayLong makeInfoLong(String name) {
+        DisplayLong longValue = new DisplayLong(0, name, getNtName(), LogLevel.INFO);
+        return longValue;
+    }
+
+    public DisplayLong makeConfigLong(String name) {
+        DisplayLong longValue = new DisplayLong(0, name, getNtName(), LogLevel.CONFIG);
+        return longValue;
+    }
+
+    public DisplayFloat makeDisplayFloat(String name) {
         DisplayFloat floatValue = new DisplayFloat(0, name, getNtName());
-        table.addNumber(name, () -> floatValue.getValue());
+        return floatValue;
+    }
+
+    public DisplayFloat makeInfoFloat(String name) {
+        DisplayFloat floatValue = new DisplayFloat(0, name, getNtName(), LogLevel.INFO);
+        return floatValue;
+    }
+
+    public DisplayFloat makeConfigFloat(String name) {
+        DisplayFloat floatValue = new DisplayFloat(0, name, getNtName(), LogLevel.CONFIG);
         return floatValue;
     }
 }

@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.EnumSet;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -44,7 +46,7 @@ public class DisplayTime {
    * @param table    - name of the table
    */
   public DisplayTime(final double unitTime, final TimeUnit unit, final String name, final String table) {
-    this(unitTime, unit, name, table, false);
+    this(unitTime, unit, name, table, LogLevel.COMPETITION);
   }
 
   /**
@@ -57,16 +59,15 @@ public class DisplayTime {
    * @param debug    - debug mode
    */
   public DisplayTime(
-      final double unitTime, final TimeUnit unit, final String name, final String table, final boolean debug) {
+      final double unitTime, final TimeUnit unit, final String name, final String table, final LogLevel logLevel) {
     time_ = new MutTime(unitTime, unit.getBaseUnit().convertFrom(unitTime, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
-    if (!isDisplayed_) {
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(time_.in(unit_));
       init();
     }
   }
@@ -78,32 +79,45 @@ public class DisplayTime {
    * @param unitTime - time in that unit
    * @param name     - name of the time
    * @param table    - name of the table
+   */
+  public DisplayTime(final Time unitTime, final String name, final String table) {
+    this(unitTime, name, table, LogLevel.COMPETITION);
+  }
+
+  /**
+   * Add a time to the dashboard
+   *
+   * @param unit     - time unit
+   * @param unitTime - time in that unit
+   * @param name     - name of the time
+   * @param table    - name of the table
    * @param debug    - debug mode
    */
   public DisplayTime(
-      final Time unitTime, final String name, final String table, final boolean debug) {
+      final Time unitTime, final String name, final String table, final LogLevel logLevel) {
     time_ = unitTime.mutableCopy();
     unit_ = unitTime.unit();
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isDisplayed(debug);
-    if (!isDisplayed_) {
+    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      subscriber_ = topic_.subscribe(time_.in(unit_));
       init();
     }
   }
 
   protected void init() {
-    listenerHandle_ = NetworkTableInstance.getDefault()
-        .addListener(
-            subscriber_,
-            EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-            event -> {
-              setTime(event.valueData.value.getDouble(), unit_, false);
-            });
-
+    if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      subscriber_ = topic_.subscribe(time_.in(unit_));
+      listenerHandle_ = NetworkTableInstance.getDefault()
+          .addListener(
+              subscriber_,
+              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+              event -> {
+                setTime(event.valueData.value.getDouble(), unit_, false);
+              });
+    }
     publisher_.setDefault(time_.in(unit_));
   }
 
