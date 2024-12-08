@@ -109,6 +109,7 @@ public class DisplayTime {
 
   protected void init() {
     if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      topic_.setPersistent(true);
       subscriber_ = topic_.subscribe(time_.in(unit_));
       listenerHandle_ = NetworkTableInstance.getDefault()
           .addListener(

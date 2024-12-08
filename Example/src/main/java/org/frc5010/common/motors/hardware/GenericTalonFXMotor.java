@@ -253,7 +253,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return The motor controller (this object)
    */
   @Override
-  public MotorController getMotor() {
+  public Object getMotor() {
     return motor;
   }
 

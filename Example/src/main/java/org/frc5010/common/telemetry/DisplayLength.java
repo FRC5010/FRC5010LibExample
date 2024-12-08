@@ -108,6 +108,7 @@ public class DisplayLength {
   protected void init() {
     publisher_.setDefault(length_.in(unit_));
     if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      topic_.setPersistent(true);
       subscriber_ = topic_.subscribe(length_.in(unit_));
       listenerHandle_ = NetworkTableInstance.getDefault()
           .addListener(
