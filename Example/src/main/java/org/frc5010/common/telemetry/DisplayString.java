@@ -59,6 +59,7 @@ public class DisplayString {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getStringTopic(name_);
       publisher_ = topic_.publish();
       if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+        topic_.setPersistent(true);
         subscriber_ = topic_.subscribe(value_);
         listenerHandle_ = NetworkTableInstance.getDefault()
             .addListener(

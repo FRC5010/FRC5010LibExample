@@ -92,7 +92,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     setDrivetrainPoseEstimator(
         new DrivePoseEstimator(
             new DifferentialPose(diffKinematics, gyro, leftEncoder, rightEncoder), vision));
-    diffDrive = new DifferentialDrive(left.getMotor(), right.getMotor());
+    diffDrive = new DifferentialDrive((double speed) -> left.set(speed), (double speed) -> right.set(speed));
   }
 
   /**

@@ -61,6 +61,7 @@ public class DisplayDouble {
       publisher_.setDefault(value_);
     }
     if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      topic_.setPersistent(true);
       subscriber_ = topic_.subscribe(value_);
       listenerHandle_ = NetworkTableInstance.getDefault()
           .addListener(

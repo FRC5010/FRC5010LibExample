@@ -116,6 +116,7 @@ public class DisplayAngle {
   protected void init() {
     publisher_.setDefault(angle_.in(unit_));
     if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
+      topic_.setPersistent(true);
       subscriber_ = topic_.subscribe(angle_.in(unit_));
       listenerHandle_ = NetworkTableInstance.getDefault()
           .addListener(

@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -241,7 +240,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return the motor controller associated with this instance
    */
   @Override
-  public MotorController getMotor() {
+  public Object getMotor() {
     return _motor.getMotor();
   }
 

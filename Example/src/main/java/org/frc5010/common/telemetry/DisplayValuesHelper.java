@@ -4,6 +4,7 @@
 
 package org.frc5010.common.telemetry;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
@@ -191,5 +192,20 @@ public class DisplayValuesHelper implements WpiHelperInterface {
     public DisplayFloat makeConfigFloat(String name) {
         DisplayFloat floatValue = new DisplayFloat(0, name, getNtName(), LogLevel.CONFIG);
         return floatValue;
+    }
+
+    public DisplayCurrent makeDisplayCurrent(String name) {
+        DisplayCurrent currentValue = new DisplayCurrent(0, Amps, name, getNtName());
+        return currentValue;
+    }
+
+    public DisplayCurrent makeInfoCurrent(String name) {
+        DisplayCurrent currentValue = new DisplayCurrent(0, Amps, name, getNtName(), LogLevel.INFO);
+        return currentValue;
+    }
+
+    public DisplayCurrent makeConfigCurrent(String name) {
+        DisplayCurrent currentValue = new DisplayCurrent(0, Amps, name, getNtName(), LogLevel.CONFIG);
+        return currentValue;
     }
 }

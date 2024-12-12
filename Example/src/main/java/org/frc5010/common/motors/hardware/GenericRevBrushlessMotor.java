@@ -31,7 +31,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -262,7 +261,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @return the MotorController instance that this object represents
    */
   @Override
-  public MotorController getMotor() {
+  public Object getMotor() {
     return motor;
   }
 

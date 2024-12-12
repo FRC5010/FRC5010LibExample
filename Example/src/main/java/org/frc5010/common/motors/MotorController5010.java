@@ -89,7 +89,7 @@ public interface MotorController5010 extends MotorController {
    *
    * @return The motor
    */
-  MotorController getMotor();
+  Object getMotor();
 
   /** Sets the motor to factory default */
   void factoryDefaults();
