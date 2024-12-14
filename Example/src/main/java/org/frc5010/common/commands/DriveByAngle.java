@@ -38,21 +38,19 @@ public class DriveByAngle extends Command {
   /** The heading axis simulation */
   private MechanismLigament2d heading;
   /** The max chassis velocity */
-  private double maxChassisVelocity =
-      Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
+  private double maxChassisVelocity = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
   /** The max chassis rotation rate */
-  private double maxChassisRotation =
-      Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
+  private double maxChassisRotation = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
 
   /**
    * Creates a new DriveByAngle command.
    *
-   * @param drivetrainSubsystem the subsystem used by this command
+   * @param drivetrainSubsystem  the subsystem used by this command
    * @param translationXSupplier the translation supplier in the X direction
    * @param translationYSupplier the translation supplier in the Y direction
-   * @param rotationXSupplier the rotation supplier in the X direction
-   * @param rotationYSupplier the rotation supplier in the Y direction
-   * @param fieldOrientedDrive whether to use field oriented drive
+   * @param rotationXSupplier    the rotation supplier in the X direction
+   * @param rotationYSupplier    the rotation supplier in the Y direction
+   * @param fieldOrientedDrive   whether to use field oriented drive
    */
   public DriveByAngle(
       GenericDrivetrain drivetrainSubsystem,
@@ -84,34 +82,37 @@ public class DriveByAngle extends Command {
   public void execute() {
     double x = m_translationXSupplier.getAsDouble();
     double y = m_translationYSupplier.getAsDouble();
-    double r =
-        Math.max(
-            Math.min(
-                Math.atan2(m_rotationXSupplier.getAsDouble(), m_rotationYSupplier.getAsDouble())
-                    - drivetrainSubsystem.getHeading().getRadians(),
-                1),
-            -1);
+    double r = Math.max(
+        Math.min(
+            Math.atan2(m_rotationXSupplier.getAsDouble(), m_rotationYSupplier.getAsDouble())
+                - drivetrainSubsystem.getHeading().getRadians(),
+            1),
+        -1);
 
     xAxis.setLength(x * 30);
     yAxis.setLength(y * 30);
     heading.setAngle(180 * r);
 
     if (fieldOrientedDrive.get()) {
-      drivetrainSubsystem.drive(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              x * maxChassisVelocity,
-              y * maxChassisVelocity,
-              r * maxChassisRotation,
-              drivetrainSubsystem.getHeading()), null);
+      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
+          x * maxChassisVelocity,
+          y * maxChassisVelocity,
+          r * maxChassisRotation);
+      chassisSpeeds.toFieldRelativeSpeeds(drivetrainSubsystem.getHeading());
+      drivetrainSubsystem.drive(chassisSpeeds,
+          null);
     } else {
       drivetrainSubsystem.drive(
           new ChassisSpeeds(
-              x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation), null);
+              x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation),
+          null);
     }
-    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented
+    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
+    // field-oriented
     // movement
     // drivetrainSubsystem.drive(
-    //     ChassisSpeeds.fromFieldRelativeSpeeds(x, y, r, drivetrainSubsystem.getHeading())
+    // ChassisSpeeds.fromFieldRelativeSpeeds(x, y, r,
+    // drivetrainSubsystem.getHeading())
     // );
   }
 

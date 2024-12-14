@@ -18,7 +18,9 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.drive.swerve.SwerveDrivetrain;
 import org.frc5010.common.subsystems.LedSubsystem;
 
-/** A command that will automatically drive the robot to a particular position */
+/**
+ * A command that will automatically drive the robot to a particular position
+ */
 public class DriveToPosition extends GenericCommand {
   /** The subsystem that this command will run on */
   private SwerveDrivetrain swerveSubsystem;
@@ -61,11 +63,11 @@ public class DriveToPosition extends GenericCommand {
   /**
    * Creates a new DriveToPosition command.
    *
-   * @param swerveSubsystem The drivetrain subsystem
-   * @param poseProvider The pose provider
+   * @param swerveSubsystem    The drivetrain subsystem
+   * @param poseProvider       The pose provider
    * @param targetPoseProvider The target pose provider
-   * @param ledSubsystem The LED subsystem
-   * @param offset The offset of the target pose
+   * @param ledSubsystem       The LED subsystem
+   * @param offset             The offset of the target pose
    */
   public DriveToPosition(
       SwerveDrivetrain swerveSubsystem,
@@ -73,30 +75,24 @@ public class DriveToPosition extends GenericCommand {
       Supplier<Pose3d> targetPoseProvider,
       LedSubsystem ledSubsystem,
       Transform2d offset) {
-    xConstraints =
-        new TrapezoidProfile.Constraints(
-            swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
-            swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
-    yConstraints =
-        new TrapezoidProfile.Constraints(
-            swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
-            swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
-    thetaConstraints =
-        new TrapezoidProfile.Constraints(
-            swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(),
-            swerveSubsystem
-                .getSwerveConstants()
-                .getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
+    xConstraints = new TrapezoidProfile.Constraints(
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
+    yConstraints = new TrapezoidProfile.Constraints(
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
+    thetaConstraints = new TrapezoidProfile.Constraints(
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(),
+        swerveSubsystem
+            .getSwerveConstants()
+            .getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
 
-    xController =
-        new ProfiledPIDController(
-            pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), xConstraints);
-    yController =
-        new ProfiledPIDController(
-            pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
-    thetaController =
-        new ProfiledPIDController(
-            pidRotation.getkP(), pidRotation.getkI(), pidRotation.getkD(), thetaConstraints);
+    xController = new ProfiledPIDController(
+        pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), xConstraints);
+    yController = new ProfiledPIDController(
+        pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), yConstraints);
+    thetaController = new ProfiledPIDController(
+        pidRotation.getkP(), pidRotation.getkI(), pidRotation.getkD(), thetaConstraints);
 
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = (SwerveDrivetrain) swerveSubsystem;
@@ -152,15 +148,12 @@ public class DriveToPosition extends GenericCommand {
     // System.out.println(robotPose2d);
 
     // System.out.println(robotPose);
-    xSpeed =
-        xController.calculate(robotPose2d.getX())
-            * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
-    ySpeed =
-        yController.calculate(robotPose2d.getY())
-            * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
-    thetaSpeed =
-        thetaController.calculate(robotPose2d.getRotation().getRadians())
-            * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
+    xSpeed = xController.calculate(robotPose2d.getX())
+        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
+    ySpeed = yController.calculate(robotPose2d.getY())
+        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
+    thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians())
+        * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
     if (xController.atGoal()) {
       xSpeed = 0;
@@ -195,9 +188,9 @@ public class DriveToPosition extends GenericCommand {
     // swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
     // ,0));
 
-    ChassisSpeeds chassisSpeeds =
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed, ySpeed, thetaSpeed, swerveSubsystem.getHeading());
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
+        xSpeed, ySpeed, thetaSpeed);
+        chassisSpeeds.toFieldRelativeSpeeds(swerveSubsystem.getHeading());
 
     SmartDashboard.putNumber("X Speed", chassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Y Speed", chassisSpeeds.vyMetersPerSecond);
@@ -209,7 +202,7 @@ public class DriveToPosition extends GenericCommand {
   @Override
   public void stop(boolean interrupted) {
     swerveSubsystem.drive(
-        ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, swerveSubsystem.getHeading()), null);
+        new ChassisSpeeds(0, 0, 0), null);
   }
 
   // Returns true when the command should end.

@@ -35,11 +35,11 @@ public class DefaultDriveCommand extends Command {
   /**
    * Creates a new DefaultDriveCommand
    *
-   * @param drivetrainSubsystem The drivetrain subsystem
+   * @param drivetrainSubsystem  The drivetrain subsystem
    * @param translationXSupplier The supplier for the X translation
    * @param translationYSupplier The supplier for the Y translation
-   * @param rotationSupplier The supplier for the rotation
-   * @param fieldOrientedDrive Whether the drive is field-oriented
+   * @param rotationSupplier     The supplier for the rotation
+   * @param fieldOrientedDrive   Whether the drive is field-oriented
    */
   public DefaultDriveCommand(
       GenericDrivetrain drivetrainSubsystem,
@@ -52,10 +52,8 @@ public class DefaultDriveCommand extends Command {
     this.m_translationYSupplier = translationYSupplier;
     this.m_rotationSupplier = rotationSupplier;
     this.fieldOrientedDrive = fieldOrientedDrive;
-    maxChassisVelocity =
-        new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
-    maxChassisRotation =
-        new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
+    maxChassisVelocity = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
+    maxChassisRotation = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
     joystick = drivetrainSubsystem.getMechVisual().getRoot("joystick", 30, 30);
     xAxis = new MechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
     yAxis = new MechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
@@ -86,23 +84,27 @@ public class DefaultDriveCommand extends Command {
     heading.setAngle(180 * r);
 
     if (fieldOrientedDrive.get()) {
-      drivetrainSubsystem.drive(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-              x * maxChassisVelocity.get(),
-              y * maxChassisVelocity.get(),
-              r * maxChassisRotation.get(),
-              drivetrainSubsystem.getHeading()), null);
+      ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
+          x * maxChassisVelocity.get(),
+          y * maxChassisVelocity.get(),
+          r * maxChassisRotation.get());
+      chassisSpeeds.toFieldRelativeSpeeds(drivetrainSubsystem.getHeading());
+      drivetrainSubsystem.drive(chassisSpeeds,
+          null);
     } else {
       drivetrainSubsystem.drive(
           new ChassisSpeeds(
               x * maxChassisVelocity.get(),
               y * maxChassisVelocity.get(),
-              r * maxChassisRotation.get()), null);
+              r * maxChassisRotation.get()),
+          null);
     }
-    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented
+    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
+    // field-oriented
     // movement
     // drivetrainSubsystem.drive(
-    //     ChassisSpeeds.fromFieldRelativeSpeeds(x, y, r, drivetrainSubsystem.getHeading())
+    // ChassisSpeeds.fromFieldRelativeSpeeds(x, y, r,
+    // drivetrainSubsystem.getHeading())
     // );
   }
 

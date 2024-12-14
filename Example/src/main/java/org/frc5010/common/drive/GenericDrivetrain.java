@@ -4,6 +4,20 @@
 
 package org.frc5010.common.drive;
 
+import static edu.wpi.first.units.Units.Kilogram;
+
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.commands.DefaultDriveCommand;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.telemetry.DisplayBoolean;
+
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.util.DriveFeedforwards;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -15,18 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-import static edu.wpi.first.units.Units.Kilogram;
-
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.arch.GenericSubsystem;
-import org.frc5010.common.commands.DefaultDriveCommand;
-import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.sensors.Controller;
-
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.util.DriveFeedforwards;
-
 /** Generic class for defining drivetrain behavior */
 public abstract class GenericDrivetrain extends GenericSubsystem {
   /** The visual representation of the drivetrain */
@@ -35,7 +37,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   /** The pose estimator */
   protected DrivePoseEstimator poseEstimator;
   /** Whether or not the robot is field oriented */
-  protected boolean isFieldOrientedDrive = true;
+  protected DisplayBoolean isFieldOrientedDrive;
   /**
    * Load the RobotConfig from the GUI settings. You should probably
    * store this in your Constants file
@@ -52,15 +54,14 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     try {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
+      // A default config in case the GUI settings can't be loaded
       config = new RobotConfig(Kilogram.of(68).magnitude(),
           SingleJointedArmSim.estimateMOI(0.5, Kilogram.of(68).magnitude()),
           new ModuleConfig(0.1, 4.5, 1.19, 
-          DCMotor.getNEO(1), 40, 4), 0.5, 0.5);
+          DCMotor.getNEO(1), 40, 4), 0.5);
     }
 
-    Shuffleboard.getTab("Drive")
-        .addBoolean("Field Oriented", () -> isFieldOrientedDrive)
-        .withPosition(8, 0);
+    isFieldOrientedDrive = new DisplayBoolean(true, "Field Oriented", logPrefix, LogLevel.COMPETITION);
   }
 
   /**
@@ -125,7 +126,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
 
   /** Toggles the field oriented drive mode */
   public void toggleFieldOrientedDrive() {
-    isFieldOrientedDrive = !isFieldOrientedDrive;
+    isFieldOrientedDrive.setValue(!isFieldOrientedDrive.getValue());
   }
 
   /** Resets the orientation of the pose estimator */
@@ -154,7 +155,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         () -> driver.getLeftYAxis(),
         () -> driver.getLeftXAxis(),
         () -> driver.getRightXAxis(),
-        () -> isFieldOrientedDrive);
+        () -> isFieldOrientedDrive.getValue());
   }
 
   /**
@@ -171,7 +172,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
         () -> driver.getLeftYAxis(),
         () -> driver.getLeftXAxis(),
         () -> driver.getRightXAxis(),
-        () -> isFieldOrientedDrive);
+        () -> isFieldOrientedDrive.getValue());
   }
 
   /**
