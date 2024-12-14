@@ -24,7 +24,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -419,9 +418,16 @@ public class GenericTalonFXMotor implements MotorController5010 {
     return motor.get();
   }
 
-  /**
-   * @deprecated Use {@link #isInverted()} instead.
-   */
+/**
+ * Returns the inversion status of the motor.
+ *
+ * <p>This method checks the current motor output configuration and determines 
+ * if the motor is set to be inverted.
+ *
+ * @return true if the motor is inverted (i.e., configured for counterclockwise 
+ * positive rotation), false if the motor is not inverted (i.e., configured for 
+ * clockwise positive rotation).
+ */
   @Override
   public boolean getInverted() {
     cfg.refresh(configuration.MotorOutput);

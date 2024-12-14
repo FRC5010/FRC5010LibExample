@@ -231,6 +231,7 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
     } else if (controlEffort < minOutput.getValue()) {
       controlEffort = minOutput.getValue();
     }
+    effort.setVoltage(controlEffort, Volts);
     return controlEffort;
   }
 

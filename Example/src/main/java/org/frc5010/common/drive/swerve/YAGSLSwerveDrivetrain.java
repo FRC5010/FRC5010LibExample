@@ -8,13 +8,17 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
@@ -24,15 +28,20 @@ import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.telemetry.DisplayBoolean;
+import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -60,6 +69,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -82,6 +92,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   /** 5010 Code */
   private DoubleSupplier angleSpeedSupplier = null;
+  private DisplayBoolean hasIssues;
 
   public YAGSLSwerveDrivetrain(
       Mechanism2d mechVisual,
@@ -128,17 +139,20 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setHeadingCorrection(false);
 
-    // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
+    // Disables cosine compensation for simulations since it causes discrepancies
+    // not seen in real life.
     swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation);
     // Correct for skew that gets worse as angular velocity increases. Start with a
     // coefficient of 0.1.
     swerveDrive.setAngularVelocityCompensation(true,
         true,
         0.1);
-    swerveDrive.setModuleEncoderAutoSynchronize(true, 3); 
-    // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
-    swerveDrive.pushOffsetsToEncoders(); 
-    // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+    swerveDrive.setModuleEncoderAutoSynchronize(true, 3);
+    // Enable if you want to resynchronize your absolute encoders and motor encoders
+    // periodically when they are not moving.
+    swerveDrive.pushOffsetsToEncoders();
+    // Set the absolute encoder to be used over the internal encoder and push the
+    // offsets onto it. Throws warning if not possible
 
     /** 5010 Code */
     SwerveConstants swerveConstants = (SwerveConstants) constants;
@@ -161,7 +175,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
     SmartDashboard.putString(
         "YAGSL Alliance", GenericRobot.chooseAllianceDisplayColor().toString());
-    Shuffleboard.getTab("Drive").addBoolean("Has Issues", () -> hasIssues()).withPosition(9, 1);
+    hasIssues = new DisplayBoolean(false, "Has Issues", logPrefix, LogLevel.COMPETITION);
     if (RobotBase.isSimulation() || useGlass) {
       initGlassWidget();
     }
@@ -223,10 +237,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public Command driveToPose(Pose2d pose) {
     // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        swerveDrive.getMaximumVelocity(),
-        4.0,
-        swerveDrive.getMaximumAngularVelocity(),
-        Units.degreesToRadians(720));
+        swerveDrive.getMaximumChassisVelocity(), swerveDrive.getMaximumChassisVelocity(),
+        swerveDrive.getMaximumChassisAngularVelocity(), swerveDrive.getMaximumChassisAngularVelocity());
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return AutoBuilder.pathfindToPose(
@@ -234,6 +246,62 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
         constraints,
         0.0 // Goal end velocity in meters/sec
     );
+  }
+
+  /**
+   * Drive with {@link SwerveSetpointGenerator} from 254, implemented by
+   * PathPlanner.
+   *
+   * @param robotRelativeChassisSpeed Robot relative {@link ChassisSpeeds} to
+   *                                  achieve.
+   * @return {@link Command} to run.
+   * @throws IOException    If the PathPlanner GUI settings is invalid
+   * @throws ParseException If PathPlanner GUI settings is nonexistent.
+   */
+  private Command driveWithSetpointGenerator(Supplier<ChassisSpeeds> robotRelativeChassisSpeed)
+      throws IOException, ParseException {
+    SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(RobotConfig.fromGUISettings(),
+        swerveDrive.getMaximumChassisAngularVelocity());
+    AtomicReference<SwerveSetpoint> prevSetpoint = new AtomicReference<>(
+        new SwerveSetpoint(swerveDrive.getRobotVelocity(),
+            swerveDrive.getStates(),
+            DriveFeedforwards.zeros(swerveDrive.getModules().length)));
+    AtomicReference<Double> previousTime = new AtomicReference<>();
+
+    return startRun(() -> previousTime.set(Timer.getFPGATimestamp()),
+        () -> {
+          double newTime = Timer.getFPGATimestamp();
+          SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
+              robotRelativeChassisSpeed.get(),
+              newTime - previousTime.get());
+          swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
+              newSetpoint.moduleStates(),
+              newSetpoint.feedforwards().linearForces());
+          prevSetpoint.set(newSetpoint);
+          previousTime.set(newTime);
+
+        });
+  }
+
+  /**
+   * Drive with 254's Setpoint generator; port written by PathPlanner.
+   *
+   * @param fieldRelativeSpeeds Field-Relative {@link ChassisSpeeds}
+   * @return Command to drive the robot using the setpoint generator.
+   */
+  public Command driveWithSetpointGeneratorFieldRelative(Supplier<ChassisSpeeds> fieldRelativeSpeeds) {
+    try {
+      return driveWithSetpointGenerator(() -> {
+        ChassisSpeeds speeds = fieldRelativeSpeeds.get();
+        speeds.toRobotRelativeSpeeds(getHeading());
+        return speeds;
+
+      });
+    } catch (IOException | ParseException e) {
+      DriverStation.reportError(e.toString(), true);
+    }
+    return Commands.none();
+
   }
 
   /**
@@ -267,7 +335,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
                   headingX.getAsDouble(),
                   headingY.getAsDouble(),
                   swerveDrive.getOdometryHeading().getRadians(),
-                  swerveDrive.getMaximumVelocity()));
+                  swerveDrive.getMaximumChassisVelocity()));
         });
   }
 
@@ -293,7 +361,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
                   translationY.getAsDouble(),
                   rotation.getAsDouble() * Math.PI,
                   swerveDrive.getOdometryHeading().getRadians(),
-                  swerveDrive.getMaximumVelocity()));
+                  swerveDrive.getMaximumChassisVelocity()));
         });
   }
 
@@ -353,18 +421,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   /**
-   * Sets the maximum speed of the swerve drive.
-   *
-   * @param maximumSpeedInMetersPerSecond the maximum speed to set for the swerve
-   *                                      drive in meters per second
-   */
-  public void setMaximumSpeed(double maximumSpeedInMetersPerSecond) {
-    swerveDrive.setMaximumSpeed(maximumSpeedInMetersPerSecond,
-        false,
-        swerveDrive.swerveDriveConfiguration.physicalCharacteristics.optimalVoltage);
-  }
-
-  /**
    * Replaces the swerve module feedforward with a new SimpleMotorFeedforward
    * object.
    *
@@ -395,9 +451,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
           // Make the robot move
           swerveDrive.drive(
               new Translation2d(
-                  Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
-                  Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
-              Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
+                  Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisVelocity(),
+                  Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumChassisVelocity()),
+              Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumChassisAngularVelocity(),
               true,
               false);
         });
@@ -454,18 +510,15 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   /**
-   * Drive according to the chassis robot oriented velocity and drive feedforwards.
+   * Drive according to the chassis robot oriented velocity and drive
+   * feedforwards.
    *
-   * @param velocity Robot oriented {@link ChassisSpeeds}
+   * @param velocity     Robot oriented {@link ChassisSpeeds}
    * @param feedforwards {@link DriveFeedforwards}
    */
   @Override
   public void drive(ChassisSpeeds velocity, DriveFeedforwards feedforwards) {
     swerveDrive.drive(velocity);
-  }
-
-  @Override
-  public void simulationPeriodic() {
   }
 
   /**
@@ -577,8 +630,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   /**
    * Get the chassis speeds based on controller input of 2 joysticks. One for
-   * speeds in which
-   * direction. The other for the angle of the robot.
+   * speeds in which direction. The other for the angle of the robot.
    *
    * @param xInput   X joystick input for the robot to move in the X direction.
    * @param yInput   Y joystick input for the robot to move in the Y direction.
@@ -596,8 +648,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
   /**
    * Get the chassis speeds based on controller input of 1 joystick and one angle.
-   * Control the robot
-   * at an offset of 90deg.
+   * Control the robot at an offset of 90deg.
    *
    * @param xInput X joystick input for the robot to move in the X direction.
    * @param yInput Y joystick input for the robot to move in the Y direction.
@@ -671,7 +722,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   @Override
   public void periodic() {
     poseEstimator.update();
-    hasIssues();
+    hasIssues.setValue(hasIssues());
     if (RobotBase.isSimulation() || useGlass) {
       updateGlassWidget();
     }
@@ -697,11 +748,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   }
 
   public Command createDefaultCommand(Controller driverXbox) {
-    // System.out.println("brrrrr");
     DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
     DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
     DoubleSupplier rightX = () -> driverXbox.getAxisValue(XboxController.Axis.kRightX.value);
-    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
+    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     return new JoystickToSwerve(
         this, leftY, leftX, rightX, isFieldOriented, () -> GenericRobot.getAlliance());
@@ -712,7 +762,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
     DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
     DoubleSupplier rightX = () -> driverXbox.getAxisValue(XboxController.Axis.kRightX.value);
-    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive;
+    BooleanSupplier isFieldOriented = () -> isFieldOrientedDrive.getValue();
 
     // driverXbox.createAButton().whileTrue(sysIdDriveMotorCommand());
     // driverXbox.createBButton().whileTrue(sysIdAngleMotorCommand());

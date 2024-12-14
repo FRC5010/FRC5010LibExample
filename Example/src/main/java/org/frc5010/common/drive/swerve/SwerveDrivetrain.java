@@ -289,7 +289,7 @@ public class SwerveDrivetrain extends GenericDrivetrain {
         leftY,
         leftX,
         rotationSupplier,
-        () -> isFieldOrientedDrive,
+        () -> isFieldOrientedDrive.getValue(),
         () -> GenericRobot.getAlliance());
     // return new TeleopDrive(this, leftX, leftY, rightX, isFieldOriented);
   }
