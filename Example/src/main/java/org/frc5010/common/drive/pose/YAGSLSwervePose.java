@@ -32,6 +32,11 @@ public class YAGSLSwervePose extends GenericPose {
   }
 
   @Override
+  public void updateRobotPoseOnField(Pose2d pose) {
+    field2d.setRobotPose(pose);
+  }
+
+  @Override
   public void updateLocalMeasurements() {}
 
   @Override

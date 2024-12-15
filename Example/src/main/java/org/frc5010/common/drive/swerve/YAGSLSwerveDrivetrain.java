@@ -60,7 +60,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -131,7 +130,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
-      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, Pose2d.kZero);
+      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed, new Pose2d(1, 4, Rotation2d.fromDegrees(0)));
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException(e);
@@ -726,6 +725,10 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     if (RobotBase.isSimulation() || useGlass) {
       updateGlassWidget();
     }
+  }
+
+  @Override
+  public void simulationPeriodic() {  
   }
 
   public void setAngleSupplier(DoubleSupplier angDoubleSupplier) {

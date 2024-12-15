@@ -47,7 +47,8 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /** Constants that are used to configure the drivetrain */
   protected GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
   /** The pose supplier */
-  protected Supplier<Pose2d> poseSupplier = () -> new Pose2d();
+  protected Supplier<Pose2d> replaceMe = () -> new Pose2d();
+  protected Supplier<Pose2d> poseSupplier = () -> replaceMe.get();
   /** The subsystem parser */
   public static SubsystemParser subsystemParser;
   /** Values that can be displayed on the dashboard */
@@ -326,7 +327,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    * @param poseSupplier the pose supplier
    */
   public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
-    this.poseSupplier = poseSupplier;
+    this.replaceMe = poseSupplier;
   }
 
   /**

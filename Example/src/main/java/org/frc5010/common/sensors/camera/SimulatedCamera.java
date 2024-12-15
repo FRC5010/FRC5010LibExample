@@ -18,8 +18,8 @@ import org.photonvision.simulation.VisionSystemSim;
 public class SimulatedCamera extends PhotonVisionPoseCamera {
   /** The vision simulation system */
   static VisionSystemSim visionSim = new VisionSystemSim("main");
-  /** Indidates if the field layout has been registered */
-  protected static boolean fieldRegistered = false;
+  /** Whether the tags have been loaded */
+  static boolean tagsLoaded = false;
 
   /** The simulated camera properties */
   protected SimCameraProperties cameraProp = new SimCameraProperties();
@@ -44,7 +44,10 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
       Transform3d cameraToRobot,
       Supplier<Pose2d> poseSupplier) {
     super(name, colIndex, fieldLayout, strategy, cameraToRobot, poseSupplier);
-    visionSim.addAprilTags(fieldLayout);
+    if (!tagsLoaded) {
+      visionSim.addAprilTags(fieldLayout);
+      tagsLoaded = true;
+    }
 
     // A 640 x 480 camera with a 100 degree diagonal FOV.
     cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(100));
@@ -60,11 +63,6 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
 
     cameraSim = new PhotonCameraSim(camera, cameraProp);
     visionSim.addCamera(cameraSim, cameraToRobot);
-
-    if (!fieldRegistered) {
-      fieldRegistered = true;
-      visionTab.add("Vision Field", visionSim.getDebugField());
-    }
   }
 
   /** Update the simulated camera */
