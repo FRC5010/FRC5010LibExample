@@ -58,6 +58,9 @@ public abstract class GenericPose {
     return field2d;
   }
 
+  public void updateRobotPoseOnField(Pose2d pose) {
+    field2d.setRobotPose(pose);
+  }
   /**
    * Get the current acceleration in the X direction.
    *

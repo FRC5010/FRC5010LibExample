@@ -148,7 +148,7 @@ public class DrivePoseEstimator {
       }
       SmartDashboard.putBoolean("April Tag Pose Updating", visionUpdated);
     }
-    field2d.setRobotPose(getCurrentPose());
+    poseTracker.updateRobotPoseOnField(getCurrentPose());
   }
 
   /**

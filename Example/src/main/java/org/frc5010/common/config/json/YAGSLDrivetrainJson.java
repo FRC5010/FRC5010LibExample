@@ -25,7 +25,8 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
   public double turningMotorGearRatio = 1.0;
 
   /**
-   * The file names of the drive module's feed forward constants. These should match what are used
+   * The file names of the drive module's feed forward constants. These should
+   * match what are used
    * in the YAGSL config
    */
   public String[] driveModules;
@@ -37,28 +38,25 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
       File moduleFile = new File(baseDirectory, "drive_modules/" + driveModules[i]);
       String moduleName = driveModules[i].substring(0, driveModules[i].indexOf(".json"));
       assert moduleFile.exists();
-      YAGSLDriveModuleJson module =
-          new ObjectMapper().readValue(moduleFile, YAGSLDriveModuleJson.class);
-      MotorFeedFwdConstants feedFwdConstants =
-          new MotorFeedFwdConstants(module.s, module.v, module.a);
+      YAGSLDriveModuleJson module = new ObjectMapper().readValue(moduleFile, YAGSLDriveModuleJson.class);
+      MotorFeedFwdConstants feedFwdConstants = new MotorFeedFwdConstants(module.s, module.v, module.a);
       swerveConstants.getSwerveModuleConstants().addDriveMotorFF(moduleName, feedFwdConstants);
     }
     robot.setDrivetrainConstants(swerveConstants);
     return;
-  }
-  ;
+  };
 
   @Override
   public void createDriveTrain(GenericRobot robot) {
-    AprilTagPoseSystem atSystem =
-        (AprilTagPoseSystem) robot.getSubsystem(CameraConfigurationJson.APRIL_TAG);
+    AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem(CameraConfigurationJson.APRIL_TAG);
+    YAGSLSwerveDrivetrain drivetrain = new YAGSLSwerveDrivetrain(
+        new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
+        robot.getDrivetrainConstants(),
+        turningMotorGearRatio,
+        directory,
+        atSystem);
     robot.addSubsystem(
-        ConfigConstants.DRIVETRAIN,
-        new YAGSLSwerveDrivetrain(
-            new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
-            robot.getDrivetrainConstants(),
-            turningMotorGearRatio,
-            directory,
-            atSystem));
+        ConfigConstants.DRIVETRAIN, drivetrain);
+    robot.setPoseSupplier(() -> drivetrain.getPoseEstimator().getCurrentPose());
   }
 }

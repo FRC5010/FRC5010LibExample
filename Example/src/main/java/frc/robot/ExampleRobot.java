@@ -39,7 +39,8 @@ public class ExampleRobot extends GenericRobot {
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> driver.getLeftYAxis()));
+    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> operator.getLeftYAxis()));
+    drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 
   @Override
