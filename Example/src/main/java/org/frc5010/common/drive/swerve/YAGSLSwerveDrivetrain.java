@@ -4,6 +4,7 @@
 
 package org.frc5010.common.drive.swerve;
 
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -27,6 +28,7 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
 import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.sensors.camera.QuestNav;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.telemetry.DisplayBoolean;
 import org.json.simple.parser.ParseException;
@@ -43,10 +45,13 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -93,6 +98,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private DoubleSupplier angleSpeedSupplier = null;
   private DisplayBoolean hasIssues;
 
+  private QuestNav questNav;
+
   public YAGSLSwerveDrivetrain(
       Mechanism2d mechVisual,
       GenericDrivetrainConstants constants,
@@ -100,6 +107,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       String swerveType,
       AprilTagPoseSystem visionSystem) {
     super(mechVisual, constants);
+
+    questNav = new QuestNav(new Transform3d(Meter.of(0), Meter.of(0), Meter.of(0.5), new Rotation3d()));
+    questNav.resetPose();
 
     this.maximumSpeed = constants.getkPhysicalMaxSpeedMetersPerSecond();
 
@@ -720,6 +730,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   /** 5010 Code */
   @Override
   public void periodic() {
+    updateVisionMeasurements(questNav.getRobotPose().toPose2d(), Timer.getFPGATimestamp(), VecBuilder.fill(0.01, 0.01, 0.01));
     poseEstimator.update();
     hasIssues.setValue(hasIssues());
     if (RobotBase.isSimulation() || useGlass) {
