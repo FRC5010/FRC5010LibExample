@@ -4,8 +4,11 @@
 
 package org.frc5010.common.sensors.camera;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotation;
 
+import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.drive.pose.PoseProvider;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -13,23 +16,28 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.FloatArraySubscriber;
 import edu.wpi.first.networktables.IntegerEntry;
+import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
-public class QuestNav implements PoseProvider {
+public class QuestNav extends GenericSubsystem implements PoseProvider {
     private boolean initializedPosition = false;
     private String networkTableRoot = "oculus";
     private NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
     private NetworkTable networkTable;
     private Transform3d robotToQuest;
+    private Pose3d initPose = new Pose3d();
 
     private IntegerEntry miso;
+    private IntegerPublisher mosi;
 
     private IntegerSubscriber frameCount;
     private DoubleSubscriber timestamp;
@@ -37,6 +45,11 @@ public class QuestNav implements PoseProvider {
     private FloatArraySubscriber quaternion;
     private FloatArraySubscriber eulerAngles;
     private DoubleSubscriber battery;
+
+    private ChassisSpeeds velocity;
+    private Pose3d previousPose;
+    private double previousTime;
+    
 
     public enum QuestCommand {
         RESET(1);
@@ -53,11 +66,13 @@ public class QuestNav implements PoseProvider {
     }
 
     public QuestNav(Transform3d robotToQuest) {
+        super();
         this.robotToQuest = robotToQuest;
         setupNetworkTables(networkTableRoot);
     }
 
     public QuestNav(Transform3d robotToQuest, String networkTableRoot) {
+        super();
         this.robotToQuest = robotToQuest;
         this.networkTableRoot = networkTableRoot;
         setupNetworkTables(networkTableRoot);
@@ -67,6 +82,7 @@ public class QuestNav implements PoseProvider {
     private void setupNetworkTables(String root) {
         networkTable = networkTableInstance.getTable(root);
         miso = networkTable.getIntegerTopic("miso").getEntry(0);
+        mosi = networkTable.getIntegerTopic("mosi").publish();
         frameCount = networkTable.getIntegerTopic("frameCount").subscribe(0);
         timestamp = networkTable.getDoubleTopic("timestamp").subscribe(0.0);
         position = networkTable.getFloatArrayTopic("position").subscribe(new float[3]);
@@ -75,14 +91,17 @@ public class QuestNav implements PoseProvider {
         battery = networkTable.getDoubleTopic("battery").subscribe(0.0);
     }
 
-
-    public Translation3d getQuestPosition() {
-        return new Translation3d(position.get()[2], -position.get()[0], position.get()[1]).plus(robotToQuest.getTranslation().times(-1));
+    public Translation3d getRawPosition() {
+        return new Translation3d(position.get()[2], -position.get()[0], position.get()[2]);
     }
 
-    public Rotation3d getQuestRotation() {
-        Quaternion q = new Quaternion(quaternion.get()[0], quaternion.get()[1], quaternion.get()[2], quaternion.get()[3]);
-        return new Rotation3d(q).plus(robotToQuest.getRotation().times(-1));
+    private Translation3d correctWorldAxis(Translation3d rawPosition) {
+        return rawPosition.rotateBy(robotToQuest.getRotation());
+    }
+
+    public Rotation3d getRawRotation() { 
+        float[] euler = eulerAngles.get();
+        return new Rotation3d(Degrees.of(euler[2]), Degrees.of(euler[0]), Degrees.of(-euler[1]));
     }
 
     public Pose3d getRobotPose() {
@@ -90,11 +109,14 @@ public class QuestNav implements PoseProvider {
     }
 
     public Translation3d getPosition() {
-        return getQuestPosition();
+        return correctWorldAxis(getRawPosition())
+        .plus(robotToQuest.getTranslation()).plus(robotToQuest.getTranslation().times(-1).rotateBy(getRotation()))
+        .plus(initPose.getTranslation());
     }
 
     public Rotation3d getRotation() {
-        return getQuestRotation();
+        // TODO: To support weird rotations/mountings of quest, implement world axis rotation
+        return getRawRotation().plus(initPose.getRotation());
     }
 
     public double getConfidence() {
@@ -112,7 +134,7 @@ public class QuestNav implements PoseProvider {
         if (miso.get() == 99) {
             return false;
         }
-        miso.set(command.getQuestRequest());
+        mosi.set(command.getQuestRequest());
         return true;
     }
 
@@ -122,6 +144,8 @@ public class QuestNav implements PoseProvider {
 
     public void resetPose(Pose3d pose) {
         initializedPosition = true;
+        initPose = pose;
+        resetQuestPose();
     }
 
     public void resetPose() {
@@ -129,5 +153,47 @@ public class QuestNav implements PoseProvider {
         resetQuestPose();
     }
 
+    public void cleanUpQuestCommand() {
+        if (miso.get() == 99) {
+            mosi.set(0);
+        }
+    }
+
+    private void updateVelocity() {
+        if (previousPose == null) {
+            previousPose = getRobotPose();
+            previousTime = timestamp.get();
+            return;
+        }
+        double currentTime = timestamp.get();
+        double deltaTime = currentTime - previousTime;
+        if (deltaTime == 0) {
+            return;
+        }
+        velocity = new ChassisSpeeds(
+            (getPosition().getX() - previousPose.getTranslation().getX()) / deltaTime,
+            (getPosition().getY() - previousPose.getTranslation().getY()) / deltaTime,
+            (getRotation().getZ() - previousPose.getRotation().getZ()) / deltaTime
+        );
+        previousTime = currentTime;
+        previousPose = getRobotPose();
+
+    }
+
+    public ChassisSpeeds getVelocity() {
+        if (null != velocity) {
+            return velocity;
+        }
+        return new ChassisSpeeds();
+    }
+
+    @Override
+    public void periodic() {
+        cleanUpQuestCommand();
+        updateVelocity();
+        
+        ChassisSpeeds velocity = getVelocity();
+        SmartDashboard.putNumberArray("Velocity", new double[] {velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond});
+    }
 
 }
