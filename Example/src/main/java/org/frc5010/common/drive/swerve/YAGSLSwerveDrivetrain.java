@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Meter;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +78,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
-import swervelib.SwerveInputStream;
 import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -90,7 +88,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 /** Add your docs here. */
 public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   /** Swerve drive object. */
-  private final SwerveDrive swerveDrive;
+  private static SwerveDrive swerveDrive = null;
   /**
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
@@ -788,6 +786,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     return getFieldVelocity();
   }
 
+  /** 5010 Code */
   public Command createDefaultCommand(Controller driverXbox) {
     DoubleSupplier leftX = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftX.value);
     DoubleSupplier leftY = () -> driverXbox.getAxisValue(XboxController.Axis.kLeftY.value);
@@ -840,32 +839,16 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     return swerveDrive.getGyro().getYawAngularVelocity().in(DegreesPerSecond);
   }
 
-  public void drive5010(ChassisSpeeds direction) {
-    // Thank you to Jared Russell FRC254 for Open Loop Compensation Code
-    // https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964/5
-    // double dtConstant = 0.009;
-    // Pose2d robotPoseVel = new Pose2d(direction.vxMetersPerSecond * dtConstant,
-    // direction.vyMetersPerSecond * dtConstant,
-    // Rotation2d.fromRadians(direction.omegaRadiansPerSecond * dtConstant));
-    // Twist2d twistVel = (new Pose2d()).log(robotPoseVel);
-
-    // ChassisSpeeds updatedChassisSpeed = new ChassisSpeeds(twistVel.dx /
-    // dtConstant, twistVel.dy / dtConstant,
-    // twistVel.dtheta / dtConstant);
-
-    setChassisSpeeds(direction);
-
-    // System.out.println((System.currentTimeMillis() - pastTime) / 1000);
-    // pastTime = System.currentTimeMillis();
-    // setChassisSpeeds(direction);
-
-    SmartDashboard.putNumber("Robot Vel X", getRobotVelocity().vxMetersPerSecond);
-    SmartDashboard.putNumber("Robot Vel Y", getRobotVelocity().vyMetersPerSecond);
-
-    SmartDashboard.putNumber("Field Vel X", getFieldVelocity().vxMetersPerSecond);
-    SmartDashboard.putNumber("Field Vel Y", getFieldVelocity().vyMetersPerSecond);
+  /**
+   * Get the swerve drive object, which has the actual driving logic, encoder
+   * data, etc.
+   *
+   * @return The swerve drive object.
+   */
+  public static SwerveDrive getSwerveDrive() {
+    return swerveDrive;
   }
-
+  
   @Override
   public SwerveModulePosition[] getModulePositions() {
     return swerveDrive.getModulePositions();

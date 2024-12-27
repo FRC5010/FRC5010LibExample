@@ -4,6 +4,7 @@ import org.frc5010.common.arch.GenericDeviceHandler;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.sensors.gyro.NavXGyro;
 import org.frc5010.common.sensors.gyro.PigeonGyro;
+import org.frc5010.common.sensors.gyro.YagslGyro;
 
 import com.studica.frc.AHRS.NavXComType;
 
@@ -27,6 +28,8 @@ public class GyroSettingsConfigurationJson implements DeviceConfiguration {
         return new NavXGyro(NavXComType.kMXP_SPI);
       case "pigeon2":
         return new PigeonGyro(id);
+      case "yagsl":
+        return new YagslGyro();
       default:
         return null;
     }
