@@ -61,6 +61,7 @@
       "/LiveWindow/Ungrouped/Pigeon 2 [13]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/BabySwerve/Auto Modes": "String Chooser",
+      "/Shuffleboard/ExampleRobot/Auto Modes": "String Chooser",
       "/Shuffleboard/Pose/Pose Field": "Field2d",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
@@ -432,9 +433,9 @@
           ]
         },
         "Robot": {
-          "image": ".\\pictures\\robot.jpg",
-          "length": 0.800000011920929,
-          "width": 0.800000011920929
+          "image": ".\\pictures\\spitfire.png",
+          "length": 0.8669999837875366,
+          "width": 0.8669999837875366
         },
         "XModules": {
           "arrowColor": [
