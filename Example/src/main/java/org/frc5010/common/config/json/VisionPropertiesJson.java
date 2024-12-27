@@ -17,6 +17,7 @@ import org.frc5010.common.vision.AprilTags;
 
 /** JSON class with an array of cameras to configure */
 public class VisionPropertiesJson {
+  /** An array of camera names */
   public String[] cameras;
 
   /**

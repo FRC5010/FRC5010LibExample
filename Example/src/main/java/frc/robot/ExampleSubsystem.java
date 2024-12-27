@@ -1,5 +1,8 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+
 import java.util.function.DoubleSupplier;
 
 import org.frc5010.common.arch.GenericSubsystem;
@@ -9,10 +12,9 @@ import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.function.AngularControlMotor;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.motors.function.VelocityControlMotor;
-import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
-import org.frc5010.common.units.Angle;
-import org.frc5010.common.units.Length;
+
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -39,7 +41,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     }
 
     public VelocityControlMotor velocityControlledMotor() {
-        VelocityControlMotor velocityMotor = new VelocityControlMotor(MotorFactory.NEO(12), "velocity")
+        VelocityControlMotor velocityMotor = new VelocityControlMotor(MotorFactory.NEO(12), "velocity", getDisplayValuesHelper())
                 .setupSimulatedMotor(1, 1)
                 .setVisualizer(mechanismSimulation, new Pose3d(0.1, 0, 0.25, new Rotation3d()));
         velocityMotor.setValues(new GenericPID(0.4, 0, 0.1));
@@ -48,13 +50,12 @@ public class ExampleSubsystem extends GenericSubsystem {
     }
 
     public AngularControlMotor angularControlledMotor() {
-        AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.NEO(13), "angular")
+        AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.NEO(13), "angular", getDisplayValuesHelper())
                 .setupSimulatedMotor((5.0 * 68.0 / 24.0) *  (80.0 / 24.0), Units.lbsToKilograms(22),
-                        Length.Inch(19), Angle.Degree(0), Angle.Degree(360),
-                        false, 0, Angle.Degree(0), false, 0.1)
+                        Inches.of(19), Degrees.of(0), Degrees.of(360),
+                        false, 0, Degrees.of(0), false, 0.1)
                 .setVisualizer(mechanismSimulation, new Pose3d(0.75, 0, 0.25, new Rotation3d()));
-        angularMotor.setEncoder(new RevAbsoluteEncoder(
-            ((GenericRevBrushlessMotor)angularMotor.getMotor()), 360));
+        angularMotor.setEncoder(new RevAbsoluteEncoder((SparkMax)angularMotor.getMotor(), 360));
         angularMotor.setValues(new GenericPID(0.01, 0.000025, 0.003));
         angularMotor.setMotorFeedFwd(new MotorFeedFwdConstants(0.0, 0.01, 0.0, false));
         angularMotor.setIZone(3);

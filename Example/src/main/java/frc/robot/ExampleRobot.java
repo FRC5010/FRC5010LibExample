@@ -8,9 +8,12 @@ import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.sensors.Controller;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** This is an example robot class. */
@@ -35,11 +38,13 @@ public class ExampleRobot extends GenericRobot {
         .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
     driver.createAButton().whileTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
         .whileFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
+    driver.createBButton().whileTrue(((YAGSLSwerveDrivetrain)drivetrain).driveToPose(new Pose2d(8, 4, new Rotation2d())));
   }
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> driver.getLeftYAxis()));
+    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> operator.getLeftYAxis()));
+    drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 
   @Override

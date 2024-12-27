@@ -4,8 +4,18 @@
 
 package org.frc5010.common.drive;
 
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.pose.SimulatedPose;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -17,12 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import org.frc5010.common.arch.Persisted;
-import org.frc5010.common.constants.RobotConstantsDef;
-import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.drive.pose.SimulatedPose;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
 
 /** Add your docs here. */
 public class SimulatedDrivetrain extends GenericDrivetrain {
@@ -47,7 +51,7 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
     unicycle.append(wheel);
   }
 
-  public void drive(ChassisSpeeds chassisSpeeds) {
+  public void drive(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     this.chassisSpeeds = chassisSpeeds;
     Pose2d pose = poseEstimator.getCurrentPose();
     Transform2d direction =
@@ -73,12 +77,17 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
 
   @Override
   public void setAutoBuilder() {
-    AutoBuilder.configureRamsete(
+    AutoBuilder.configure(
         () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
         (Pose2d pose) -> getPoseEstimator().resetToPose(pose),
         this::getChassisSpeeds, // Current ChassisSpeeds supplier
         this::drive, // Method that will drive the robot given ChassisSpeeds
-        new ReplanningConfig(), // Default path replanning config. See the API for the options here
+        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
+                                        // drive trains
+            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+        ),
+        config, // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red alliance
           // This will flip the path being followed to the red side of the field.

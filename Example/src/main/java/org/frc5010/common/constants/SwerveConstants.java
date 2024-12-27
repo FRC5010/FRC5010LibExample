@@ -4,8 +4,11 @@
 
 package org.frc5010.common.constants;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.units.measure.Distance;
 
 /** Add your docs here. */
 public class SwerveConstants extends GenericDrivetrainConstants {
@@ -20,24 +23,24 @@ public class SwerveConstants extends GenericDrivetrainConstants {
 
   private SwerveModuleConstants swerveModuleConstants;
 
-  public SwerveConstants(double trackWidth, double wheelBase) {
-    this.DRIVETRAIN_TRACKWIDTH_METERS = trackWidth;
-    this.DRIVETRAIN_WHEELBASE_METERS = wheelBase;
+  public SwerveConstants(Distance trackWidth, Distance wheelBase) {
+    this.DRIVETRAIN_TRACKWIDTH = trackWidth;
+    this.DRIVETRAIN_WHEELBASE = wheelBase;
 
     kinematics =
         new SwerveDriveKinematics(
             // Front left
             new Translation2d(
-                DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                DRIVETRAIN_TRACKWIDTH.in(Meters) / 2.0, DRIVETRAIN_WHEELBASE.in(Meters) / 2.0),
             // Front right
             new Translation2d(
-                DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                DRIVETRAIN_TRACKWIDTH.in(Meters) / 2.0, -DRIVETRAIN_WHEELBASE.in(Meters) / 2.0),
             // Back left
             new Translation2d(
-                -DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                -DRIVETRAIN_TRACKWIDTH.in(Meters) / 2.0, DRIVETRAIN_WHEELBASE.in(Meters) / 2.0),
             // Back right
             new Translation2d(
-                -DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+                -DRIVETRAIN_TRACKWIDTH.in(Meters) / 2.0, -DRIVETRAIN_WHEELBASE.in(Meters) / 2.0));
   }
 
   public SwerveConstants(GenericDrivetrainConstants constants) {

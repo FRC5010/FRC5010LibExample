@@ -1,0 +1,10 @@
+{
+    "gamePieces": [
+        {
+            "x": 2,
+            "y": 7,
+            "type": "Note",
+            "rotation": 0
+        }
+    ]
+}

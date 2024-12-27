@@ -4,8 +4,24 @@
 
 package org.frc5010.common.drive;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.constants.DrivePorts;
+import org.frc5010.common.drive.pose.DifferentialPose;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.sensors.encoder.SimulatedEncoder;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,18 +35,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import java.util.ArrayList;
-import java.util.List;
-import org.frc5010.common.arch.Persisted;
-import org.frc5010.common.constants.DrivePorts;
-import org.frc5010.common.drive.pose.DifferentialPose;
-import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.mechanisms.DriveConstantsDef;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.SimulatedEncoder;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
 
 /** A class for differential drive. */
 public class DifferentialDrivetrain extends GenericDrivetrain {
@@ -46,10 +50,10 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   /**
    * Creates a new SkidSteerDrivetrain.
    *
-   * @param left - requires the left motor as a template for the others
-   * @param ports - a list of ports (assumes all ports are given)
-   * @param gyro - the gyroscope
-   * @param vision - the vision system
+   * @param left       - requires the left motor as a template for the others
+   * @param ports      - a list of ports (assumes all ports are given)
+   * @param gyro       - the gyroscope
+   * @param vision     - the vision system
    * @param mechVisual - the visualizer
    */
   public DifferentialDrivetrain(
@@ -79,8 +83,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     leftEncoder = left.getMotorEncoder();
     rightEncoder = right.getMotorEncoder();
 
-    diffKinematics =
-        new DifferentialDriveKinematics(Persisted.doubleVal(DriveConstantsDef.TRACK_WIDTH));
+    diffKinematics = new DifferentialDriveKinematics(Persisted.doubleVal(DriveConstantsDef.TRACK_WIDTH));
 
     if (RobotBase.isSimulation()) {
       initSimulation();
@@ -89,26 +92,24 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     setDrivetrainPoseEstimator(
         new DrivePoseEstimator(
             new DifferentialPose(diffKinematics, gyro, leftEncoder, rightEncoder), vision));
-    diffDrive = new DifferentialDrive(left.getMotor(), right.getMotor());
+    diffDrive = new DifferentialDrive((double speed) -> left.set(speed), (double speed) -> right.set(speed));
   }
 
   /**
    * Arcade drive with throttle and rotation
    *
    * @param throttle - forward/reverse value
-   * @param steer - rotational value
+   * @param steer    - rotational value
    */
   public void arcadeDrive(double throttle, double steer) {
     diffDrive.arcadeDrive(throttle, steer);
   }
 
-  private Persisted<Double> maxChassisVelocity =
-      new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
-  private Persisted<Double> maxChassisRotation =
-      new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
+  private Persisted<Double> maxChassisVelocity = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
+  private Persisted<Double> maxChassisRotation = new Persisted<>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
 
   @Override
-  public void drive(ChassisSpeeds direction) {
+  public void drive(ChassisSpeeds direction, DriveFeedforwards feedforwards) {
     chassisSpeeds = direction;
     // WARNING: TODO: this may not be the 'best' way to convert chassis speeds to
     // throttles
@@ -135,34 +136,31 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
   public void initSimulation() {
     KvLinear = new Persisted<>(DriveConstantsDef.KV_DRIVE_LINEAR, 1.3984);
     KaLinear = new Persisted<>(DriveConstantsDef.KA_DRIVE_LINEAR, 0.27137);
-    motorRotationsPerWheelRotation =
-        new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, 10.71);
+    motorRotationsPerWheelRotation = new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, 10.71);
 
     KvAngular = new Persisted<>(DriveConstantsDef.KV_DRIVE_ANGULAR, 0.5 / 180);
     KaAngular = new Persisted<>(DriveConstantsDef.KA_DRIVE_ANGULAR, 0.03);
-    motorRotationsPerWheelRotation =
-        new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, 10.71);
+    motorRotationsPerWheelRotation = new Persisted<>(DriveConstantsDef.MOTOR_ROT_PER_WHEEL_ROT, 10.71);
     kTrackwidthMeters = new Persisted<>(DriveConstantsDef.TRACK_WIDTH, Double.class);
 
-    driveSim =
-        new DifferentialDrivetrainSim(
-            // Create a linear system from our identification gains.
-            LinearSystemId.identifyDrivetrainSystem(
-                KvLinear.getDouble(),
-                KaLinear.getDouble(),
-                KvAngular.getDouble(),
-                KaAngular.getDouble()),
-            DCMotor.getNEO(2), // 2 NEO motors on each side of the drivetrain.
-            motorRotationsPerWheelRotation.getDouble(), // 10.71:1 gearing reduction.
-            kTrackwidthMeters.getDouble(), // The track width is 0.616 meters.
-            KitbotWheelSize.kSixInch.value, // The robot uses 3" radius wheels.
+    driveSim = new DifferentialDrivetrainSim(
+        // Create a linear system from our identification gains.
+        LinearSystemId.identifyDrivetrainSystem(
+            KvLinear.getDouble(),
+            KaLinear.getDouble(),
+            KvAngular.getDouble(),
+            KaAngular.getDouble()),
+        DCMotor.getNEO(2), // 2 NEO motors on each side of the drivetrain.
+        motorRotationsPerWheelRotation.getDouble(), // 10.71:1 gearing reduction.
+        kTrackwidthMeters.getDouble(), // The track width is 0.616 meters.
+        KitbotWheelSize.kSixInch.value, // The robot uses 3" radius wheels.
 
-            // The standard deviations for measurement noise:
-            // x and y: 0.001 m
-            // heading: 0.001 rad
-            // l and r velocity: 0.1 m/s
-            // l and r position: 0.005 m
-            VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+        // The standard deviations for measurement noise:
+        // x and y: 0.001 m
+        // heading: 0.001 rad
+        // l and r velocity: 0.1 m/s
+        // l and r position: 0.005 m
+        VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
     leftEncoder = new SimulatedEncoder(10, 11);
     rightEncoder = new SimulatedEncoder(12, 13);
@@ -198,14 +196,18 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
 
   @Override
   public void setAutoBuilder() {
-    AutoBuilder.configureRamsete(
+    // Configure AutoBuilder last
+    AutoBuilder.configure(
         () -> getPoseEstimator().getCurrentPose(), // Pose2d supplier
-        (Pose2d pose) -> getPoseEstimator().resetToPose(pose),
-        this::getChassisSpeeds, // Current ChassisSpeeds supplier
-        this::drive, // Method that will drive the robot given ChassisSpeeds
-        new ReplanningConfig(), // Default path replanning config. See the API for the options here
+        (Pose2d pose) -> getPoseEstimator().resetToPose(pose), // Pose2d consumer, used to reset odometry at the
+        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::drive,
+        new PPLTVController(0.02),
+        // PPLTVController is the built in path following controller for differential drive trains
+        config, // The robot configuration
         () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -216,6 +218,6 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
           return false;
         },
         this // Reference to this subsystem to set requirements
-        );
+    );
   }
 }

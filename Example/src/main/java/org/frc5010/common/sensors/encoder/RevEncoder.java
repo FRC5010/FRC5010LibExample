@@ -5,12 +5,15 @@
 package org.frc5010.common.sensors.encoder;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.config.EncoderConfig;
 
 public class RevEncoder implements GenericEncoder {
   RelativeEncoder encoder;
+  EncoderConfig config;
 
   public RevEncoder(RelativeEncoder encoder) {
     this.encoder = encoder;
+    config = new EncoderConfig();
   }
 
   @Override
@@ -40,14 +43,16 @@ public class RevEncoder implements GenericEncoder {
 
   @Override
   public void setPositionConversion(double conversion) {
-    encoder.setPositionConversionFactor(conversion);
+    config.positionConversionFactor(conversion);
   }
 
   @Override
   public void setVelocityConversion(double conversion) {
-    encoder.setVelocityConversionFactor(conversion);
+    config.velocityConversionFactor(conversion);
   }
 
   @Override
-  public void setInverted(boolean inverted) {}
+  public void setInverted(boolean inverted) {
+    config.inverted(inverted);
+  }
 }

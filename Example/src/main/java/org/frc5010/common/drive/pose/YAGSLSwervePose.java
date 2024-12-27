@@ -4,18 +4,18 @@
 
 package org.frc5010.common.drive.pose;
 
+import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
+
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N3;
-import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
-import org.frc5010.common.sensors.gyro.GenericGyro;
 
 public class YAGSLSwervePose extends GenericPose {
   private YAGSLSwerveDrivetrain drivetrain;
 
-  public YAGSLSwervePose(GenericGyro gyro, YAGSLSwerveDrivetrain drivetrain) {
-    super(gyro);
+  public YAGSLSwervePose(YAGSLSwerveDrivetrain drivetrain) {
+    super(null);
     this.drivetrain = drivetrain;
     field2d = drivetrain.getField2d();
   }
@@ -29,6 +29,11 @@ public class YAGSLSwervePose extends GenericPose {
   public void updateVisionMeasurements(
       Pose2d robotPose, double imageCaptureTime, Vector<N3> stdVector) {
     drivetrain.updateVisionMeasurements(robotPose, imageCaptureTime, stdVector);
+  }
+
+  @Override
+  public void updateRobotPoseOnField(Pose2d pose) {
+    field2d.setRobotPose(pose);
   }
 
   @Override

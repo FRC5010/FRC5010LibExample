@@ -7,10 +7,11 @@ package org.frc5010.common.arch;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import org.frc5010.common.subsystems.Color;
 import org.frc5010.robot.TestRobot;
 import org.junit.jupiter.api.Test;
+
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /** Add your docs here. */
 public class GenericRobotTest {
@@ -21,7 +22,7 @@ public class GenericRobotTest {
     assertNotNull(robot);
     assertNotNull(robot.getMechVisual());
     assertEquals(Alliance.Blue, TestRobot.getAlliance());
-    assertEquals(GenericRobot.LogLevel.DEBUG, TestRobot.getLoggingLevel());
+    assertEquals(GenericRobot.LogLevel.COMPETITION, TestRobot.getLoggingLevel());
     assertNotNull(robot.getController("driver"));
     assertNotNull(robot.getController("operator"));
   }
@@ -34,7 +35,6 @@ public class GenericRobotTest {
 
   @Test
   public void testChooseAllianceColor() {
-    TestRobot robot = new TestRobot();
-    assertEquals(Color.ORANGE, robot.chooseAllianceDisplayColor());
+    assertEquals(Color.ORANGE, GenericRobot.chooseAllianceDisplayColor());
   }
 }

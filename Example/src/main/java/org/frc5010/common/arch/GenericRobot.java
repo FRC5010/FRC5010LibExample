@@ -1,6 +1,21 @@
 package org.frc5010.common.arch;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.frc5010.common.config.RobotParser;
+import org.frc5010.common.config.SubsystemParser;
+import org.frc5010.common.constants.GenericDrivetrainConstants;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.subsystems.Color;
+import org.frc5010.common.telemetry.DisplayString;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+import org.frc5010.common.telemetry.WpiDataLogging;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -11,20 +26,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-import org.frc5010.common.config.RobotParser;
-import org.frc5010.common.config.SubsystemParser;
-import org.frc5010.common.constants.GenericDrivetrainConstants;
-import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.subsystems.Color;
-import org.frc5010.common.telemetery.WpiDataLogging;
 
 /** Robots should extend this class as the entry point into using the library */
 public abstract class GenericRobot extends GenericMechanism implements GenericDeviceHandler {
-  /** Selector for autonmous modes */
+  /** Selector for autonomous modes */
   protected SendableChooser<Command> selectableCommand;
   /** The driver controller */
   protected Optional<Controller> driver;
@@ -42,21 +47,33 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   protected RobotParser parser;
   /** Constants that are used to configure the drivetrain */
   protected GenericDrivetrainConstants drivetrainConstants = new GenericDrivetrainConstants();
+  /** The internal pose supplier that is used by the drivetrain */
+  protected Supplier<Pose2d> internalPoseSupplier = () -> new Pose2d();
   /** The pose supplier */
-  protected Supplier<Pose2d> poseSupplier = () -> new Pose2d();
+  protected Supplier<Pose2d> poseSupplier = () -> internalPoseSupplier.get();
+  /** The internal pose supplier that is used by the drivetrain */
+  protected Supplier<Pose2d> internalSimulatedPoseSupplier = () -> new Pose2d();
+  /** The pose supplier */
+  protected Supplier<Pose2d> simulatedPoseSupplier = () -> internalSimulatedPoseSupplier.get();
   /** The subsystem parser */
   public static SubsystemParser subsystemParser;
+  /** Values that can be displayed on the dashboard */
+  protected DisplayValuesHelper displayValues;
 
   /** The log level enums */
   public enum LogLevel {
     /** The debug log level */
     DEBUG,
+    /** The configuration log level */
+    CONFIG,
+    /** The info log level */
+    INFO,
     /** The competition log level */
     COMPETITION
   }
 
   /** The current log level */
-  public static LogLevel logLevel = LogLevel.DEBUG;
+  public static LogLevel logLevel = LogLevel.COMPETITION;
 
   /**
    * Creates a new robot using the provided configuration directory
@@ -64,26 +81,16 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    * @param directory the directory to read from
    */
   public GenericRobot(String directory) {
-    super(directory);
+    super();
     try {
       parser = new RobotParser(directory, this);
-      parser.createRobot(this);
       subsystemParser = new SubsystemParser(directory, this);
+      parser.createRobot(this);
 
       driver = Optional.ofNullable(controllers.get("driver"));
       operator = Optional.ofNullable(controllers.get("operator"));
-      operator.ifPresent(
-          op -> {
-            if (!op.isPluggedIn()) {
-              operator = driver;
-              driver.ifPresent(it -> it.setSingleControllerMode(true));
-            }
-          });
-      DriverStation.silenceJoystickConnectionWarning(true);
-      alliance = determineAllianceColor();
-      values.declare("Alliance", alliance.toString());
 
-      SmartDashboard.putData("Robot Visual", mechVisual);
+      initializeDisplay();
     } catch (Exception e) {
       e.printStackTrace();
       return;
@@ -92,22 +99,31 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   /** Creates a new robot using a programmatic configuration */
   public GenericRobot() {
-    super("Robot");
+    super();
 
     // Setup controllers
     driver = Optional.of(new Controller(Controller.JoystickPorts.ZERO.ordinal()));
     controllers.put("driver", driver.get());
     operator = Optional.of(new Controller(Controller.JoystickPorts.ONE.ordinal()));
     controllers.put("operator", operator.get());
-    if (!operator.get().isPluggedIn()) {
-      operator = driver;
-      driver.get().setSingleControllerMode(true);
-    }
+    initializeDisplay();
+  }
+
+  protected void initializeDisplay() {
+    displayValues = new DisplayValuesHelper(shuffleTab.getTitle(), logPrefix, true, 2);
+    operator.ifPresent(
+      op -> {
+        if (!op.isPluggedIn()) {
+          operator = driver;
+          driver.ifPresent(it -> it.setSingleControllerMode(true));
+        }
+      });
     SmartDashboard.putData("Robot Visual", mechVisual);
 
     DriverStation.silenceJoystickConnectionWarning(true);
     alliance = determineAllianceColor();
-    values.declare("Alliance", alliance.toString());
+    DisplayString allianceDisplay = displayValues.makeDisplayString("Alliance");
+    allianceDisplay.setValue(alliance.toString());
   }
 
   /**
@@ -165,9 +181,11 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   public void configureButtonBindings() {
@@ -194,6 +212,20 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
         shuffleTab.add("Auto Modes", selectableCommand).withSize(2, 1);
       }
     }
+  }
+
+  /**
+   * Adds auto commands to the auto selector
+   * 
+   * @param name    the name of the command
+   * @param command the command to add
+   * @throws IllegalStateException if the auto chooser is not initialized
+   */
+  public void addAutoToChooser(String name, Command command) {
+    if (null == selectableCommand) {
+      throw new IllegalStateException("Auto chooser not initialized. Call buildAutoCommands() first");
+    }
+    selectableCommand.addOption(name, command);
   }
 
   /**
@@ -240,7 +272,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /**
    * Add a controller to the configuration
    *
-   * @param name the name of the controller
+   * @param name       the name of the controller
    * @param controller the controller
    */
   public void addController(String name, Controller controller) {
@@ -260,7 +292,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /**
    * Add a subsystem to the configuration
    *
-   * @param name the name of the subsystem
+   * @param name      the name of the subsystem
    * @param subsystem the subsystem
    */
   public void addSubsystem(String name, GenericSubsystem subsystem) {
@@ -270,7 +302,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /**
    * Add a mechanism to the configuration
    *
-   * @param name the name of the mechanism
+   * @param name      the name of the mechanism
    * @param mechanism the mechanism
    */
   @Override
@@ -300,7 +332,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    * @param poseSupplier the pose supplier
    */
   public void setPoseSupplier(Supplier<Pose2d> poseSupplier) {
-    this.poseSupplier = poseSupplier;
+    this.internalPoseSupplier = poseSupplier;
   }
 
   /**
@@ -310,6 +342,24 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    */
   public Supplier<Pose2d> getPoseSupplier() {
     return poseSupplier;
+  }
+
+  /**
+   * Set the pose supplier
+   *
+   * @param poseSupplier the pose supplier
+   */
+  public void setSimulatedPoseSupplier(Supplier<Pose2d> poseSupplier) {
+    this.internalSimulatedPoseSupplier = poseSupplier;
+  }
+
+  /**
+   * Get the pose supplier
+   *
+   * @return the pose supplier
+   */
+  public Supplier<Pose2d> getSimulatedPoseSupplier() {
+    return simulatedPoseSupplier;
   }
 
   /**
@@ -328,5 +378,15 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    */
   public void setDrivetrainConstants(GenericDrivetrainConstants constants) {
     this.drivetrainConstants = constants;
+  }
+
+  /**
+   * Get the display values helper
+   *
+   * @return the display values helper
+   */
+  @Override
+  public DisplayValuesHelper getDisplayValuesHelper() {
+    return displayValues;
   }
 }

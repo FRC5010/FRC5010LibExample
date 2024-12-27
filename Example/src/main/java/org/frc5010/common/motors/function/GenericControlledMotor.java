@@ -4,16 +4,21 @@
 
 package org.frc5010.common.motors.function;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.units.Units.Volts;
+
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
-import org.frc5010.common.sensors.absolute_encoder.GenericAbsoluteEncoder;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.telemetry.DisplayDouble;
 import org.frc5010.common.telemetry.DisplayString;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+import org.frc5010.common.telemetry.DisplayVoltage;
+
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Add your docs here. */
 public abstract class GenericControlledMotor extends GenericFunctionalMotor
@@ -41,7 +46,7 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   protected DisplayDouble feedForward;
   protected DisplayDouble position;
   protected DisplayDouble velocity;
-  protected DisplayDouble effort;
+  protected DisplayVoltage effort;
   protected DisplayDouble kP;
   protected DisplayDouble kI;
   protected DisplayDouble kD;
@@ -59,29 +64,39 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   protected MotorFeedFwdConstants feedFwd;
   protected GenericEncoder encoder;
 
-  public GenericControlledMotor(MotorController5010 motor, String visualName) {
+  public GenericControlledMotor(MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName);
     encoder = _motor.getMotorEncoder();
     pid = motor.getPIDController5010();
-    kP = new DisplayDouble(0.0, K_P, _visualName);
-    kI = new DisplayDouble(0.0, K_I, _visualName);
-    kD = new DisplayDouble(0.0, K_D, _visualName);
-    kF = new DisplayDouble(0.0, K_F, _visualName);
-    iZone = new DisplayDouble(0.0, I_ZONE, _visualName);
-    minOutput = new DisplayDouble(0.0, MIN_OUTPUT, _visualName);
-    maxOutput = new DisplayDouble(0.0, MAX_OUTPUT, _visualName);
-    reference = new DisplayDouble(0.0, REFERENCE, _visualName);
-    kS = new DisplayDouble(0.0, K_S, _visualName);
-    kV = new DisplayDouble(0.0, K_V, _visualName);
-    kA = new DisplayDouble(0.0, K_A, _visualName);
-    tolerance = new DisplayDouble(0.0, TOLERANCE, _visualName);
-    controlType = new DisplayString(PIDControlType.DUTY_CYCLE.name(), CONTROL_TYPE, _visualName);
-    feedForward = new DisplayDouble(0.0, FEEDFORWARD, _visualName);
-    position = new DisplayDouble(0.0, POSITION, _visualName);
-    velocity = new DisplayDouble(0.0, VELOCITY, _visualName);
-    effort = new DisplayDouble(0.0, EFFORT, _visualName);
+    setDisplayValuesHelper(tab);
   }
 
+  /**
+   * Initializes all the display values for the motor, including PID values, feed
+   * forward, and control type. This function is called by the superclass's
+   * constructor.
+   */
+  @Override
+  protected void initiateDisplayValues() {
+    kP = _displayValuesHelper.makeConfigDouble(K_P);
+    kI = _displayValuesHelper.makeConfigDouble(K_I);
+    kD = _displayValuesHelper.makeConfigDouble(K_D);
+    kF = _displayValuesHelper.makeConfigDouble(K_F);
+    kS = _displayValuesHelper.makeConfigDouble(K_S);
+    kV = _displayValuesHelper.makeConfigDouble(K_V);
+    kA = _displayValuesHelper.makeConfigDouble(K_A);
+    iZone = _displayValuesHelper.makeConfigDouble(I_ZONE);
+    minOutput = _displayValuesHelper.makeConfigDouble(MIN_OUTPUT);
+    maxOutput = _displayValuesHelper.makeConfigDouble(MAX_OUTPUT);
+    reference = _displayValuesHelper.makeDisplayDouble(REFERENCE);
+    tolerance = _displayValuesHelper.makeConfigDouble(TOLERANCE);
+    feedForward = _displayValuesHelper.makeDisplayDouble(FEEDFORWARD);
+    controlType = _displayValuesHelper.makeDisplayString(CONTROL_TYPE);
+    position = _displayValuesHelper.makeDisplayDouble(POSITION);
+    velocity = _displayValuesHelper.makeDisplayDouble(VELOCITY);
+    effort = _displayValuesHelper.makeDisplayVoltage(EFFORT);
+  }
+  
   @Override
   public PIDController5010 getPIDController5010() {
     return pid;
@@ -210,12 +225,13 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
 
   @Override
   public double calculateControlEffort(double current) {
-    double controlEffort = pid.calculateControlEffort(current) + getFeedForward();
+    double controlEffort = pid.calculateControlEffort(current) + getFeedForward().in(Volts);
     if (controlEffort > maxOutput.getValue()) {
       controlEffort = maxOutput.getValue();
     } else if (controlEffort < minOutput.getValue()) {
       controlEffort = minOutput.getValue();
     }
+    effort.setVoltage(controlEffort, Volts);
     return controlEffort;
   }
 
@@ -230,18 +246,18 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
     return feedFwd;
   }
 
-  public double getFeedForward() {
+  public Voltage getFeedForward() {
     double feedforward =
         (null == feedFwd
             ? 0.0
             : pid.getReference() * (feedFwd.getkV() + feedFwd.getkA()) + feedFwd.getkS());
     feedForward.setValue(feedforward);
-    return feedforward;
+    return Volts.of(feedforward);
   }
 
   @Override
-  public void configureAbsoluteControl(GenericAbsoluteEncoder encoder, double min, double max) {
-    pid.configureAbsoluteControl(encoder, min, max);
+  public void configureAbsoluteControl(double offset, boolean inverted, double min, double max) {
+    pid.configureAbsoluteControl(offset, inverted, min, max);
   }
 
   public abstract Command getSysIdCommand(SubsystemBase subsystemBase);

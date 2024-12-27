@@ -19,7 +19,9 @@ import org.frc5010.common.sensors.Controller.Axis;
  * </ul>
  */
 public class DriveteamControllerConfiguration {
+  /** The port number of the controller */
   private int port;
+  /** The axes of the controller */
   private List<DriveteamControllerAxisJson> axes = new ArrayList<>();
 
   /**

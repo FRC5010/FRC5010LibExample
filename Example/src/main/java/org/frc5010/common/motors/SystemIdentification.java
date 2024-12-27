@@ -4,7 +4,6 @@
 
 package org.frc5010.common.motors;
 
-import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -12,29 +11,41 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.MutableMeasure;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import org.frc5010.common.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public class SystemIdentification {
-  private static final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-  private static final MutableMeasure<Angle> m_distance = mutable(Rotations.of(0));
-  private static final MutableMeasure<Velocity<Angle>> m_velocity =
-      mutable(RotationsPerSecond.of(0));
-
-  private static final MutableMeasure<Angle> m_angle_position = mutable(Rotations.of(0));
-  private static final MutableMeasure<Velocity<Angle>> m_anglular_velocity =
-      mutable(RotationsPerSecond.of(0));
+  /**
+   * Tracks the voltage being applied to a motor
+   */
+  private static final MutVoltage m_appliedVoltage = new MutVoltage(0, 0, Volts);
+  /**
+   * Tracks the distance travelled of a position motor
+   */
+  private static final MutAngle m_distance = new MutAngle(0, 0, Rotations);
+  /**
+   * Tracks the velocity of a positional motor
+   */
+  private static final MutAngularVelocity m_velocity = new MutAngularVelocity(0, 9, RotationsPerSecond);
+  /**
+   * Tracks the rotations of an angular motor
+   */
+  private static final MutAngle m_anglePosition = new MutAngle(0, 0, Degrees);
+  /**
+   * Tracks the velocity of an angular motor
+   */
+  private static final MutAngularVelocity m_angVelocity = new MutAngularVelocity(0, 0, DegreesPerSecond);
 
   public static SysIdRoutine rpmSysIdRoutine(
       MotorController5010 motor,
@@ -43,10 +54,12 @@ public class SystemIdentification {
       SubsystemBase subsystemBase) {
 
     return new SysIdRoutine(
-        new Config(Volts.of(1).per(Seconds.of(1)), Volts.of(12), Seconds.of(12.5)),
+        new Config(
+            Volts.of(1).div(Seconds.of(1)),
+            Volts.of(1),
+            Seconds.of(10)),
         new SysIdRoutine.Mechanism(
-            (Measure<Voltage> voltage) ->
-                motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
+            (Voltage voltage) -> motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
             log -> {
               log.motor(motorName)
                   .voltage(
@@ -68,16 +81,15 @@ public class SystemIdentification {
     return new SysIdRoutine(
         new Config(),
         new SysIdRoutine.Mechanism(
-            (Measure<Voltage> voltage) ->
-                motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
+            (Voltage voltage) -> motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
             log -> {
               log.motor(motorName)
                   .voltage(
                       m_appliedVoltage.mut_replace(
                           motor.get() * RobotController.getBatteryVoltage(), Volts))
-                  .angularPosition(m_angle_position.mut_replace(encoder.getPosition(), Degrees))
+                  .angularPosition(m_anglePosition.mut_replace(encoder.getPosition(), Degrees))
                   .angularVelocity(
-                      m_anglular_velocity.mut_replace(encoder.getVelocity(), DegreesPerSecond));
+                      m_angVelocity.mut_replace(encoder.getVelocity(), DegreesPerSecond));
             },
             subsystemBase));
   }

@@ -63,7 +63,7 @@ public class JoystickToSwerve extends Command {
 
     Translation2d inputTranslation = new Translation2d(xInput, yInput);
     double magnitude = inputTranslation.getNorm();
-    Rotation2d angle = inputTranslation.getAngle();
+    Rotation2d angle = 0 != xInput || 0 != yInput ? inputTranslation.getAngle() : new Rotation2d();
 
     double curvedMagnitude = Math.pow(magnitude, 3);
 
@@ -90,12 +90,10 @@ public class JoystickToSwerve extends Command {
 
     if (fieldOrientedDrive.getAsBoolean()) {
       Alliance alliance = allianceSupplier.get();
-      chassisSpeeds =
-          ChassisSpeeds.fromFieldRelativeSpeeds(
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(    
               alliance == Alliance.Red ? -xSpeed : xSpeed,
               alliance == Alliance.Red ? -ySpeed : ySpeed,
-              turnSpeed,
-              correctedRotation);
+              turnSpeed, correctedRotation);
     } else {
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnSpeed);
     }
@@ -105,7 +103,7 @@ public class JoystickToSwerve extends Command {
     // SwerveDrivetrain.m_kinematics.toSwerveModuleStates(chassisSpeeds);
 
     // output each module speed into subsystem
-    swerveDrive.drive(chassisSpeeds);
+    swerveDrive.drive(chassisSpeeds, null);
   }
 
   // Called once the command ends or is interrupted.

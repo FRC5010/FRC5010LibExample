@@ -4,26 +4,36 @@
 
 package org.frc5010.common.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.json.CameraConfigurationJson;
 import org.frc5010.common.config.json.DriveteamControllersJson;
 import org.frc5010.common.config.json.DrivetrainPropertiesJson;
+import org.frc5010.common.config.json.GamePiecesJson;
 import org.frc5010.common.config.json.RobotJson;
 import org.frc5010.common.config.json.VisionPropertiesJson;
 import org.frc5010.common.config.json.YAGSLDrivetrainJson;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
+
 /** RobotParser is used to parse JSON configuration files to build a robot. */
 public class RobotParser {
+  /** JSON classes for the Driveteam controllers */
   private static DriveteamControllersJson controllersJson;
+  /** Map of Driveteam controller configurations */
   private static Map<String, DriveteamControllerConfiguration> controllersMap;
+  /** JSON classes for the cameras */
   private static VisionPropertiesJson visionJson;
+  /** Map of camera configurations */
   private static Map<String, CameraConfigurationJson> camerasMap;
+  /** JSON class for the drivetrain */
   private static Optional<DrivetrainPropertiesJson> driveTrainJson = Optional.empty();
 
   /**

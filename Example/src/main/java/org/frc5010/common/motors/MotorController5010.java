@@ -5,6 +5,7 @@
 package org.frc5010.common.motors;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -39,7 +40,7 @@ public interface MotorController5010 extends MotorController {
   /**
    * Sets the motor as an inverted follower of another motor
    *
-   * @param motor The motor to follow
+   * @param motor    The motor to follow
    * @param inverted Whether the motor should be inverted
    * @return a reference to the motor
    */
@@ -88,10 +89,10 @@ public interface MotorController5010 extends MotorController {
    *
    * @return The motor
    */
-  MotorController getMotor();
+  Object getMotor();
 
   /** Sets the motor to factory default */
-  void factoryDefault();
+  void factoryDefaults();
 
   /**
    * Returns the default SysIdRoutine
@@ -113,5 +114,51 @@ public interface MotorController5010 extends MotorController {
    *
    * @return The maximum RPM
    */
-  public double getMaxRPM();
+  public AngularVelocity getMaxRPM();
+
+  /**
+   * Set the voltage compensation for the swerve module motor.
+   *
+   * @param nominalVoltage Nominal voltage for operation to output to.
+   */
+  public MotorController5010 setVoltageCompensation(double nominalVoltage);
+
+  /**
+   * Clear the sticky faults on the motor controller.
+   */
+  public void clearStickyFaults();
+
+  /**
+   * Set the idle mode.
+   *
+   * @param isBrakeMode Set the brake mode.
+   */
+  public MotorController5010 setMotorBrake(boolean isBrakeMode);
+
+  /**
+   * Save the configurations from flash to EEPROM.
+   */
+  public void burnFlash();
+
+  /**
+   * Get the voltage output of the motor controller.
+   *
+   * @return Voltage output.
+   */
+  public double getVoltage();
+
+  /**
+   * Get the applied dutycycle output.
+   *
+   * @return Applied dutycycle output to the motor.
+   */
+  public double getAppliedOutput();
+
+
+  /**
+   * Get the current output of the motor controller.
+   * 
+   * @return Current output.
+   */
+  public double getOutputCurrent();
 }

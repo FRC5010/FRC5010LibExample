@@ -10,12 +10,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import java.util.Map;
 import org.frc5010.common.motors.function.GenericFunctionalMotor;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
 
-/** Base class for subsystems that provides default logging and network table support */
+/**
+ * Base class for subsystems that provides default logging and network table
+ * support
+ */
 public class GenericSubsystem extends SubsystemBase
     implements WpiHelperInterface, GenericDeviceHandler {
   /** The network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
+  protected final DisplayValuesHelper displayValues;
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
   /** The mechanism simulation */
@@ -26,14 +31,17 @@ public class GenericSubsystem extends SubsystemBase
   /** Creates a new LoggedSubsystem. */
   public GenericSubsystem(Mechanism2d mechanismSimulation) {
     this.mechanismSimulation = mechanismSimulation;
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem() {
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem(String configFile) {
+    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     try {
       GenericRobot.subsystemParser.parseSubsystem(this, configFile);
     } catch (Exception e) {
@@ -64,7 +72,7 @@ public class GenericSubsystem extends SubsystemBase
   /**
    * Add a device to the configuration
    *
-   * @param name the name of the device
+   * @param name   the name of the device
    * @param device the device
    */
   @Override
@@ -94,6 +102,10 @@ public class GenericSubsystem extends SubsystemBase
     values.initSendables(builder, this.getClass().getSimpleName());
   }
 
+  /**
+   * Called every time the scheduler runs while the robot is enabled. Used to
+   * update display values and draw motor graphics.
+   */
   @Override
   public void periodic() {
     devices.values().stream()
@@ -105,6 +117,11 @@ public class GenericSubsystem extends SubsystemBase
             });
   }
 
+  /**
+   * Called every time the scheduler runs while the robot is in simulation mode.
+   * Used to update
+   * simulation models.
+   */
   @Override
   public void simulationPeriodic() {
     devices.values().stream()
@@ -114,5 +131,25 @@ public class GenericSubsystem extends SubsystemBase
                 ((GenericFunctionalMotor) it).simulationUpdate();
               }
             });
+  }
+
+  /**
+   * Get the display values helper associated with the subsystem.
+   *
+   * @return the DisplayValuesHelper instance for managing display values
+   */
+  @Override
+  public DisplayValuesHelper getDisplayValuesHelper() {
+    return displayValues;
+  }
+
+  /**
+   * Sets the display state of the subsystem.
+   *
+   * @param display a boolean indicating whether to enable or disable the display
+   */
+  public void setDisplay(boolean display) {
+    if (display) 
+      displayValues.makeDisplayed();
   }
 }

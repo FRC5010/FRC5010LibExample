@@ -4,7 +4,7 @@
 
 package org.frc5010.common.arch;
 
-import org.frc5010.common.telemetery.WpiDataLogging;
+import org.frc5010.common.telemetry.WpiDataLogging;
 
 /** An interface for logging that can be mixed in classes */
 public interface WpiHelperInterface {

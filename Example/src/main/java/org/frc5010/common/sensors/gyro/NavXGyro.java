@@ -4,24 +4,14 @@
 
 package org.frc5010.common.sensors.gyro;
 
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 
 /** Add your docs here. */
 public class NavXGyro implements GenericGyro {
   AHRS gyro;
 
-  public NavXGyro(SPI.Port kmxp) {
-    gyro = new AHRS(kmxp);
-  }
-
-  public NavXGyro(SerialPort.Port kmxp) {
-    gyro = new AHRS(kmxp);
-  }
-
-  public NavXGyro(I2C.Port kmxp) {
+  public NavXGyro(NavXComType kmxp) {
     gyro = new AHRS(kmxp);
   }
 
