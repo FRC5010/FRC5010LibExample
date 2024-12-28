@@ -17,7 +17,7 @@ import org.photonvision.simulation.VisionSystemSim;
 /** A simulated camera using the PhotonVision library. */
 public class SimulatedCamera extends PhotonVisionPoseCamera {
   /** The vision simulation system */
-  static VisionSystemSim visionSim = new VisionSystemSim("main");
+  public static VisionSystemSim visionSim = new VisionSystemSim("main");
   /** Whether the tags have been loaded */
   static boolean tagsLoaded = false;
 

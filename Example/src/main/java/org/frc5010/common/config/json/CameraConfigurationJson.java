@@ -4,6 +4,8 @@
 
 package org.frc5010.common.config.json;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +77,7 @@ public class CameraConfigurationJson {
   public void configureCamera(GenericRobot robot) {
     GenericCamera camera = null;
     Transform3d robotToCamera =
-        new Transform3d(new Translation3d(x, y, z), new Rotation3d(roll, pitch, yaw));
+        new Transform3d(new Translation3d(x, y, z), new Rotation3d(Degrees.of(roll), Degrees.of(pitch), Degrees.of(yaw)));
     AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem("apriltag");
     if (atSystem == null) {
       atSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);

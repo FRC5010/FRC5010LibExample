@@ -4,13 +4,11 @@
 
 package org.frc5010.common.drive.swerve;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Meter;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
@@ -59,6 +57,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -759,7 +759,9 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   @Override
   public void simulationPeriodic() {
     int count = 0;
-    for (Pose3d note : SimulatedArena.getInstance().getGamePiecesByType("Note")) {
+    List<Pose3d> notes = SimulatedArena.getInstance().getGamePiecesByType("Note");
+    SmartDashboard.putNumber("Notes", notes.size());
+    for (Pose3d note : notes) {
       getField2d().getObject("GP" + count++).setPose(new Pose2d(note.getX(), note.getY(), new Rotation2d()));
     }
   }

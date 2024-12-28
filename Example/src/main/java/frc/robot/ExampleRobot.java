@@ -32,10 +32,10 @@ public class ExampleRobot extends GenericRobot {
 
   @Override
   public void configureButtonBindings(Controller driver, Controller operator) {
-    driver.createXButton().onTrue(exampleSubsystem.setControlMotorReference(() -> 5000))
-        .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
-    driver.createYButton().onTrue(exampleSubsystem.setControlMotorReference(() -> 2000))
-        .onFalse(exampleSubsystem.setControlMotorReference(() -> 0));
+    driver.createYButton().onTrue(exampleSubsystem.setVelocityControlMotorReference(() -> 3500))
+        .onFalse(exampleSubsystem.setVelocityControlMotorReference(() -> 0));
+    driver.createXButton().onTrue(exampleSubsystem.setVelocityControlMotorReference(() -> 2000))
+        .onFalse(exampleSubsystem.setVelocityControlMotorReference(() -> 0));
     driver.createAButton().whileTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
         .whileFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
     driver.createBButton().whileTrue(((YAGSLSwerveDrivetrain)drivetrain).driveToPose(new Pose2d(8, 4, new Rotation2d())));
@@ -43,7 +43,8 @@ public class ExampleRobot extends GenericRobot {
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
-    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> operator.getLeftYAxis()));
+    driver.setRightTrigger(driver.createRightTrigger());
+    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> driver.getRightTrigger()));
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 

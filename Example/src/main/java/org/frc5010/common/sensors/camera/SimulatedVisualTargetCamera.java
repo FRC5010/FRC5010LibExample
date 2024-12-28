@@ -6,10 +6,13 @@ package org.frc5010.common.sensors.camera;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.estimation.TargetModel;
+import org.photonvision.simulation.VisionTargetSim;
 
 /** A simulated camera using the PhotonVision library. */
 public class SimulatedVisualTargetCamera extends SimulatedCamera {
