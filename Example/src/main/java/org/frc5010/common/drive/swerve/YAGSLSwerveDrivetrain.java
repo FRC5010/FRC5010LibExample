@@ -28,7 +28,6 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
 import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.sensors.camera.QuestNav;
 import org.frc5010.common.telemetry.DisplayBoolean;
 import org.ironmaple.simulation.SimulatedArena;
 import org.json.simple.parser.ParseException;
@@ -50,8 +49,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -98,18 +95,12 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   private DoubleSupplier angleSpeedSupplier = null;
   private DisplayBoolean hasIssues;
 
-  private QuestNav questNav;
-
   public YAGSLSwerveDrivetrain(
       Mechanism2d mechVisual,
       GenericDrivetrainConstants constants,
       double kTurningMotorGearRatio,
       String swerveType) {
     super(mechVisual, constants);
-
-    questNav = new QuestNav(new Transform3d(Meter.of(0), Meter.of(0), Meter.of(0.5), new Rotation3d()));
-    questNav.resetPose();
-
     this.maximumSpeed = constants.getkTeleDriveMaxSpeedMetersPerSecond();
 
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
@@ -745,9 +736,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   /** 5010 Code */
   @Override
   public void periodic() {
-    // updateVisionMeasurements(questNav.getRobotPose().toPose2d(),
-    // Timer.getFPGATimestamp(),
-    // VecBuilder.fill(0.01, 0.01, 0.01));
     hasIssues.setValue(hasIssues());
     if (RobotBase.isSimulation() || useGlass) {
       updateGlassWidget();
