@@ -77,7 +77,8 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
   @Override
   public void updateCameraInfo() {
     super.updateCameraInfo();
-    visionSim.update(poseSupplier.get());
-    visionSim.resetRobotPose(poseSupplier.get());
+    Pose2d p = poseSupplier.get();
+    visionSim.update(p);
+    visionSim.resetRobotPose(p);
   }
 }

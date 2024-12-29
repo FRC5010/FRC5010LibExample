@@ -6,7 +6,9 @@ package org.frc5010.common.sensors.camera;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -217,5 +219,29 @@ public class LimeLightCamera extends GenericCamera {
   public void setRobotToCameraOnLL() {
     LimelightHelpers.setCameraPose_RobotSpace(name, robotToCamera.getX(), -robotToCamera.getY(), robotToCamera.getZ(),
     robotToCamera.getRotation().getX(), robotToCamera.getRotation().getY(), robotToCamera.getRotation().getZ());
+  }
+  
+  @Override
+  public double getConfidence() {
+    return 0.0;
+  }
+
+  @Override
+  public boolean isActive() {
+    return hasValidTarget();
+  }
+
+  @Override
+  public Translation3d getPosition() {
+    return getRobotPose().orElse(new Pose3d()).getTranslation();
+  }
+
+  @Override
+  public Rotation3d getRotation() {
+    return getRobotPose().orElse(new Pose3d()).getRotation();
+  }
+
+  public double getCaptureTime() {
+    return getLatency();
   }
 }

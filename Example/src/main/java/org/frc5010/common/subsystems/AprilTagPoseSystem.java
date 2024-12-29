@@ -173,6 +173,16 @@ public class AprilTagPoseSystem extends CameraSystem {
     return VecBuilder.fill(calib, calib, Units.degreesToRadians(stdVectorRadianFactor.getValue() * distance));
   }
 
+  public Vector<N3> getStdConfidenceVector(double confidence) {
+    double calib = confidence;
+    return VecBuilder.fill(calib, calib, calib);
+  }
+
+  @Override
+  public void periodic() {
+    
+  }
+  
   /**
    * Determines if any cameras have a valida target
    *

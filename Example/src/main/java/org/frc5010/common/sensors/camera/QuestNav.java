@@ -6,7 +6,8 @@ package org.frc5010.common.sensors.camera;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import org.frc5010.common.arch.GenericSubsystem;
+import java.util.Optional;
+
 import org.frc5010.common.drive.pose.PoseProvider;
 
 import edu.wpi.first.math.geometry.Pose3d;
@@ -21,10 +22,11 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
-public class QuestNav extends GenericSubsystem implements PoseProvider {
+public class QuestNav implements PoseProvider {
     private boolean initializedPosition = false;
     private String networkTableRoot = "oculus";
     private NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
@@ -45,7 +47,6 @@ public class QuestNav extends GenericSubsystem implements PoseProvider {
     private ChassisSpeeds velocity;
     private Pose3d previousPose;
     private double previousTime;
-    
 
     public enum QuestCommand {
         RESET(1);
@@ -74,7 +75,6 @@ public class QuestNav extends GenericSubsystem implements PoseProvider {
         setupNetworkTables(networkTableRoot);
     }
 
-
     private void setupNetworkTables(String root) {
         networkTable = networkTableInstance.getTable(root);
         miso = networkTable.getIntegerTopic("miso").getEntry(0);
@@ -95,34 +95,48 @@ public class QuestNav extends GenericSubsystem implements PoseProvider {
         return rawPosition.rotateBy(robotToQuest.getRotation());
     }
 
-    public Rotation3d getRawRotation() { 
+    public Rotation3d getRawRotation() {
         float[] euler = eulerAngles.get();
         return new Rotation3d(Degrees.of(euler[2]), Degrees.of(euler[0]), Degrees.of(-euler[1]));
     }
 
-    public Pose3d getRobotPose() {
-        return new Pose3d(getPosition(), getRotation());
+    public Optional<Pose3d> getRobotPose() {
+        if (RobotBase.isReal()) {
+            return Optional.of(new Pose3d(getPosition(), getRotation()));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Translation3d getPosition() {
         return correctWorldAxis(getRawPosition())
-        .plus(robotToQuest.getTranslation()).plus(robotToQuest.getTranslation().times(-1).rotateBy(getRotation()))
-        .plus(initPose.getTranslation());
+                .plus(robotToQuest.getTranslation())
+                .plus(robotToQuest.getTranslation().times(-1).rotateBy(getRotation()))
+                .plus(initPose.getTranslation());
     }
 
     public Rotation3d getRotation() {
-        // TODO: To support weird rotations/mountings of quest, implement world axis rotation
+        // TODO: To support weird rotations/mountings of quest, implement world axis
+        // rotation
         return getRawRotation().plus(initPose.getRotation());
     }
 
     public double getConfidence() {
-        return 0.1;
+        if (RobotBase.isReal()) {
+            return 0.1;
+        } else {
+            return Double.MAX_VALUE;
+        }
+    }
+
+    public double getCaptureTime() {
+        return timestamp.getAsDouble();
     }
 
     public boolean isActive() {
-        if (timestamp.get() == 0.0) {
+        if (timestamp.get() == 0.0 || RobotBase.isSimulation()) {
             return false;
-        } 
+        }
         return initializedPosition;
     }
 
@@ -157,7 +171,7 @@ public class QuestNav extends GenericSubsystem implements PoseProvider {
 
     private void updateVelocity() {
         if (previousPose == null) {
-            previousPose = getRobotPose();
+            previousPose = getRobotPose().get();
             previousTime = timestamp.get();
             return;
         }
@@ -167,12 +181,11 @@ public class QuestNav extends GenericSubsystem implements PoseProvider {
             return;
         }
         velocity = new ChassisSpeeds(
-            (getPosition().getX() - previousPose.getTranslation().getX()) / deltaTime,
-            (getPosition().getY() - previousPose.getTranslation().getY()) / deltaTime,
-            (getRotation().getZ() - previousPose.getRotation().getZ()) / deltaTime
-        );
+                (getPosition().getX() - previousPose.getTranslation().getX()) / deltaTime,
+                (getPosition().getY() - previousPose.getTranslation().getY()) / deltaTime,
+                (getRotation().getZ() - previousPose.getRotation().getZ()) / deltaTime);
         previousTime = currentTime;
-        previousPose = getRobotPose();
+        previousPose = getRobotPose().get();
 
     }
 
@@ -184,12 +197,15 @@ public class QuestNav extends GenericSubsystem implements PoseProvider {
     }
 
     @Override
-    public void periodic() {
-        cleanUpQuestCommand();
-        updateVelocity();
-        
-        ChassisSpeeds velocity = getVelocity();
-        SmartDashboard.putNumberArray("Velocity", new double[] {velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond});
+    public void update() {
+        if (RobotBase.isReal()) {
+            cleanUpQuestCommand();
+            updateVelocity();
+
+            ChassisSpeeds velocity = getVelocity();
+            SmartDashboard.putNumberArray("Velocity", new double[] { velocity.vxMetersPerSecond,
+                    velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond });
+        }
     }
 
 }

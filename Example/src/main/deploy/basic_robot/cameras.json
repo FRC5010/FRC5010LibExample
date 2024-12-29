@@ -2,6 +2,7 @@
   "cameras": [
     "intake.json",
     "localization.json",
-    "shooter.json"
+    "shooter.json",
+    "quest.json"
   ]
 }

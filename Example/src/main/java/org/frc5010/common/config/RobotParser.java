@@ -96,7 +96,7 @@ public class RobotParser {
    */
   public void createRobot(GenericRobot robot) {
     controllersJson.createControllers(robot, controllersMap);
-    visionJson.createCameraSystem(robot, camerasMap);
     driveTrainJson.ifPresent(it -> it.createDriveTrain(robot));
+    visionJson.createCameraSystem(robot, camerasMap);
   }
 }

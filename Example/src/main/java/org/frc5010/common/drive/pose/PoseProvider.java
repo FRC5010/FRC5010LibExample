@@ -4,6 +4,8 @@
 
 package org.frc5010.common.drive.pose;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -16,7 +18,7 @@ public interface PoseProvider {
      * 
      * @return The current pose of the robot.
      */
-    public Pose3d getRobotPose();
+    public Optional<Pose3d> getRobotPose();
 
     /*
      * Returns the confidence of the current pose measurement. Used in order to merge multiple pose measurements. Lower values are better.
@@ -47,6 +49,7 @@ public interface PoseProvider {
      */
     public Rotation3d getRotation();
 
+    public double getCaptureTime();
 
-    
+    public void update();
 }

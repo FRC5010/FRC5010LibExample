@@ -14,7 +14,6 @@ import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,13 +64,11 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
 
   @Override
   public void createDriveTrain(GenericRobot robot) {
-    AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem(CameraConfigurationJson.APRIL_TAG);
     YAGSLSwerveDrivetrain drivetrain = new YAGSLSwerveDrivetrain(
         new Mechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
         robot.getDrivetrainConstants(),
         turningMotorGearRatio,
-        directory,
-        atSystem);
+        directory);
     robot.addSubsystem(
         ConfigConstants.DRIVETRAIN, drivetrain);
     robot.setPoseSupplier(() -> drivetrain.getPoseEstimator().getCurrentPose());

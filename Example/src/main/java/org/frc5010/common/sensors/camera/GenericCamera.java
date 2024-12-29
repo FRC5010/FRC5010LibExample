@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.frc5010.common.drive.pose.PoseProvider;
 import org.frc5010.common.vision.VisionConstants;
 
 /** A generic camera interface */
-public abstract class GenericCamera {
+public abstract class GenericCamera implements PoseProvider {
   /** The list of updaters that will be called every time the camera is updated */
   protected List<Runnable> updaters = new ArrayList<>();
   /** The robot-to-camera transform */

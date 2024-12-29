@@ -4,16 +4,16 @@
 
 package org.frc5010.common.config.json;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
-import org.frc5010.common.vision.AprilTags;
+
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** JSON class with an array of cameras to configure */
 public class VisionPropertiesJson {
@@ -21,26 +21,20 @@ public class VisionPropertiesJson {
   public String[] cameras;
 
   /**
-   * Creates cameras for a given robot using the provided map of camera configurations.
+   * Creates cameras for a given robot using the provided map of camera
+   * configurations.
    *
    * @param robot the robot to add the cameras to
-   * @param map a map of camera configurations, where the key is the camera name and the value is
-   *     the configuration object
+   * @param map   a map of camera configurations, where the key is the camera name
+   *              and the value is
+   *              the configuration object
    */
   public void createCameraSystem(GenericRobot robot, Map<String, CameraConfigurationJson> map) {
-    if (map.isEmpty()) {
-      AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem("apriltag");
-      if (atSystem == null) {
-        atSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
-        robot.addSubsystem("apriltag", atSystem);
-      }
-    } else {
-      map.keySet()
-          .forEach(
-              it -> {
-                map.get(it).configureCamera(robot);
-              });
-    }
+    map.keySet()
+        .forEach(
+            it -> {
+              map.get(it).configureCamera(robot);
+            });
   }
 
   /**
@@ -55,8 +49,7 @@ public class VisionPropertiesJson {
     for (int i = 0; i < cameras.length; i++) {
       File cameraFile = new File(directory, "cameras/" + cameras[i]);
       assert cameraFile.exists();
-      CameraConfigurationJson camera =
-          new ObjectMapper().readValue(cameraFile, CameraConfigurationJson.class);
+      CameraConfigurationJson camera = new ObjectMapper().readValue(cameraFile, CameraConfigurationJson.class);
       camerasMap.put(camera.name, camera);
     }
     return camerasMap;

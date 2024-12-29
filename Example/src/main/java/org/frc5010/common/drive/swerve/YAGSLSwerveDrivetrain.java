@@ -4,6 +4,9 @@
 
 package org.frc5010.common.drive.swerve;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meter;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +29,6 @@ import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.YAGSLSwervePose;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.sensors.camera.QuestNav;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.telemetry.DisplayBoolean;
 import org.ironmaple.simulation.SimulatedArena;
 import org.json.simple.parser.ParseException;
@@ -57,8 +59,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -104,8 +104,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
       Mechanism2d mechVisual,
       GenericDrivetrainConstants constants,
       double kTurningMotorGearRatio,
-      String swerveType,
-      AprilTagPoseSystem visionSystem) {
+      String swerveType) {
     super(mechVisual, constants);
 
     questNav = new QuestNav(new Transform3d(Meter.of(0), Meter.of(0), Meter.of(0.5), new Rotation3d()));
@@ -182,7 +181,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
               });
     }
 
-    setDrivetrainPoseEstimator(new DrivePoseEstimator(new YAGSLSwervePose(this), visionSystem));
+    setDrivetrainPoseEstimator(new DrivePoseEstimator(new YAGSLSwervePose(this)));
 
     SmartDashboard.putString(
         "YAGSL Alliance", GenericRobot.chooseAllianceDisplayColor().toString());
@@ -749,7 +748,6 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // updateVisionMeasurements(questNav.getRobotPose().toPose2d(),
     // Timer.getFPGATimestamp(),
     // VecBuilder.fill(0.01, 0.01, 0.01));
-    // poseEstimator.update();
     hasIssues.setValue(hasIssues());
     if (RobotBase.isSimulation() || useGlass) {
       updateGlassWidget();

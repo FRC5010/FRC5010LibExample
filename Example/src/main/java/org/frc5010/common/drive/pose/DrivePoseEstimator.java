@@ -4,6 +4,14 @@
 
 package org.frc5010.common.drive.pose;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.frc5010.common.vision.AprilTags;
+
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -13,14 +21,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
-import org.frc5010.common.vision.AprilTags;
 
 /** A class to handle estimating the pose of the robot */
-public class DrivePoseEstimator {
+public class DrivePoseEstimator extends GenericSubsystem {
   /** The pose tracker */
   protected GenericPose poseTracker;
   /** The vision system used to get the robot pose */
@@ -31,6 +34,10 @@ public class DrivePoseEstimator {
   private List<Pose2d> tagPoses = new ArrayList<>();
   /** Whether to disable the vision update */
   private boolean disableVisionUpdate = false;
+    /** Whether to disable the vision update command */
+    private boolean disableVisionUpdateCommand = false;
+  /** List of PoseProviders */
+  private List<PoseProvider> poseProviders = new ArrayList<>();
 
   /**
    * Build a DrivePoseEstimator
@@ -42,6 +49,8 @@ public class DrivePoseEstimator {
     this.poseTracker = poseTracker;
     this.vision = vision;
     field2d = poseTracker.getField();
+    //poseProviders.addAll(vision.getPoseProviders());
+    disableVisionUpdate = true;
 
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
@@ -59,7 +68,43 @@ public class DrivePoseEstimator {
       }
     }
   }
+    /**
+   * Build a DrivePoseEstimator
+   *
+   * @param poseTracker the pose tracker
+   * @param vision the vision system
+   */
+  public DrivePoseEstimator(GenericPose poseTracker) {
+    this.poseTracker = poseTracker;
+    field2d = poseTracker.getField();
+    disableVisionUpdate = true;
 
+    ShuffleboardTab tab = Shuffleboard.getTab("Pose");
+    tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
+    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray()).withPosition(11, 1);
+
+    tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees()))
+        .withPosition(11, 2);
+    tab.add("Pose Field", field2d).withPosition(0, 0).withSize(11, 5);
+
+    for (AprilTag at : AprilTags.aprilTagFieldLayout.getTags()) {
+      if (at.pose.getX() != 0 && at.pose.getY() != 0 && at.pose.getZ() != 0) {
+        field2d.getObject("Field Tag " + at.ID).setPose(at.pose.toPose2d());
+        AprilTags.poseToID.put(at.pose.toPose2d(), at.ID);
+        tagPoses.add(at.pose.toPose2d());
+      }
+    }
+  }
+
+  /**
+   * Register a PoseProvider to the list of pose providers.
+   *
+   * @param provider the PoseProvider to be registered
+   */
+  public void registerPoseProvider(PoseProvider provider) {
+    poseProviders.add(provider);
+  }
+  
   /**
    * Set whether to disable the vision update
    *
@@ -142,13 +187,50 @@ public class DrivePoseEstimator {
           double imageCaptureTime = vision.getLatency(camera);
           visionUpdated = true;
           SmartDashboard.putBoolean(camera, true);
-          poseTracker.updateVisionMeasurements(
+          if (4 > poseDistance) {
+            poseTracker.updateVisionMeasurements(
               robotPose.get().toPose2d(), imageCaptureTime, vision.getStdVector(poseDistance));
+          }
         }
       }
       SmartDashboard.putBoolean("April Tag Pose Updating", visionUpdated);
     }
     poseTracker.updateRobotPoseOnField(getCurrentPose());
+  }
+
+  @Override
+  public void periodic() {
+    poseProviders.forEach(it -> it.update());
+    updatePoseFromProviders();
+  }
+
+  /**
+   * Creates a command that updates the pose estimator using the pose providers.
+   *
+   * <p>This command will update the local measurements of the pose tracker and check if vision
+   * update is disabled. If vision update is not disabled, it will iterate over each pose provider
+   * and update the vision measurements of the pose tracker if a robot pose is present. Finally, it
+   * will update a boolean value on the SmartDashboard to indicate if any vision updates were made.
+   *
+   * @return the command that updates the pose estimator
+   */
+  protected void updatePoseFromProviders() {
+      poseTracker.updateLocalMeasurements();
+      boolean visionUpdated = false;
+      if (!disableVisionUpdateCommand) {
+        for (PoseProvider provider: poseProviders) {
+          if (provider.isActive()) {
+            Optional<Pose3d> robotPose = provider.getRobotPose();
+            if (robotPose.isPresent()) {
+              double confidence = provider.getConfidence();
+              visionUpdated = true;
+              poseTracker.updateVisionMeasurements(
+                robotPose.get().toPose2d(), provider.getCaptureTime(), vision.getStdConfidenceVector(confidence));
+            }
+          }
+        }
+      }  
+      SmartDashboard.putBoolean("April Tag Pose Updating", visionUpdated);
   }
 
   /**
@@ -201,5 +283,8 @@ public class DrivePoseEstimator {
         vision.getFieldLayout().getTagPose(getClosestTagToRobot()).orElse(getCurrentPose3d());
     field2d.getObject("Closest Tag").setPose(targetPose.toPose2d());
     return targetPose;
+  }
+  public void addAprilTagPoseSystem(AprilTagPoseSystem atSystem) {
+    vision = atSystem;
   }
 }

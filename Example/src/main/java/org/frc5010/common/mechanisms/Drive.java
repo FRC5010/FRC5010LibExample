@@ -153,8 +153,7 @@ public class Drive extends GenericMechanism {
             ((SwerveConstants) driveConstants)
                 .getSwerveModuleConstants()
                 .getkTurningMotorGearRatio(),
-            driveTrainFolder,
-            vision);
+            driveTrainFolder);
   }
 
   private void initializeYAGSLMK4SwerveDrive() {
@@ -165,8 +164,7 @@ public class Drive extends GenericMechanism {
             ((SwerveConstants) driveConstants)
                 .getSwerveModuleConstants()
                 .getkTurningMotorGearRatio(),
-            "swervemk4",
-            vision);
+            "swervemk4");
   }
 
   private void initializeYAGSLThriftySwerveDrive() {
@@ -177,8 +175,7 @@ public class Drive extends GenericMechanism {
             ((SwerveConstants) driveConstants)
                 .getSwerveModuleConstants()
                 .getkTurningMotorGearRatio(),
-            "swervethrifty",
-            vision);
+            "swervethrifty");
   }
 
   /**
