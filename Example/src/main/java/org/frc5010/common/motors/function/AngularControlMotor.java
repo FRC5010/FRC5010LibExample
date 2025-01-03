@@ -149,9 +149,9 @@ public class AngularControlMotor extends GenericControlledMotor {
             kG.getValue(),
             getMotorFeedFwd().getkV(),
             getMotorFeedFwd().getkA());
-    Voltage ff =
+    Voltage ff = Volts.of(
         pivotFeedforward.calculate(
-            Radians.of(getPivotPosition()), RadiansPerSecond.of(0));
+            Degrees.of(getPivotPosition()).in(Radians), 0.0));
     feedForward.setValue(ff.in(Volts));
     return ff;
   }
