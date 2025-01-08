@@ -63,6 +63,7 @@
       "/Shuffleboard/BabySwerve/Auto Modes": "String Chooser",
       "/Shuffleboard/ExampleRobot/Auto Modes": "String Chooser",
       "/Shuffleboard/Pose/Pose Field": "Field2d",
+      "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/Field": "Field2d",
