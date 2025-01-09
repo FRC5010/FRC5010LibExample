@@ -143,13 +143,13 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
 
     // Disables cosine compensation for simulations since it causes discrepancies
     // not seen in real life.
-    swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation);
+    swerveDrive.setCosineCompensator(false);//!SwerveDriveTelemetry.isSimulation);
     // Correct for skew that gets worse as angular velocity increases. Start with a
     // coefficient of 0.1.
-    swerveDrive.setAngularVelocityCompensation(true,
+    swerveDrive.setAngularVelocityCompensation(false,
         true,
         0.1);
-    swerveDrive.setModuleEncoderAutoSynchronize(true, 3);
+    swerveDrive.setModuleEncoderAutoSynchronize(false, 3);
     // Enable if you want to resynchronize your absolute encoders and motor encoders
     // periodically when they are not moving.
     // swerveDrive.pushOffsetsToEncoders();
@@ -157,20 +157,20 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     // offsets onto it. Throws warning if not possible
 
     /** 5010 Code */
-    SwerveConstants swerveConstants = (SwerveConstants) constants;
-    if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {
-      Map<String, MotorFeedFwdConstants> motorFFMap = swerveConstants.getSwerveModuleConstants().getDriveFeedForward();
-      Map<String, SwerveModule> swerveModuleMap = swerveDrive.getModuleMap();
-      motorFFMap.keySet().stream()
-          .forEach(
-              module -> {
-                MotorFeedFwdConstants ff = motorFFMap.get(module);
-                double kS = ff.getkS();
-                double kV = ff.getkV();
-                double kA = ff.getkA();
-                swerveModuleMap.get(module).setFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
-              });
-    }
+    // SwerveConstants swerveConstants = (SwerveConstants) constants;
+    // if (swerveConstants.getSwerveModuleConstants().getDriveFeedForward().size() > 0) {
+    //   Map<String, MotorFeedFwdConstants> motorFFMap = swerveConstants.getSwerveModuleConstants().getDriveFeedForward();
+    //   Map<String, SwerveModule> swerveModuleMap = swerveDrive.getModuleMap();
+    //   motorFFMap.keySet().stream()
+    //       .forEach(
+    //           module -> {
+    //             MotorFeedFwdConstants ff = motorFFMap.get(module);
+    //             double kS = ff.getkS();
+    //             double kV = ff.getkV();
+    //             double kA = ff.getkA();
+    //             swerveModuleMap.get(module).setFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+    //           });
+    // }
 
     setDrivetrainPoseEstimator(new DrivePoseEstimator(new YAGSLSwervePose(this)));
 

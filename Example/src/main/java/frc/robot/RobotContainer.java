@@ -15,7 +15,7 @@ public class RobotContainer implements WpiHelperInterface {
   private GenericRobot robot;
 
   public RobotContainer() {
-    robot = new Kitbot("kitbot");
+    robot = new Kitbot("Kitbot");
     constants = new Constants();
 
     initAutoCommands();
