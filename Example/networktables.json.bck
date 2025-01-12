@@ -226,7 +226,7 @@
   {
     "name": "/Shuffleboard/ExampleSubsystem/velocity_motor/Reference",
     "type": "double",
-    "value": -1000.0,
+    "value": -0.0,
     "properties": {
       "persistent": true
     }
@@ -242,7 +242,7 @@
   {
     "name": "/Shuffleboard/ExampleSubsystem/velocity_motor/FeedForward",
     "type": "double",
-    "value": -99.9,
+    "value": 0.1,
     "properties": {
       "persistent": true
     }

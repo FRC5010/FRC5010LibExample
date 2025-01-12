@@ -587,7 +587,7 @@
           ]
         },
         "Robot": {
-          "image": ".\\pictures\\spitfire.png",
+          "image": ".\\pictures\\robot.png",
           "length": 0.8669999837875366,
           "width": 0.8669999837875366
         },
