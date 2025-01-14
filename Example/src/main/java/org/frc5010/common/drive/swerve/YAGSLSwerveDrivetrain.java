@@ -132,7 +132,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     try {
       File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), swerveType);
       swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed,
-          new Pose2d(new Translation2d(Meter.of(1),
+          new Pose2d(new Translation2d(Meter.of(7.2),
               Meter.of(4)),
               Rotation2d.fromDegrees(0)));
     } catch (Exception e) {
