@@ -1,5 +1,10 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
@@ -11,6 +16,7 @@ import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.function.AngularControlMotor;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.motors.function.VelocityControlMotor;
+import org.frc5010.common.motors.function.VerticalPositionControlMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
@@ -24,8 +30,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +40,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     protected PercentControlMotor motor;
     protected VelocityControlMotor controlledMotor;
     protected AngularControlMotor angularMotor;
+    protected VerticalPositionControlMotor verticalMotor;
     protected final IntakeSimulation intakeSimulation;
     protected NoteOnFly noteOnFly;
     protected int scoredNotes = 0;
@@ -46,7 +51,8 @@ public class ExampleSubsystem extends GenericSubsystem {
         this.motor = (PercentControlMotor) devices.get("percent_motor");
         this.controlledMotor = (VelocityControlMotor) devices.get("velocity_motor");
         this.angularMotor = angularControlledMotor();
-        intakeSimulation = IntakeSimulation.InTheFrameIntake("Note",
+        verticalMotor = verticalControlledMotor();
+        intakeSimulation = IntakeSimulation.InTheFrameIntake("Coral",
                 YAGSLSwerveDrivetrain.getSwerveDrive().getMapleSimDrive().get(), Inches.of(24.25), IntakeSide.FRONT, 1);
     }
 
@@ -63,6 +69,20 @@ public class ExampleSubsystem extends GenericSubsystem {
         angularMotor.setIZone(3);
         angularMotor.setOutputRange(-12, 12);
         return angularMotor;
+    }
+
+    public VerticalPositionControlMotor verticalControlledMotor() {
+        VerticalPositionControlMotor verticalMotor = new VerticalPositionControlMotor(MotorFactory.NEO(14), "vertical",
+                getDisplayValuesHelper())
+                .setupSimulatedMotor(5, Kilograms.of(20), Meters.of(0.05), Meters.of(0), 
+                Meters.of(2), Meters.of(0), Meters.of(0.5),1.0, 0.1)
+                .setVisualizer(mechanismSimulation, new Pose3d(0.75, 0, 0.25, new Rotation3d()));
+
+        verticalMotor.setValues(new GenericPID(0.01, 0.000025, 0.003));
+        verticalMotor.setMotorFeedFwd(new MotorFeedFwdConstants(0.0, 0.01, 0.0, false));
+        verticalMotor.setIZone(3);
+        verticalMotor.setOutputRange(-12, 12);
+        return verticalMotor;
     }
 
     public Command getDefaultCommand(DoubleSupplier speed) {
@@ -158,11 +178,13 @@ public class ExampleSubsystem extends GenericSubsystem {
     public void periodic() {
         super.periodic();
         angularMotor.draw();
+        verticalMotor.draw();
     }
 
     @Override
     public void simulationPeriodic() {
         super.simulationPeriodic();
         angularMotor.simulationUpdate();
+        verticalMotor.simulationUpdate();
     }
 }
