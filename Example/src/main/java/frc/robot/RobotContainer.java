@@ -19,7 +19,8 @@ public class RobotContainer implements WpiHelperInterface {
     constants = new Constants();
 
     //robot = new BabySwerve("baby_swerve");
-    robot = new ExampleRobot("basic_robot");
+    //robot = new ExampleRobot("basic_robot");
+    robot = new ControlsBoard("controls_board");
 
     initAutoCommands();
     configureButtonBindings();
