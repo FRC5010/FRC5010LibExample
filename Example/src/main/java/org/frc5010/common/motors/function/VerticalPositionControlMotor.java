@@ -47,7 +47,7 @@ public class VerticalPositionControlMotor extends GenericControlledMotor {
 
     public VerticalPositionControlMotor(MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
         super(motor, visualName, tab);
-        kG = new DisplayDouble(0.0, K_G, visualName);
+        kG = _displayValuesHelper.makeDisplayDouble(K_G);
         setControlType(PIDControlType.POSITION);
     }
 

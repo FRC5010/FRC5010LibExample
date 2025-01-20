@@ -51,13 +51,13 @@ public class ExampleSubsystem extends GenericSubsystem {
         this.motor = (PercentControlMotor) devices.get("percent_motor");
         this.controlledMotor = (VelocityControlMotor) devices.get("velocity_motor");
         this.angularMotor = angularControlledMotor();
-        verticalMotor = verticalControlledMotor();
+        //verticalMotor = verticalControlledMotor();
         intakeSimulation = IntakeSimulation.InTheFrameIntake("Coral",
                 YAGSLSwerveDrivetrain.getSwerveDrive().getMapleSimDrive().get(), Inches.of(24.25), IntakeSide.FRONT, 1);
     }
 
     public AngularControlMotor angularControlledMotor() {
-        AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.NEO(13), "angular",
+        AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.Neo(13), "angular",
                 getDisplayValuesHelper())
                 .setupSimulatedMotor((5.0 * 68.0 / 24.0) * (80.0 / 24.0), Units.lbsToKilograms(22),
                         Inches.of(19), Degrees.of(0), Degrees.of(360),
@@ -72,7 +72,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     }
 
     public VerticalPositionControlMotor verticalControlledMotor() {
-        VerticalPositionControlMotor verticalMotor = new VerticalPositionControlMotor(MotorFactory.NEO(14), "vertical",
+        VerticalPositionControlMotor verticalMotor = new VerticalPositionControlMotor(MotorFactory.Neo(16), "vertical",
                 getDisplayValuesHelper())
                 .setupSimulatedMotor(5, Kilograms.of(20), Meters.of(0.05), Meters.of(0), 
                 Meters.of(2), Meters.of(0), Meters.of(0.5),1.0, 0.1)
@@ -178,13 +178,13 @@ public class ExampleSubsystem extends GenericSubsystem {
     public void periodic() {
         super.periodic();
         angularMotor.draw();
-        verticalMotor.draw();
+//        verticalMotor.draw();
     }
 
     @Override
     public void simulationPeriodic() {
         super.simulationPeriodic();
         angularMotor.simulationUpdate();
-        verticalMotor.simulationUpdate();
+  //      verticalMotor.simulationUpdate();
     }
 }
