@@ -31,7 +31,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -112,20 +111,21 @@ public class ExampleSubsystem extends GenericSubsystem {
                 controlledMotor.setReference(speed);
                 if (RobotBase.isSimulation()) {
                     Pose2d worldPose = YAGSLSwerveDrivetrain.getSwerveDrive().getPose();
-                    noteOnFly = new NoteOnFly(
-                            worldPose.getTranslation(),
-                            controlledMotor.getRobotToMotor().getTranslation().toTranslation2d(),
-                            YAGSLSwerveDrivetrain.getSwerveDrive().getFieldVelocity(),
-                            worldPose.getRotation().rotateBy(rotation),
-                            0.45,
-                            speed / 6000 * 20,
-                            Math.toRadians(55));
-                    noteOnFly.enableBecomeNoteOnFieldAfterTouchGround();
-                    noteOnFly.asSpeakerShotNote(() -> {
-                        if (noteOnFly.hasHitTarget()) {
-                            SmartDashboard.putNumber("Notes Speaker", ++scoredNotes);
-                        }
-                    });
+                    
+                    // noteOnFly = new NoteOnFly(
+                    //         worldPose.getTranslation(),
+                    //         controlledMotor.getRobotToMotor().getTranslation().toTranslation2d(),
+                    //         YAGSLSwerveDrivetrain.getSwerveDrive().getFieldVelocity(),
+                    //         worldPose.getRotation().rotateBy(rotation),
+                    //         0.45,
+                    //         speed / 6000 * 20,
+                    //         Math.toRadians(55));
+                    // noteOnFly.enableBecomeNoteOnFieldAfterTouchGround();
+                    // noteOnFly.asSpeakerShotNote(() -> {
+                    //     if (noteOnFly.hasHitTarget()) {
+                    //         SmartDashboard.putNumber("Notes Speaker", ++scoredNotes);
+                    //     }
+                    // });
                     SimulatedArena.getInstance().addGamePieceProjectile(noteOnFly);
                 }
             } else if (speed < 3000 && speed > 1000 && noteIsInsideIntake().getAsBoolean()
@@ -133,21 +133,21 @@ public class ExampleSubsystem extends GenericSubsystem {
                 controlledMotor.setReference(speed);
                 if (RobotBase.isSimulation()) {
                     Pose2d worldPose = YAGSLSwerveDrivetrain.getSwerveDrive().getPose();
-                    noteOnFly = new NoteOnFly(
-                            worldPose.getTranslation(),
-                            controlledMotor.getRobotToMotor().getTranslation().toTranslation2d(),
-                            YAGSLSwerveDrivetrain.getSwerveDrive().getFieldVelocity(),
-                            worldPose.getRotation().rotateBy(rotation),
-                            0.45,
-                            speed / 6000 * 20,
-                            Math.toRadians(55));
-                    noteOnFly.enableBecomeNoteOnFieldAfterTouchGround();
-                    noteOnFly.asAmpShotNote(() -> {
-                        if (noteOnFly.hasHitTarget()) {
-                            SmartDashboard.putNumber("Notes Amp", ++scoredNotes);
-                        }
-                    });
-                    SimulatedArena.getInstance().addGamePieceProjectile(noteOnFly);
+                    // noteOnFly = new NoteOnFly(
+                    //         worldPose.getTranslation(),
+                    //         controlledMotor.getRobotToMotor().getTranslation().toTranslation2d(),
+                    //         YAGSLSwerveDrivetrain.getSwerveDrive().getFieldVelocity(),
+                    //         worldPose.getRotation().rotateBy(rotation),
+                    //         Meters.of(0.45),
+                    //         speed / 6000 * 20,
+                    //         Math.toRadians(55));
+                    // noteOnFly.enableBecomeNoteOnFieldAfterTouchGround();
+                    // noteOnFly.asAmpShotNote(() -> {
+                    //     if (noteOnFly.hasHitTarget()) {
+                    //         SmartDashboard.putNumber("Notes Amp", ++scoredNotes);
+                    //     }
+                    // });
+                    // SimulatedArena.getInstance().addGamePieceProjectile(noteOnFly);
                 }
             } else {
                 controlledMotor.setReference(speed);

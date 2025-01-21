@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -91,8 +92,12 @@ public class QuestNav implements PoseProvider {
         return new Translation3d(position.get()[2], -position.get()[0], position.get()[2]);
     }
 
+    private Translation3d rotateAxes(Translation3d raw, Rotation3d rotation) {
+        return raw.rotateBy(rotation);
+    }
+
     private Translation3d correctWorldAxis(Translation3d rawPosition) {
-        return rawPosition.rotateBy(robotToQuest.getRotation());
+        return rotateAxes(rawPosition, robotToQuest.getRotation());
     }
 
     public Rotation3d getRawRotation() {
@@ -109,9 +114,11 @@ public class QuestNav implements PoseProvider {
     }
 
     public Translation3d getPosition() {
-        return correctWorldAxis(getRawPosition())
+        return rotateAxes(correctWorldAxis(getRawPosition())
                 .plus(robotToQuest.getTranslation())
-                .plus(robotToQuest.getTranslation().times(-1).rotateBy(getRotation()))
+                .plus(robotToQuest.getTranslation().times(-1).rotateBy(getRawRotation())),
+                initPose.getRotation().times(-1))
+
                 .plus(initPose.getTranslation());
     }
 
@@ -123,7 +130,7 @@ public class QuestNav implements PoseProvider {
 
     public double getConfidence() {
         if (RobotBase.isReal()) {
-            return 0.1;
+            return 0.000000000000000000000000000000000000000000000000000000000000000000000000001;
         } else {
             return Double.MAX_VALUE;
         }
@@ -135,7 +142,7 @@ public class QuestNav implements PoseProvider {
 
     public boolean isActive() {
         if (timestamp.get() == 0.0 || RobotBase.isSimulation()) {
-            return false;
+        return false;
         }
         return initializedPosition;
     }
@@ -167,6 +174,10 @@ public class QuestNav implements PoseProvider {
         if (miso.get() == 99) {
             mosi.set(0);
         }
+    }
+
+    public int fiducialId() {
+        return 0;
     }
 
     private void updateVelocity() {

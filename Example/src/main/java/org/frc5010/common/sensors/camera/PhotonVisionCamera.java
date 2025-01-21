@@ -120,6 +120,11 @@ public class PhotonVisionCamera extends GenericCamera {
     return Optional.empty();
   }
 
+  @Override
+  public int fiducialId() {
+    return target.map(t -> t.fiducialId).orElse(0);
+  }
+
   /**
    * Get the confidence of the target detection
    *
@@ -168,4 +173,6 @@ public class PhotonVisionCamera extends GenericCamera {
   public double getCaptureTime() {
     return getLatency();
   }
+
+  public void resetPose(Pose3d init) {}
 }

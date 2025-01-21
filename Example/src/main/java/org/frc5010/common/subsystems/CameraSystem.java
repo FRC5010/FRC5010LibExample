@@ -65,6 +65,7 @@ public abstract class CameraSystem extends GenericSubsystem {
     }
   }
 
+
   /**
    * This is an abstract method that needs to be implemented by any subclass of CameraSystem. It is
    * responsible for updating the camera information.

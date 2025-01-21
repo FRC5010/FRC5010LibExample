@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.sensors.camera.QuestNav;
 import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.vision.AprilTags;
 
@@ -130,6 +131,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
    * @return the current pose
    */
   public Pose2d getCurrentPose() {
+    //return poseProviders.get(0).getRobotPose().get().toPose2d();
     return poseTracker.getCurrentPose();
   }
 
@@ -204,6 +206,12 @@ public class DrivePoseEstimator extends GenericSubsystem {
     updatePoseFromProviders();
   }
 
+  private void resetProviderPoses(Pose2d pose) {
+    for (PoseProvider provider : poseProviders) {
+      provider.resetPose(new Pose3d(pose));
+    }
+  }
+
   /**
    * Creates a command that updates the pose estimator using the pose providers.
    *
@@ -223,7 +231,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
             Optional<Pose3d> robotPose = provider.getRobotPose();
             if (robotPose.isPresent()) {
               double confidence = provider.getConfidence();
-              visionUpdated = true;
+              visionUpdated |= provider.fiducialId() != 0;
               poseTracker.updateVisionMeasurements(
                 robotPose.get().toPose2d(), provider.getCaptureTime(), vision.getStdConfidenceVector(confidence));
             }
@@ -242,6 +250,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
    */
   public void resetToPose(Pose2d pose) {
     poseTracker.resetToPose(pose);
+    resetProviderPoses(pose);
   }
 
   /**

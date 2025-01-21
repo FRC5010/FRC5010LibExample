@@ -72,6 +72,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -200,8 +201,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   /** Setup AutoBuilder for PathPlanner. */
   public void setupPathPlanner() {
     AutoBuilder.configure(
-        this::getPose, // Robot pose supplier
-        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting
+        poseEstimator::getCurrentPose, // Robot pose supplier
+        poseEstimator::resetToPose, // Method to reset odometry (will be called if your auto has a starting
         // pose)
         this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
@@ -331,8 +332,8 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
   public Command sysIdDriveMotorCommand() {
     return SwerveDriveTest.generateSysIdCommand(
         SwerveDriveTest.setDriveSysIdRoutine(
-            new Config(),
-            this, swerveDrive, 12),
+            new SysIdRoutine.Config(),
+            this, swerveDrive, 12, true),
         3.0, 5.0, 3.0);
   }
 
@@ -627,6 +628,11 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
     }
   }
 
+  @Override
+  public void resetOrientation() {
+    poseEstimator.resetToPose(poseEstimator.getCurrentPose());
+  }
+
   /**
    * Sets the drive motors to brake/coast mode.
    *
@@ -763,6 +769,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDrivetrain {
         new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
     }
   }
+
 
   public void setAngleSupplier(DoubleSupplier angDoubleSupplier) {
     angleSpeedSupplier = angDoubleSupplier;
