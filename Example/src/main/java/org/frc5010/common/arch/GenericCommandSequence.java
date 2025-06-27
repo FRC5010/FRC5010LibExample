@@ -20,9 +20,10 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
   
 
   private final List<Command> m_commands = new ArrayList<>();
-  private int m_currentCommandIndex = -1;
+  protected int m_currentCommandIndex = -1;
   private boolean m_runWhenDisabled = true;
   private InterruptionBehavior m_interruptBehavior = InterruptionBehavior.kCancelIncoming;
+  private final String CURRENT_SEQUENCE_NT_NAME = "Current Sequence";
 
   /**
    * Creates a new GenericCommandSequence. The given commands will be run sequentially, with the
@@ -33,19 +34,28 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
   @SuppressWarnings("this-escape")
   public GenericCommandSequence(String log, Command... commands) {
     this.logPrefix = log;
+    values.declare(CURRENT_SEQUENCE_NT_NAME, "None");
     addCommands(commands);
+    WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericCommandSequence() {
     // Use addRequirements() here to declare subsystem dependencies.
     this.logPrefix = this.getClass().getSimpleName();
+    values.declare(CURRENT_SEQUENCE_NT_NAME, "None");
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericCommandSequence(String log) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.logPrefix = log;
+    values.declare(CURRENT_SEQUENCE_NT_NAME, "None");
     WpiNetworkTableValuesHelper.register(this);
+  }
+
+  public void logCurrentAction(String text) {
+    log(logPrefix + text);
+    values.set(CURRENT_SEQUENCE_NT_NAME, text);
   }
 
   /**
@@ -74,12 +84,12 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
 
   @Override
   public final void initialize() {
-    log(logPrefix + ": Initializing");
+    logCurrentAction(": Initializing");
     m_currentCommandIndex = 0;
 
     if (!m_commands.isEmpty()) {
       m_commands.get(0).initialize();
-      log(logPrefix + ": Running command " + m_commands.get(m_currentCommandIndex).getName() + " : " + m_currentCommandIndex + " of " + m_commands.size());
+      logCurrentAction(": Running command " + m_commands.get(m_currentCommandIndex).getName() + " : " + m_currentCommandIndex + " of " + m_commands.size());
     }
   }
 
@@ -96,7 +106,7 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
       currentCommand.end(false);
       m_currentCommandIndex++;
       if (m_currentCommandIndex < m_commands.size()) {
-        log(logPrefix + ": Running command " + m_commands.get(m_currentCommandIndex).getName() + " : " + m_currentCommandIndex + " of " + m_commands.size());
+        logCurrentAction(": Running command " + m_commands.get(m_currentCommandIndex).getName() + " : " + m_currentCommandIndex + " of " + m_commands.size());
         m_commands.get(m_currentCommandIndex).initialize();
       }
     }
@@ -111,7 +121,7 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
       m_commands.get(m_currentCommandIndex).end(true);
     }
     m_currentCommandIndex = -1;
-    log(logPrefix + ": " + (interrupted ? "Interrupted: " : "Ended: "));
+    logCurrentAction(": " + (interrupted ? "Interrupted: " : "Ended: "));
   }
 
   @Override

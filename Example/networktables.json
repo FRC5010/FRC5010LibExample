@@ -410,7 +410,7 @@
   {
     "name": "/Shuffleboard/ExampleSubsystem/angular/Effort (V)",
     "type": "double",
-    "value": -0.7040000000000001,
+    "value": -12.0,
     "properties": {
       "persistent": true
     }

@@ -5,14 +5,18 @@
 package org.frc5010.common.motors;
 
 import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
 
 public interface PIDController5010 {
   public static enum PIDControlType {
+    NONE,
     POSITION,
     VELOCITY,
     VOLTAGE,
     CURRENT,
-    DUTY_CYCLE
+    DUTY_CYCLE,
+    PROFILED_POSITION,
+    PROFILED_VELOCITY
   }
 
   public void setTolerance(double tolerance);
@@ -20,6 +24,8 @@ public interface PIDController5010 {
   public double getTolerance();
 
   public void setValues(GenericPID pid);
+
+  public void setMotorFeedFwd(MotorFeedFwdConstants motorConstants);
 
   public void setP(double p);
 
@@ -37,7 +43,13 @@ public interface PIDController5010 {
 
   public void setReference(double reference, PIDControlType controlType, double feedforward);
 
+  public double getReferenceVelocity();
+
   public void setControlType(PIDControlType controlType);
+
+  public void setProfiledMaxVelocity(double maxVelocity);
+
+  public void setProfiledMaxAcceleration(double maxAcceleration);
 
   public GenericPID getValues();
 
@@ -56,6 +68,8 @@ public interface PIDController5010 {
   public PIDControlType getControlType();
 
   public boolean isAtTarget();
+
+  public void resetController(double position, double velocity);
 
   public double calculateControlEffort(double current);
 

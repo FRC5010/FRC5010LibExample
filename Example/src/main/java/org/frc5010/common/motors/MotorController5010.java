@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -80,7 +79,7 @@ public interface MotorController5010 extends MotorController {
    * @param countsPerRev The number of counts per revolution
    * @return The motor encoder
    */
-  GenericEncoder getMotorEncoder(int countsPerRev);
+  GenericEncoder createMotorEncoder(int countsPerRev);
 
   /**
    * Gets the PID controller
@@ -122,7 +121,7 @@ public interface MotorController5010 extends MotorController {
   public void setMotorSimulationType(DCMotor motorSimulationType);
 
   /** Updates the simulated instance of the motor */
-  public void simulationUpdate(Optional<Angle> position, AngularVelocity velocity);
+  public void simulationUpdate(Optional<Double> position, Double velocity);
   
   /**
    * Returns the maximum RPM

@@ -15,6 +15,8 @@ import org.frc5010.common.subsystems.Color;
 import org.frc5010.common.telemetry.DisplayString;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.frc5010.common.telemetry.WpiDataLogging;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -24,15 +26,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** Robots should extend this class as the entry point into using the library */
 public abstract class GenericRobot extends GenericMechanism implements GenericDeviceHandler {
   /** Selector for autonomous modes */
-  protected SendableChooser<Command> selectableCommand;
+  protected LoggedDashboardChooser<Command> selectableCommand;
   /** The driver controller */
   protected Optional<Controller> driver;
   /** The operator controller */
@@ -62,6 +62,8 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /** Values that can be displayed on the dashboard */
   protected DisplayValuesHelper displayValues;
 
+  public static boolean everEnabled = false;
+
   /** The log level enums */
   public enum LogLevel {
     /** The debug log level */
@@ -73,9 +75,6 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     /** The competition log level */
     COMPETITION
   }
-
-  /** The current log level */
-  public static LogLevel logLevel = LogLevel.COMPETITION;
 
   /**
    * Creates a new robot using the provided configuration directory
@@ -97,6 +96,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
       e.printStackTrace();
       return;
     }
+    initRealOrSim();
   }
 
   /** Creates a new robot using a programmatic configuration */
@@ -109,6 +109,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     operator = Optional.of(new Controller(Controller.JoystickPorts.ONE.ordinal()));
     controllers.put("operator", operator.get());
     initializeDisplay();
+    initRealOrSim();
   }
 
   protected void initializeDisplay() {
@@ -139,36 +140,18 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   /**
-   * Get the current log level
-   *
-   * @return the current log level
-   */
-  public static LogLevel getLoggingLevel() {
-    return logLevel;
-  }
-
-  /**
-   * Set the current log level
-   *
-   * @param level the new log level
-   */
-  public static void setLoggingLevel(LogLevel level) {
-    logLevel = level;
-  }
-
-  /**
    * Return the Robot simulation visual
    *
    * @return the Mechanism 2d
    */
-  public Mechanism2d getMechVisual() {
+  public LoggedMechanism2d getMechVisual() {
     return mechVisual;
   }
 
   /** Initialize the robot depending on whether we are simulating or not */
   @Override
   protected void initRealOrSim() {
-    if (RobotBase.isReal()) {
+    if (RobotBase.isReal() ) {
       WpiDataLogging.start(true);
     } else {
       WpiDataLogging.start(false);
@@ -209,9 +192,9 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
     // TODO: Figure out Pathplanner Warmup Command
     if (AutoBuilder.isConfigured()) {
-      selectableCommand = AutoBuilder.buildAutoChooser();
+      selectableCommand = new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());
       if (null != selectableCommand) {
-        shuffleTab.add("Auto Modes", selectableCommand).withSize(2, 1);
+        shuffleTab.add("Auto Modes", selectableCommand.getSendableChooser()).withSize(2, 1);
       }
     }
   }
@@ -236,7 +219,8 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
    * @return the selected auto command
    */
   public Command getAutonomousCommand() {
-    return generateAutoCommand(selectableCommand.getSelected());
+    everEnabled = true;
+    return generateAutoCommand(selectableCommand.get());
   }
 
   /**
@@ -375,7 +359,6 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   public void resetDrivePose() {
     GenericDrivetrain drivetrain =  (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN); 
-    drivetrain.resetOrientation();  
   }
 
   /**

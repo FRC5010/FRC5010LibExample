@@ -1,17 +1,19 @@
 package org.frc5010.common.commands;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
 import org.frc5010.common.arch.Persisted;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /** A default driving command */
 public class DefaultDriveCommand extends Command {
@@ -23,10 +25,10 @@ public class DefaultDriveCommand extends Command {
   private final DoubleSupplier m_rotationSupplier;
   private Supplier<Boolean> fieldOrientedDrive;
 
-  private MechanismRoot2d joystick;
-  private MechanismLigament2d xAxis;
-  private MechanismLigament2d yAxis;
-  private MechanismLigament2d heading;
+  private LoggedMechanismRoot2d joystick;
+  private LoggedMechanismLigament2d xAxis;
+  private LoggedMechanismLigament2d yAxis;
+  private LoggedMechanismLigament2d heading;
   private Persisted<Double> maxChassisVelocity;
   private Persisted<Double> maxChassisRotation;
 
@@ -55,9 +57,9 @@ public class DefaultDriveCommand extends Command {
     maxChassisVelocity = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
     maxChassisRotation = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
     joystick = drivetrainSubsystem.getMechVisual().getRoot("joystick", 30, 30);
-    xAxis = new MechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
-    yAxis = new MechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
-    heading = new MechanismLigament2d("heading", 20, 0, 6, new Color8Bit(Color.kDeepPink));
+    xAxis = new LoggedMechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
+    yAxis = new LoggedMechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
+    heading = new LoggedMechanismLigament2d("heading", 20, 0, 6, new Color8Bit(Color.kDeepPink));
     joystick.append(xAxis);
     joystick.append(yAxis);
     joystick.append(heading);
@@ -88,15 +90,13 @@ public class DefaultDriveCommand extends Command {
           x * maxChassisVelocity.get(),
           y * maxChassisVelocity.get(),
           r * maxChassisRotation.get(),drivetrainSubsystem.getHeading());
-      drivetrainSubsystem.drive(chassisSpeeds,
-          null);
+      drivetrainSubsystem.drive(chassisSpeeds);
     } else {
       drivetrainSubsystem.drive(
           new ChassisSpeeds(
               x * maxChassisVelocity.get(),
               y * maxChassisVelocity.get(),
-              r * maxChassisRotation.get()),
-          null);
+              r * maxChassisRotation.get()));
     }
     // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
     // field-oriented
@@ -109,6 +109,6 @@ public class DefaultDriveCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0), null);
+    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
   }
 }

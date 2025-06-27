@@ -38,13 +38,13 @@ public class ExampleRobot extends GenericRobot {
         .onFalse(exampleSubsystem.setVelocityControlMotorReference(() -> 0));
     driver.createAButton().whileTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
         .whileFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
-    driver.createBButton().whileTrue(((YAGSLSwerveDrivetrain)drivetrain).driveToPose(new Pose2d(8, 4, new Rotation2d())));
+//    driver.createBButton().whileTrue(((YAGSLSwerveDrivetrain)drivetrain).driveToPose(new Pose2d(8, 4, new Rotation2d())));
   }
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
     driver.setRightTrigger(driver.createRightTrigger());
-    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> driver.getRightTrigger()));
+    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> operator.getLeftYAxis()));
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 

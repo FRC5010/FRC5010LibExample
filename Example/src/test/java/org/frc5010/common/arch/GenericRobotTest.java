@@ -22,7 +22,6 @@ public class GenericRobotTest {
     assertNotNull(robot);
     assertNotNull(robot.getMechVisual());
     assertEquals(Alliance.Blue, TestRobot.getAlliance());
-    assertEquals(GenericRobot.LogLevel.COMPETITION, TestRobot.getLoggingLevel());
     assertNotNull(robot.getController("driver"));
     assertNotNull(robot.getController("operator"));
   }

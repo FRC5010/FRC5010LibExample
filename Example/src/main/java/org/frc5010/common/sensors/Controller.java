@@ -18,7 +18,7 @@ public class Controller {
 
   private Joystick joystick;
   private boolean singleControllerMode;
-  private JoystickButton A_BUTTON,
+  public JoystickButton A_BUTTON,
       B_BUTTON,
       X_BUTTON,
       Y_BUTTON,
@@ -295,8 +295,8 @@ public class Controller {
     Y_BUTTON,
     LEFT_BUMPER,
     RIGHT_BUMPER,
-    START_BUTTON,
     BACK_BUTTON,
+    START_BUTTON,
     LEFT_STICK_BUTT,
     RIGHT_STICK_BUTT;
   }
@@ -569,7 +569,7 @@ public class Controller {
    * @return the current value
    */
   public double getRightXAxis() {
-    return axisMap.get(AxisNums.RIGHT_Y.ordinal()).get();
+    return axisMap.get(AxisNums.RIGHT_X.ordinal()).get();
   }
 
   /**

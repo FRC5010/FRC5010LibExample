@@ -8,20 +8,22 @@ import static edu.wpi.first.units.Units.Meters;
 
 import java.util.Optional;
 
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -30,10 +32,11 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   /** The motor */
   protected MotorController5010 _motor;
 
-  protected Mechanism2d _visualizer;
+  protected LoggedMechanism2d _visualizer;
   protected Pose3d _robotToMotor;
   protected String _visualName;
   protected DisplayValuesHelper _displayValuesHelper;
+  protected Alert loggingAlert = new Alert(this.getClass().getSimpleName() + " Logging Mode is not COMPETITION!", AlertType.kWarning);
 
   /**
    * Constructor for a motor
@@ -57,6 +60,32 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   }
 
   /**
+   * Sets the logging level for the motor. Values that are at a higher or
+   * equal level to the specified level will be displayed on the dashboard.
+   *
+   * @param logLevel the level to set the motor to
+   */
+  public GenericFunctionalMotor setLogLevel(LogLevel logLevel) {
+    _displayValuesHelper.setLoggingLevel(logLevel);
+    if (logLevel == LogLevel.COMPETITION) {
+      loggingAlert.set(false);
+    } else {
+      loggingAlert.setText(_visualName + " Logging Level is " + logLevel);
+      loggingAlert.set(true);
+    }
+    return this;
+  }
+
+  /**
+   * Gets the current logging level for the motor.
+   *
+   * @return the current LogLevel
+   */
+  public LogLevel getLogLevel() {
+    return _displayValuesHelper.getLoggingLevel();
+  }
+
+  /**
    * Duplicates the motor controller and returns a new instance with the specified
    * port.
    *
@@ -66,6 +95,10 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   @Override
   public MotorController5010 duplicate(int port) {
     return _motor.duplicate(port);
+  }
+
+  public MotorController5010 getMotorController() {
+    return _motor;
   }
 
   /**
@@ -210,8 +243,8 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return the generic encoder for the motor
    */
   @Override
-  public GenericEncoder getMotorEncoder(int countsPerRev) {
-    return _motor.getMotorEncoder(countsPerRev);
+  public GenericEncoder createMotorEncoder(int countsPerRev) {
+    return _motor.createMotorEncoder(countsPerRev);
   }
 
   /**
@@ -248,13 +281,13 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
     return _motor.getMotor();
   }
 
-  public GenericFunctionalMotor setVisualizer(Mechanism2d visualizer, Pose3d robotToMotor) {
+  public GenericFunctionalMotor setVisualizer(LoggedMechanism2d visualizer, Pose3d robotToMotor) {
     _visualizer = visualizer;
     _robotToMotor = robotToMotor;
     return this;
   }
 
-  public Mechanism2d getVisualizer() {
+  public LoggedMechanism2d getVisualizer() {
     return _visualizer;
   }
 
@@ -262,7 +295,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * Needs to be overridden by subclasses to draw the motor behavior on the
    * visualizer
    */
-  public void draw() {
+  public void periodicUpdate() {
   }
 
   /**
@@ -289,10 +322,10 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
 
   /**
    * Converts a given distance in the x-direction to a x-coordinate appropriate
-   * for visualizing on a Mechanism2d.
+   * for visualizing on a LoggedMechanism2d.
    *
    * @param x the distance in the x-direction
-   * @return the x-coordinate for visualizing on a Mechanism2d
+   * @return the x-coordinate for visualizing on a LoggedMechanism2d
    */
   public double getSimX(Distance x) {
     return x.in(Meters) * RobotConstantsDef.robotVisualH / 2.0
@@ -301,10 +334,10 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
 
   /**
    * Converts a given distance in the y-direction to a y-coordinate appropriate
-   * for visualizing on a Mechanism2d.
+   * for visualizing on a LoggedMechanism2d.
    *
    * @param y the distance in the y-direction
-   * @return the y-coordinate for visualizing on a Mechanism2d
+   * @return the y-coordinate for visualizing on a LoggedMechanism2d
    */
   public double getSimY(Distance y) {
     return y.in(Meters);
@@ -317,7 +350,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    */
   @Override
   public AngularVelocity getMaxRPM() {
-    throw new UnsupportedOperationException("Unimplemented method 'getMaxRPM'");
+    return _motor.getMaxRPM();
   }
 
   /**
@@ -440,7 +473,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    *                 second.
    */
   @Override
-  public void simulationUpdate(Optional<Angle> position, AngularVelocity velocity) {
+  public void simulationUpdate(Optional<Double> position, Double velocity) {
     _motor.simulationUpdate(position, velocity);
   }
 

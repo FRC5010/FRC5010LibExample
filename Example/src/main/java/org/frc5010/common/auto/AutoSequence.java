@@ -23,6 +23,7 @@ public class AutoSequence extends GenericCommandSequence {
     /** Autonomous event loop used to bind triggers which are only active while the autonomous sequence is running */
     EventLoop autonomousEventLoop = new EventLoop();
 
+
     /**
      * Returns a command that resets the odometry to the specified pose.
      * 
@@ -87,6 +88,10 @@ public class AutoSequence extends GenericCommandSequence {
             Pose2d robotPose = AutoBuilder.getCurrentPose();
             return robotPose.getTranslation().getDistance(location.getTranslation()) <= distance.in(Meters);
         });
+    }
+
+    public int getCurrentCommandIndex() {
+        return m_currentCommandIndex;
     }
 
     /**

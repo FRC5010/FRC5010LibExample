@@ -9,7 +9,9 @@ import org.frc5010.common.constants.RobotConstantsDef;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.pose.SimulatedPose;
 import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -22,23 +24,21 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 /** Add your docs here. */
 public class SimulatedDrivetrain extends GenericDrivetrain {
-  private MechanismRoot2d unicycle;
-  private MechanismLigament2d wheel;
+  private LoggedMechanismRoot2d unicycle;
+  private LoggedMechanismLigament2d wheel;
   private Persisted<Integer> driveVisualH;
   private Persisted<Integer> driveVisualV;
   private ChassisSpeeds chassisSpeeds;
 
-  public SimulatedDrivetrain(GenericGyro gyro, AprilTagPoseSystem vision, Mechanism2d mechVisual) {
+  public SimulatedDrivetrain(GenericGyro gyro, LoggedMechanism2d mechVisual) {
     super(mechVisual);
-    setDrivetrainPoseEstimator(new DrivePoseEstimator(new SimulatedPose(gyro), vision));
+    setDrivetrainPoseEstimator(new DrivePoseEstimator(new SimulatedPose(gyro)));
 
     driveVisualH = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_H, Integer.class);
     driveVisualV = new Persisted<>(RobotConstantsDef.DRIVE_VISUAL_V, Integer.class);
@@ -47,18 +47,18 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
     Integer centerV = driveVisualV.getInteger() / 2;
 
     unicycle = mechVisual.getRoot("unicycle", centerH, centerV);
-    wheel = new MechanismLigament2d("wheel", 1.0, 0.0, 6.0, new Color8Bit(Color.kYellow));
+    wheel = new LoggedMechanismLigament2d("wheel", 1.0, 0.0, 6.0, new Color8Bit(Color.kYellow));
     unicycle.append(wheel);
   }
 
-  public void drive(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+  @Override
+  public void driveWithFeedforwards(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     this.chassisSpeeds = chassisSpeeds;
     Pose2d pose = poseEstimator.getCurrentPose();
-    Transform2d direction =
-        new Transform2d(
-            new Translation2d(
-                chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
-            new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
+    Transform2d direction = new Transform2d(
+        new Translation2d(
+            chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
+        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
     pose = pose.transformBy(direction);
     poseEstimator.resetToPose(pose);
 
@@ -89,7 +89,8 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
         ),
         config, // The robot configuration
         () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
           // This will flip the path being followed to the red side of the field.
           // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -100,6 +101,28 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
           return false;
         },
         this // Reference to this subsystem to set requirements
-        );
+    );
+  }
+
+  @Override
+  public void drive(ChassisSpeeds chassisSpeeds) {
+    this.chassisSpeeds = chassisSpeeds;
+    Pose2d pose = poseEstimator.getCurrentPose();
+    Transform2d direction = new Transform2d(
+        new Translation2d(
+            chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
+        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
+    pose = pose.transformBy(direction);
+    poseEstimator.resetToPose(pose);
+
+    // Update visualizaton
+    wheel.setAngle(pose.getRotation());
+    wheel.setLength(direction.getTranslation().getNorm() * 1500);
+  }
+
+  @Override
+  public Field2d getField2d() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getField2d'");
   }
 }

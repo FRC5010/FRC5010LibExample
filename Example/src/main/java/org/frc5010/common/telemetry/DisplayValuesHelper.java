@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.WpiHelperInterface;
 
@@ -27,6 +26,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
     protected String layoutName = "5010";
     protected int column = 0;
     protected boolean isDisplayed;
+    protected LogLevel logLevel = LogLevel.COMPETITION;
 
     public DisplayValuesHelper(String tab, String table) {
         this(tab, table, false, 0);
@@ -46,11 +46,38 @@ public class DisplayValuesHelper implements WpiHelperInterface {
         makeDisplayed();
     }
 
+
+    /**
+     * Sets the display state to active, initializes the Shuffleboard tab and layout
+     * for displaying values. Configures the layout size and position based on the
+     * provided column.
+     */
     public void makeDisplayed() {
         isDisplayed = true;
         this.tab = Shuffleboard.getTab(tabName);
         this.layout = this.tab.getLayout(layoutName, BuiltInLayouts.kList).withSize(2, 4).withPosition(column, 0);
     }
+
+    /**
+     * Sets the logging level for the display. Values that are at a higher or
+     * equal level to the specified level will be displayed on the dashboard.
+     *
+     * @param level the level to set the display to
+     */
+    public void setLoggingLevel(LogLevel level) {
+        logLevel = level;
+    }
+
+    
+    /**
+     * Gets the current logging level of the display.
+     *
+     * @return the LogLevel that the display is currently set to
+     */
+    public LogLevel getLoggingLevel() {
+        return logLevel;
+    }
+    
     /**
      * Advances the column number for the next value to be placed in.
      *
@@ -83,16 +110,16 @@ public class DisplayValuesHelper implements WpiHelperInterface {
      *         level,
      *         false otherwise
      */
-    public static boolean robotIsAtLogLevel(LogLevel logLevel) {
+    public static boolean isAtLogLevel(LogLevel logLevel) {
         switch (logLevel) {
             case DEBUG: {
-                return GenericRobot.logLevel == LogLevel.DEBUG || GenericRobot.logLevel == LogLevel.INFO;
+                return logLevel == LogLevel.DEBUG || logLevel == LogLevel.INFO;
             }
             case INFO: {
-                return GenericRobot.logLevel == LogLevel.INFO || GenericRobot.logLevel == LogLevel.DEBUG;
+                return logLevel == LogLevel.INFO || logLevel == LogLevel.DEBUG;
             }
             case CONFIG: {
-                return GenericRobot.logLevel == LogLevel.CONFIG || GenericRobot.logLevel == LogLevel.DEBUG;
+                return logLevel == LogLevel.CONFIG || logLevel == LogLevel.DEBUG;
             }
             case COMPETITION: {
                 return true;

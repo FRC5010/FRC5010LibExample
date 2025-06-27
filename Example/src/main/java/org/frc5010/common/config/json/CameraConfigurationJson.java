@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 import org.frc5010.common.sensors.camera.GenericCamera;
 import org.frc5010.common.sensors.camera.LimeLightCamera;
 import org.frc5010.common.sensors.camera.PhotonVisionCamera;
@@ -22,8 +22,6 @@ import org.frc5010.common.sensors.camera.QuestNav;
 import org.frc5010.common.sensors.camera.SimulatedCamera;
 import org.frc5010.common.sensors.camera.SimulatedFiducialTargetCamera;
 import org.frc5010.common.sensors.camera.SimulatedVisualTargetCamera;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.frc5010.common.subsystems.AprilTagPoseSystem;
 import org.frc5010.common.subsystems.VisibleTargetSystem;
 import org.frc5010.common.vision.AprilTags;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -66,6 +64,12 @@ public class CameraConfigurationJson {
   public double pitch = 0;
   /** Camera yaw angle in degrees, in the robot's reference frame */
   public double yaw = 0;
+  /** Camera width in pixels */
+  public int width = 800;
+  /** Camera height in pixels */
+  public int height = 600;
+  /* Camera FOV in degrees */
+  public double fov = 70;
   /** optional target height in meters */
   public double targetHeight = 0;
   /** optional target fiducial id */
@@ -81,30 +85,42 @@ public class CameraConfigurationJson {
     GenericDrivetrain drivetrain = (GenericDrivetrain) robot.getSubsystem("drivetrain");
     Transform3d robotToCamera = new Transform3d(new Translation3d(x, y, z),
         new Rotation3d(Degrees.of(roll), Degrees.of(pitch), Degrees.of(yaw)));
-    AprilTagPoseSystem atSystem = (AprilTagPoseSystem) robot.getSubsystem(APRIL_TAG);
-    if (atSystem == null) {
-      atSystem = new AprilTagPoseSystem(AprilTags.aprilTagFieldLayout);
-      robot.addSubsystem(APRIL_TAG, atSystem);
-      drivetrain.getPoseEstimator().addAprilTagPoseSystem(atSystem);
-    }
 
     if (RobotBase.isReal()) {
       switch (type) {
         case "limelight": {
           camera = new LimeLightCamera(name, column, robotToCamera);
           ((LimeLightCamera) camera)
-              .setGyroSupplier(() -> (GenericGyro) robot.getDevice(ConfigConstants.GYRO));
+              .setAngleSupplier(((GenericDrivetrain) robot.getSubsystem("drivetrain")).getPoseEstimator()
+                  .getCurrentPose()::getRotation)
+              .setPoseEstimationChooser(() -> false);
+          ((LimeLightCamera) camera).setIMUMode(4);
           break;
         }
         case "photonvision": {
           if (!"none".equalsIgnoreCase(strategy)) {
-            camera = new PhotonVisionPoseCamera(
-                name,
-                column,
-                AprilTags.aprilTagFieldLayout,
-                PoseStrategy.valueOf(strategy),
-                robotToCamera,
-                robot.getPoseSupplier());
+            if (targetFiducialIds.length > 0) {
+              List<Integer> targetFiducialIdList = new ArrayList<>();
+              for (int targetFiducialId : targetFiducialIds) {
+                targetFiducialIdList.add(targetFiducialId);
+              }
+              camera = new PhotonVisionPoseCamera(
+                  name,
+                  column,
+                  AprilTags.aprilTagFieldLayout,
+                  PoseStrategy.valueOf(strategy),
+                  robotToCamera,
+                  robot.getPoseSupplier(),
+                  targetFiducialIdList);
+            } else {
+              camera = new PhotonVisionPoseCamera(
+                  name,
+                  column,
+                  AprilTags.aprilTagFieldLayout,
+                  PoseStrategy.valueOf(strategy),
+                  robotToCamera,
+                  robot.getPoseSupplier());
+            }
           } else if (targetFiducialIds.length > 0) {
             List<Integer> targetFiducialIdList = new ArrayList<>();
             for (int targetFiducialId : targetFiducialIds) {
@@ -114,7 +130,9 @@ public class CameraConfigurationJson {
                 name,
                 column,
                 AprilTags.aprilTagFieldLayout,
+                PoseStrategy.valueOf(strategy),
                 robotToCamera,
+                robot.getPoseSupplier(),
                 targetFiducialIdList);
           } else if (targetHeight > 0) {
             camera = new PhotonVisionVisualTargetCamera(name, column, robotToCamera);
@@ -127,13 +145,28 @@ public class CameraConfigurationJson {
       }
     } else {
       if (!"none".equalsIgnoreCase(strategy)) {
-        camera = new SimulatedCamera(
-            name,
-            column,
-            AprilTags.aprilTagFieldLayout,
-            PoseStrategy.valueOf(strategy),
-            robotToCamera,
-            robot.getSimulatedPoseSupplier());
+        if (targetFiducialIds.length > 0) {
+          List<Integer> targetFiducialIdList = new ArrayList<>();
+          for (int targetFiducialId : targetFiducialIds) {
+            targetFiducialIdList.add(targetFiducialId);
+          }
+          camera = new SimulatedCamera(
+              name,
+              column,
+              AprilTags.aprilTagFieldLayout,
+              PoseStrategy.valueOf(strategy),
+              robotToCamera,
+              robot.getPoseSupplier(),
+              targetFiducialIdList, width, height, fov);
+        } else {
+          camera = new SimulatedCamera(
+              name,
+              column,
+              AprilTags.aprilTagFieldLayout,
+              PoseStrategy.valueOf(strategy),
+              robotToCamera,
+              robot.getSimulatedPoseSupplier(), width, height, fov);
+        }
       } else if (targetFiducialIds.length > 0) {
         List<Integer> targetFiducialIdList = new ArrayList<>();
         for (int targetFiducialId : targetFiducialIds) {
@@ -146,7 +179,7 @@ public class CameraConfigurationJson {
             PoseStrategy.LOWEST_AMBIGUITY,
             robotToCamera,
             robot.getSimulatedPoseSupplier(),
-            targetFiducialIdList);
+            targetFiducialIdList, width, height, fov);
       } else if (targetHeight > 0) {
         camera = new SimulatedVisualTargetCamera(
             name,
@@ -154,7 +187,7 @@ public class CameraConfigurationJson {
             AprilTags.aprilTagFieldLayout,
             PoseStrategy.LOWEST_AMBIGUITY,
             robotToCamera,
-            robot.getSimulatedPoseSupplier());
+            robot.getSimulatedPoseSupplier(), width, height, fov);
       } else if (!"quest".equalsIgnoreCase(use)) {
         camera = new SimulatedCamera(
             name,
@@ -162,7 +195,7 @@ public class CameraConfigurationJson {
             AprilTags.aprilTagFieldLayout,
             PoseStrategy.LOWEST_AMBIGUITY,
             robotToCamera,
-            robot.getSimulatedPoseSupplier());
+            robot.getSimulatedPoseSupplier(), width, height, fov);
       }
     }
     switch (use) {
@@ -173,13 +206,18 @@ public class CameraConfigurationJson {
         if (drivetrain != null) {
           drivetrain.getPoseEstimator().registerPoseProvider(camera);
         }
-        //atSystem.addCamera(camera);
+        // if (targetFiducialIds.length > 0) {
+        // robot.addSubsystem(name, new VisibleTargetSystem(camera, targetHeight));
+        // }
+        // atSystem.addCamera(camera);
         break;
       }
       case "quest": {
         QuestNav questNav = new QuestNav(robotToCamera);
         questNav.resetPose();
         if (drivetrain != null) {
+          // FIX: Undo this
+          questNav.withRobotSpeedSupplier(((GenericSwerveDrivetrain) drivetrain)::getFieldVelocity);
           drivetrain.getPoseEstimator().registerPoseProvider(questNav);
         }
         break;

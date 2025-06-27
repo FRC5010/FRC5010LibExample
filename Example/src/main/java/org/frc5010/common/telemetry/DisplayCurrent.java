@@ -65,11 +65,11 @@ public class DisplayCurrent {
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      init();
+      init(logLevel);
     }
   }
 
@@ -99,25 +99,28 @@ public class DisplayCurrent {
     unit_ = current.unit();
     name_ = String.format("%s (%s)", name, unit_.symbol());
     table_ = table;
-    isDisplayed_ = DisplayValuesHelper.robotIsAtLogLevel(logLevel);
+    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
-      init();
+      init(logLevel);
     }
   }
 
-  protected void init() {
-    if (DisplayValuesHelper.robotIsAtLogLevel(LogLevel.CONFIG)) {
-      topic_.setPersistent(true);
-      subscriber_ = topic_.subscribe(current_.in(unit_));
-      listenerHandle_ = NetworkTableInstance.getDefault()
-          .addListener(
-              subscriber_,
-              EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-              event -> {
-                setCurrent(event.valueData.value.getDouble(), unit_, false);
-              });
+  protected void init(LogLevel logLevel) {
+    if (LogLevel.CONFIG == logLevel) {
+      if (isDisplayed_) topic_.setPersistent(true);
+      if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
+        subscriber_ = topic_.subscribe(current_.in(unit_));
+        listenerHandle_ = NetworkTableInstance.getDefault()
+            .addListener(
+                subscriber_,
+                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                event -> {
+                  setCurrent(event.valueData.value.getDouble(), unit_, false);
+                });
+        setCurrent(subscriber_.get(), unit_, false);
+      }
     }
     publisher_.setDefault(current_.in(unit_));
   }
@@ -136,9 +139,9 @@ public class DisplayCurrent {
   /**
    * Sets the current
    *
-   * @param unit       - current unit
+   * @param unit    - current unit
    * @param current - current in that unit
-   * @param publish    - publish the value
+   * @param publish - publish the value
    */
   public void setCurrent(final double current, final CurrentUnit unit, final boolean publish) {
     setCurrent(unit.of(current), publish);

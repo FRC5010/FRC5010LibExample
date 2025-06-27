@@ -6,6 +6,7 @@ package org.frc5010.common.motors.function;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.MotorController5010;
@@ -16,6 +17,7 @@ import org.frc5010.common.telemetry.DisplayString;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.frc5010.common.telemetry.DisplayVoltage;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,14 +41,18 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   protected static final String CONFIG_MODE = "ConfigMode";
   protected static final String POSITION = "Position";
   protected static final String VELOCITY = "Velocity";
-  protected static final String EFFORT = "Effort";
+  protected static final String EFFORT = "Output Effort";
   protected static final String TOLERANCE = "Tolerance";
+  protected static final String PROFILED_MAX_VEL = "Max Velocity";
+  protected static final String PROFILED_MAX_ACCEL = "Max Acceleration";
 
   protected DisplayString controlType;
   protected DisplayDouble feedForward;
   protected DisplayDouble position;
   protected DisplayDouble velocity;
-  protected DisplayVoltage effort;
+  protected DisplayVoltage outputEffort;
+  protected DisplayVoltage calculatedEffort;
+  protected DisplayVoltage actualEffort;
   protected DisplayDouble kP;
   protected DisplayDouble kI;
   protected DisplayDouble kD;
@@ -55,20 +61,27 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   protected DisplayDouble minOutput;
   protected DisplayDouble maxOutput;
   protected DisplayDouble reference;
+  protected DisplayDouble referenceVelocity;
   protected DisplayDouble kS;
   protected DisplayDouble kV;
   protected DisplayDouble kA;
   protected DisplayDouble tolerance;
+  protected DisplayDouble profiledMaxVel;
+  protected DisplayDouble profiledMaxAccel;
+  protected DisplayDouble outputFactor;
+  protected DisplayDouble encoderFeedback;
 
-  protected PIDController5010 pid;
+  protected PIDController5010 controller;
   protected MotorFeedFwdConstants feedFwd;
   protected GenericEncoder encoder;
 
   public GenericControlledMotor(MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName);
     encoder = _motor.getMotorEncoder();
-    pid = motor.getPIDController5010();
+    controller = motor.getPIDController5010();
     setDisplayValuesHelper(tab);
+    setMotorFeedFwd(new MotorFeedFwdConstants(kS.getValue(), kV.getValue(), kA.getValue()));
+    setValues(new GenericPID(kP.getValue(), kI.getValue(), kD.getValue()));
   }
 
   /**
@@ -89,79 +102,105 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
     minOutput = _displayValuesHelper.makeConfigDouble(MIN_OUTPUT);
     maxOutput = _displayValuesHelper.makeConfigDouble(MAX_OUTPUT);
     reference = _displayValuesHelper.makeDisplayDouble(REFERENCE);
+    referenceVelocity = _displayValuesHelper.makeDisplayDouble("Reference Velocity");
     tolerance = _displayValuesHelper.makeConfigDouble(TOLERANCE);
     feedForward = _displayValuesHelper.makeDisplayDouble(FEEDFORWARD);
     controlType = _displayValuesHelper.makeDisplayString(CONTROL_TYPE);
     position = _displayValuesHelper.makeDisplayDouble(POSITION);
     velocity = _displayValuesHelper.makeDisplayDouble(VELOCITY);
-    effort = _displayValuesHelper.makeDisplayVoltage(EFFORT);
+    outputEffort = _displayValuesHelper.makeDisplayVoltage(EFFORT);
+    profiledMaxVel = _displayValuesHelper.makeConfigDouble(PROFILED_MAX_VEL);
+    profiledMaxAccel = _displayValuesHelper.makeConfigDouble(PROFILED_MAX_ACCEL);
+    outputFactor = _displayValuesHelper.makeDisplayDouble("Output Factor");
+    calculatedEffort = _displayValuesHelper.makeDisplayVoltage("Calculated Effort");
+    actualEffort = _displayValuesHelper.makeDisplayVoltage("Actual Effort");
+    encoderFeedback = _displayValuesHelper.makeDisplayDouble("Encoder Feedback");
   }
-  
+
   @Override
   public PIDController5010 getPIDController5010() {
-    return pid;
+    return controller;
+  }
+
+  public void setPIDController5010(PIDController5010 controller) {
+    this.controller = controller;
   }
 
   @Override
   public void setTolerance(double tolerance) {
     this.tolerance.setValue(tolerance);
-    pid.setTolerance(tolerance);
+    controller.setTolerance(tolerance);
   }
 
   @Override
   public double getTolerance() {
-    return pid.getTolerance();
+    return controller.getTolerance();
   }
 
   @Override
   public void setValues(GenericPID pidValues) {
-    kP.setValue(pidValues.getkP());
-    kI.setValue(pidValues.getkI());
-    kD.setValue(pidValues.getkD());
-    pid.setValues(pidValues);
+    if (0 != pidValues.getkP())
+      kP.setValue(pidValues.getkP());
+    if (0 != pidValues.getkI())
+      kI.setValue(pidValues.getkI());
+    if (0 != pidValues.getkD())
+      kD.setValue(pidValues.getkD());
+    pidValues.setkP(kP.getValue());
+    pidValues.setkI(kI.getValue());
+    pidValues.setkD(kD.getValue());
+    controller.setValues(pidValues);
   }
 
   @Override
   public void setP(double p) {
     kP.setValue(p);
-    pid.setP(p);
+    controller.setP(p);
   }
 
   @Override
   public void setI(double i) {
     kI.setValue(i);
-    pid.setI(i);
+    controller.setI(i);
   }
 
   @Override
   public void setD(double d) {
     kD.setValue(d);
-    pid.setD(d);
+    controller.setD(d);
   }
 
   @Override
   public void setF(double f) {
     kF.setValue(f);
-    pid.setF(f);
+    controller.setF(f);
   }
 
   @Override
   public void setIZone(double iZone) {
     this.iZone.setValue(iZone);
-    pid.setIZone(iZone);
+    controller.setIZone(iZone);
   }
 
   @Override
   public void setOutputRange(double min, double max) {
     minOutput.setValue(min);
     maxOutput.setValue(max);
-    pid.setOutputRange(min, max);
+    controller.setOutputRange(min, max);
+    if (1.0 == max) {
+      outputFactor.setValue(12.0);
+    } else {
+      outputFactor.setValue(1.0);
+    }
   }
 
   @Override
   public void setReference(double reference) {
     this.reference.setValue(reference);
-    pid.setReference(reference);
+    if (GenericRobot.LogLevel.CONFIG == _displayValuesHelper.getLoggingLevel()) {
+      controller.setValues(new GenericPID(kP.getValue(), kI.getValue(), kD.getValue()));
+      controller.setMotorFeedFwd(new MotorFeedFwdConstants(kS.getValue(), kV.getValue(), kA.getValue()));
+    }
+    controller.setReference(reference);
   }
 
   @Override
@@ -169,95 +208,169 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
     this.reference.setValue(reference);
     feedForward.setValue(feedforward);
     this.controlType.setValue(controlType.name());
-    pid.setReference(reference, controlType, feedforward);
+    if (GenericRobot.LogLevel.CONFIG == _displayValuesHelper.getLoggingLevel()) {
+      // controller.setValues(new GenericPID(kP.getValue(), kI.getValue(),
+      // kD.getValue()));
+      // controller.setMotorFeedFwd(new MotorFeedFwdConstants(kS.getValue(),
+      // kV.getValue(), kA.getValue()));
+    }
+    controller.setReference(reference, controlType, feedforward);
   }
 
   @Override
   public void setControlType(PIDControlType controlType) {
     this.controlType.setValue(controlType.name());
-    pid.setControlType(controlType);
+    controller.setControlType(controlType);
+  }
+
+  @Override
+  public void setProfiledMaxVelocity(double maxVel) {
+    this.profiledMaxVel.setValue(maxVel);
+    controller.setProfiledMaxVelocity(maxVel);
+  }
+
+  @Override
+  public void setProfiledMaxAcceleration(double maxAccel) {
+    this.profiledMaxAccel.setValue(maxAccel);
+    controller.setProfiledMaxAcceleration(maxAccel);
+  }
+
+  public double getProfiledMaxAcceleration() {
+    return profiledMaxAccel.getValue();
+  }
+
+  public double getProfiledMaxVelocity() {
+    return profiledMaxVel.getValue();
   }
 
   @Override
   public GenericPID getValues() {
-    return pid.getValues();
+    return controller.getValues();
   }
 
+  /**
+   * Gets the proportional value of the PID controller from the config values.
+   * 
+   * @return the proportional value.
+   */
   @Override
   public double getP() {
-    return pid.getP();
+    return kP.getValue();
   }
 
+  /**
+   * Gets the integral value of the PID controller from the config values.
+   * 
+   * @return the integral value.
+   */
   @Override
   public double getI() {
-    return pid.getI();
+    return kI.getValue();
   }
 
+  /**
+   * Gets the derivative value of the PID controller from the config values.
+   * 
+   * @return the derivative value.
+   */
   @Override
   public double getD() {
-    return pid.getD();
+    return kD.getValue();
   }
 
   @Override
   public double getF() {
-    return pid.getF();
+    return kF.getValue();
   }
 
   @Override
   public double getIZone() {
-    return pid.getIZone();
+    return iZone.getValue();
   }
 
   @Override
   public double getReference() {
-    return pid.getReference();
+    return reference.getValue();
   }
 
   @Override
   public PIDControlType getControlType() {
-    return pid.getControlType();
+    return controller.getControlType();
   }
 
   @Override
   public boolean isAtTarget() {
-    return pid.isAtTarget();
+    return controller.isAtTarget();
+  }
+
+  public abstract double getEncoderFeedback();
+
+  public void runControllerToSetpoint() {
+    double output = calculateControlEffort(encoderFeedback.getValue());
+    setOutputWithFF(output, getReferenceVelocity());
+  }
+
+  public void setOutputWithFF(double power, double ffVelocity) {
+    double outputFactor = this.outputFactor.getValue();
+    double ff = getFeedForward(ffVelocity).in(Volts);
+    double actual = MathUtil.clamp(power * outputFactor + ff, minOutput.getValue() * outputFactor,
+        maxOutput.getValue() * outputFactor);
+    outputEffort.setVoltage(actual, Volts);
+    _motor.setVoltage(actual);
   }
 
   @Override
   public double calculateControlEffort(double current) {
-    double controlEffort = pid.calculateControlEffort(current) + getFeedForward().in(Volts);
-    if (controlEffort > maxOutput.getValue()) {
-      controlEffort = maxOutput.getValue();
-    } else if (controlEffort < minOutput.getValue()) {
-      controlEffort = minOutput.getValue();
-    }
-    effort.setVoltage(controlEffort, Volts);
+    double controlEffort = controller.calculateControlEffort(current);
+    MathUtil.clamp(controlEffort, minOutput.getValue(), maxOutput.getValue()); // clamp effort to (min, max, 0)
+    calculatedEffort.setVoltage(controlEffort * outputFactor.getValue(), Volts);
     return controlEffort;
   }
 
+  public double getVelocity() {
+    return velocity.getValue();
+  }
+
+  @Override
+  public double getReferenceVelocity() {
+    return controller.getReferenceVelocity();
+  }
+
+  @Override
+  public void resetController(double position, double velocity) {
+    controller.resetController(position, velocity);
+  }
+
+  @Override
   public void setMotorFeedFwd(MotorFeedFwdConstants feedFwd) {
+    if (0 != feedFwd.getkS())
+      kS.setValue(feedFwd.getkS());
+    if (0 != feedFwd.getkV())
+      kV.setValue(feedFwd.getkV());
+    if (0 != feedFwd.getkA())
+      kA.setValue(feedFwd.getkA());
+    feedFwd.setkS(kS.getValue());
+    feedFwd.setkV(kV.getValue());
+    feedFwd.setkA(kA.getValue());
     this.feedFwd = feedFwd;
-    kS.setValue(feedFwd.getkS());
-    kV.setValue(feedFwd.getkV());
-    kA.setValue(feedFwd.getkA());
+    controller.setMotorFeedFwd(feedFwd);
   }
 
   public MotorFeedFwdConstants getMotorFeedFwd() {
     return feedFwd;
   }
 
-  public Voltage getFeedForward() {
-    double feedforward =
-        (null == feedFwd
-            ? 0.0
-            : pid.getReference() * (feedFwd.getkV() + feedFwd.getkA()) + feedFwd.getkS());
+  public Voltage getFeedForward(double velocity) {
+    double feedforward = (null == feedFwd
+        ? controller.getF()
+        : controller.getReference() * (feedFwd.getkV() + feedFwd.getkA()) + feedFwd.getkS());
     feedForward.setValue(feedforward);
     return Volts.of(feedforward);
   }
 
   @Override
   public void configureAbsoluteControl(double offset, boolean inverted, double min, double max) {
-    pid.configureAbsoluteControl(offset, inverted, min, max);
+    controller.configureAbsoluteControl(offset, inverted, min, max);
   }
 
   public abstract Command getSysIdCommand(SubsystemBase subsystemBase);

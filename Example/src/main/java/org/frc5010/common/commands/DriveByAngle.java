@@ -1,16 +1,18 @@
 package org.frc5010.common.commands;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-import org.frc5010.common.drive.GenericDrivetrain;
-import org.frc5010.common.mechanisms.DriveConstantsDef;
 
 /** Drive the robot where the angle is given */
 public class DriveByAngle extends Command {
@@ -30,13 +32,13 @@ public class DriveByAngle extends Command {
   private Supplier<Boolean> fieldOrientedDrive;
 
   /** The joystick simulation */
-  private MechanismRoot2d joystick;
+  private LoggedMechanismRoot2d joystick;
   /** The X axis simulation */
-  private MechanismLigament2d xAxis;
+  private LoggedMechanismLigament2d xAxis;
   /** The Y axis simulation */
-  private MechanismLigament2d yAxis;
+  private LoggedMechanismLigament2d yAxis;
   /** The heading axis simulation */
-  private MechanismLigament2d heading;
+  private LoggedMechanismLigament2d heading;
   /** The max chassis velocity */
   private double maxChassisVelocity = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
   /** The max chassis rotation rate */
@@ -68,9 +70,9 @@ public class DriveByAngle extends Command {
     this.fieldOrientedDrive = fieldOrientedDrive;
 
     joystick = drivetrainSubsystem.getMechVisual().getRoot("joystick", 30, 30);
-    xAxis = new MechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
-    yAxis = new MechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
-    heading = new MechanismLigament2d("heading", 20, 0, 6, new Color8Bit(Color.kDeepPink));
+    xAxis = new LoggedMechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
+    yAxis = new LoggedMechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
+    heading = new LoggedMechanismLigament2d("heading", 20, 0, 6, new Color8Bit(Color.kDeepPink));
     joystick.append(xAxis);
     joystick.append(yAxis);
     joystick.append(heading);
@@ -98,13 +100,11 @@ public class DriveByAngle extends Command {
           x * maxChassisVelocity,
           y * maxChassisVelocity,
           r * maxChassisRotation, drivetrainSubsystem.getHeading());
-      drivetrainSubsystem.drive(chassisSpeeds,
-          null);
+      drivetrainSubsystem.drive(chassisSpeeds);
     } else {
       drivetrainSubsystem.drive(
           new ChassisSpeeds(
-              x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation),
-          null);
+              x * maxChassisVelocity, y * maxChassisVelocity, r * maxChassisRotation));
     }
     // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of
     // field-oriented
@@ -117,6 +117,6 @@ public class DriveByAngle extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0), null);
+    drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
   }
 }

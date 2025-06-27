@@ -4,6 +4,15 @@
 
 package org.frc5010.common.commands;
 
+import java.util.function.Supplier;
+
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
+import org.frc5010.common.telemetry.DisplayDouble;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -12,22 +21,26 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.function.Supplier;
-import org.frc5010.common.arch.GenericCommand;
-import org.frc5010.common.constants.GenericPID;
-import org.frc5010.common.drive.swerve.SwerveDrivetrain;
-import org.frc5010.common.subsystems.LedSubsystem;
 
 /**
  * A command that will automatically drive the robot to a particular position
  */
 public class DriveToPosition extends GenericCommand {
   /** The subsystem that this command will run on */
-  private SwerveDrivetrain swerveSubsystem;
+  private GenericSwerveDrivetrain swerveSubsystem;
   /** The PID constants for translation */
-  private final GenericPID pidTranslation = new GenericPID(1, 0, 0);
+
+  private DisplayValuesHelper displayValuesHelper = new DisplayValuesHelper("PID Values", logPrefix);
+  private DisplayDouble translationkP;
+  private DisplayDouble translationkD;
+  private DisplayDouble rotationkP;
+  private DisplayDouble rotationkD;
+
+  private final GenericPID pidTranslation = new GenericPID(0.8, 0, 0);
   /** The PID constants for rotation */
-  private final GenericPID pidRotation = new GenericPID(.25, 0, 0);
+  private final GenericPID pidRotation = new GenericPID(2.0, 0, 0);
+
+  private int onTargetCounter = 0;
 
   /** The constraints for translation in the X direction */
   private final TrapezoidProfile.Constraints xConstraints;
@@ -53,6 +66,8 @@ public class DriveToPosition extends GenericCommand {
   /** The target pose provider */
   private Supplier<Pose3d> targetPoseProvider;
 
+  private Supplier<ChassisSpeeds> initialVelocity = () -> new ChassisSpeeds();
+
   /** The speed that the robot will drive at in the X direction */
   private double xSpeed;
   /** The speed that the robot will drive at in the Y direction */
@@ -66,21 +81,19 @@ public class DriveToPosition extends GenericCommand {
    * @param swerveSubsystem    The drivetrain subsystem
    * @param poseProvider       The pose provider
    * @param targetPoseProvider The target pose provider
-   * @param ledSubsystem       The LED subsystem
    * @param offset             The offset of the target pose
    */
   public DriveToPosition(
-      SwerveDrivetrain swerveSubsystem,
+    GenericSwerveDrivetrain swerveSubsystem,
       Supplier<Pose2d> poseProvider,
       Supplier<Pose3d> targetPoseProvider,
-      LedSubsystem ledSubsystem,
       Transform2d offset) {
     xConstraints = new TrapezoidProfile.Constraints(
-        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
-        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()/Math.sqrt(2),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()/Math.sqrt(2));
     yConstraints = new TrapezoidProfile.Constraints(
-        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond(),
-        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond());
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()/Math.sqrt(2),
+        swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAccelerationUnitsPerSecond()/Math.sqrt(2));
     thetaConstraints = new TrapezoidProfile.Constraints(
         swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond(),
         swerveSubsystem
@@ -95,20 +108,43 @@ public class DriveToPosition extends GenericCommand {
         pidRotation.getkP(), pidRotation.getkI(), pidRotation.getkD(), thetaConstraints);
 
     // Use addRequirements() here to declare subsystem dependencies.
-    this.swerveSubsystem = (SwerveDrivetrain) swerveSubsystem;
+    this.swerveSubsystem = swerveSubsystem;
     this.poseProvider = poseProvider;
     this.targetPoseProvider = targetPoseProvider;
 
-    xController.setTolerance(0.05);
-    yController.setTolerance(0.05);
+    xController.setTolerance(0.02);
+    yController.setTolerance(0.02);
     thetaController.setTolerance(Units.degreesToRadians(3));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     targetTransform = offset;
 
+    translationkP = displayValuesHelper.makeConfigDouble("Translation kP");
+    translationkD = displayValuesHelper.makeConfigDouble("Translation kD");
+    rotationkP = displayValuesHelper.makeConfigDouble("Rotation kP");
+    rotationkD = displayValuesHelper.makeConfigDouble("Rotation kD");
+
+    if (translationkP.getValue() == 0) {
+      translationkP.setValue(pidTranslation.getkP());
+    }
+    if (translationkD.getValue() == 0) {
+      translationkD.setValue(pidTranslation.getkD());
+    }
+    if (rotationkP.getValue() == 0) {
+      rotationkP.setValue(pidRotation.getkP());
+    }
+    if (rotationkD.getValue() == 0) {
+      rotationkD.setValue(pidRotation.getkD());
+    }
+
     addRequirements(swerveSubsystem);
   }
 
+  public DriveToPosition withInitialVelocity(Supplier<ChassisSpeeds> speedSupplier) {
+    initialVelocity = speedSupplier;
+    return this;
+  }
+ 
   private void updateTargetPose(Pose2d pose) {
     targetPose = pose;
 
@@ -121,11 +157,19 @@ public class DriveToPosition extends GenericCommand {
   // Called when the command is initially scheduled.
   @Override
   public void init() {
-    Pose2d robotPose = poseProvider.get();
+    xController.setP(translationkP.getValue());
+    xController.setD(translationkD.getValue());
+    yController.setP(translationkP.getValue());
+    yController.setD(translationkD.getValue());
+    thetaController.setP(rotationkP.getValue());
+    thetaController.setD(rotationkD.getValue()); 
 
-    thetaController.reset(robotPose.getRotation().getRadians());
-    xController.reset(robotPose.getX());
-    yController.reset(robotPose.getY());
+    Pose2d robotPose = poseProvider.get();
+    onTargetCounter = 0;
+
+    thetaController.reset(robotPose.getRotation().getRadians(), initialVelocity.get().omegaRadiansPerSecond);
+    xController.reset(robotPose.getX(), initialVelocity.get().vxMetersPerSecond);
+    yController.reset(robotPose.getY(), initialVelocity.get().vyMetersPerSecond);
 
     if (null != targetPoseProvider.get()) {
       updateTargetPose(targetPoseProvider.get().toPose2d().transformBy(targetTransform));
@@ -148,6 +192,7 @@ public class DriveToPosition extends GenericCommand {
     // System.out.println(robotPose2d);
 
     // System.out.println(robotPose);
+    
     xSpeed = xController.calculate(robotPose2d.getX())
         * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond();
     ySpeed = yController.calculate(robotPose2d.getY())
@@ -155,17 +200,17 @@ public class DriveToPosition extends GenericCommand {
     thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians())
         * swerveSubsystem.getSwerveConstants().getkTeleDriveMaxAngularSpeedRadiansPerSecond();
 
-    if (xController.atGoal()) {
-      xSpeed = 0;
-    }
+    // if (xController.atGoal()) {
+    //   xSpeed = 0;
+    // }
 
-    if (yController.atGoal()) {
-      ySpeed = 0;
-    }
+    // if (yController.atGoal()) {
+    //   ySpeed = 0;
+    // }
 
-    if (thetaController.atGoal()) {
-      thetaSpeed = 0;
-    }
+    // if (thetaController.atGoal()) {
+    //   thetaSpeed = 0;
+    // }
 
     // // Transform the tag's pose to set our goal
 
@@ -187,26 +232,39 @@ public class DriveToPosition extends GenericCommand {
     // yController.calculate(robotPose.getY()) *
     // swerveSubsystem.getSwerveConstants().getkTeleDriveMaxSpeedMetersPerSecond()
     // ,0));
-
+    double minFFRadius = 0.05;
+    double maxFFRadius = 0.15;
+    double distanceToGoal = robotPose2d.getTranslation().getDistance(targetPose.getTranslation());
+    double ffInclusionFactor = MathUtil.clamp((distanceToGoal - minFFRadius) / (maxFFRadius - minFFRadius), 0.0, 1.0);
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        xSpeed, ySpeed, thetaSpeed, swerveSubsystem.getHeading());
+        xSpeed + xController.getSetpoint().velocity*ffInclusionFactor, ySpeed + yController.getSetpoint().velocity*ffInclusionFactor, thetaSpeed + thetaController.getSetpoint().velocity*ffInclusionFactor, swerveSubsystem.getHeading());
 
     SmartDashboard.putNumber("X Speed", chassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Y Speed", chassisSpeeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Theta Speed", chassisSpeeds.omegaRadiansPerSecond);
-    swerveSubsystem.drive(chassisSpeeds, null);
+    SmartDashboard.putBoolean("X Controller at Setpoins", xController.atGoal());
+    SmartDashboard.putBoolean("Y Controller at Setpoins", yController.atGoal());
+    SmartDashboard.putBoolean("Theta Controller at Setpoins", thetaController.atGoal());
+    swerveSubsystem.drive(chassisSpeeds);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void stop(boolean interrupted) {
+    onTargetCounter = 0;
+    SmartDashboard.putBoolean("DriveToPositionInterrupted", interrupted);
     swerveSubsystem.drive(
-        new ChassisSpeeds(0, 0, 0), null);
+        new ChassisSpeeds(0, 0, 0));
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (xSpeed == 0) && (ySpeed == 0) && (thetaSpeed == 0);
+
+    if (xController.atGoal() && yController.atGoal() && thetaController.atGoal()) {
+      onTargetCounter++;
+    }
+
+    return onTargetCounter > 20;
   }
 }

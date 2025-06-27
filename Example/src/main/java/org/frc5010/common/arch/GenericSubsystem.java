@@ -4,13 +4,18 @@
 
 package org.frc5010.common.arch;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.motors.function.GenericFunctionalMotor;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Base class for subsystems that provides default logging and network table
@@ -24,12 +29,13 @@ public class GenericSubsystem extends SubsystemBase
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
   /** The mechanism simulation */
-  protected Mechanism2d mechanismSimulation;
+  protected LoggedMechanism2d mechanismSimulation;
   /** The map of devices created by the configuration system */
   protected Map<String, Object> devices = new HashMap<>();
+  protected Alert loggingAlert = new Alert(logPrefix + " Logging Mode is not COMPETITION!", AlertType.kWarning);
 
   /** Creates a new LoggedSubsystem. */
-  public GenericSubsystem(Mechanism2d mechanismSimulation) {
+  public GenericSubsystem(LoggedMechanism2d mechanismSimulation) {
     this.mechanismSimulation = mechanismSimulation;
     displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
     WpiNetworkTableValuesHelper.register(this);
@@ -56,7 +62,7 @@ public class GenericSubsystem extends SubsystemBase
    *
    * @return the mechanism visual
    */
-  public Mechanism2d getMechVisual() {
+  public LoggedMechanism2d getMechVisual() {
     return mechanismSimulation;
   }
 
@@ -65,7 +71,7 @@ public class GenericSubsystem extends SubsystemBase
    *
    * @param mechSim the mechanism visual
    */
-  public void setMechSimulation(Mechanism2d mechSim) {
+  public void setMechSimulation(LoggedMechanism2d mechSim) {
     mechanismSimulation = mechSim;
   }
 
@@ -80,6 +86,14 @@ public class GenericSubsystem extends SubsystemBase
     devices.put(name, device);
   }
 
+  public void setLoggingLevel(LogLevel logLevel) {
+    displayValues.setLoggingLevel(logLevel);
+    if (logLevel == LogLevel.COMPETITION) {
+      loggingAlert.set(false);;
+    } else {
+      loggingAlert.set(true);
+    }
+  }
   /**
    * Get a device from the configuration
    *
@@ -112,7 +126,7 @@ public class GenericSubsystem extends SubsystemBase
         .forEach(
             it -> {
               if (it instanceof GenericFunctionalMotor) {
-                ((GenericFunctionalMotor) it).draw();
+                ((GenericFunctionalMotor) it).periodicUpdate();
               }
             });
   }

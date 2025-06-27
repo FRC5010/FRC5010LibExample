@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.Set;
 import java.util.function.DoubleSupplier;
 
 import org.frc5010.common.arch.GenericSubsystem;
@@ -13,6 +12,7 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 import org.frc5010.common.motors.MotorFactory;
+import org.frc5010.common.motors.MotorConstants.Motor;
 import org.frc5010.common.motors.function.AngularControlMotor;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.motors.function.VelocityControlMotor;
@@ -56,7 +56,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     }
 
     public AngularControlMotor angularControlledMotor() {
-        AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.Neo(13), "angular",
+        AngularControlMotor angularMotor = new AngularControlMotor(MotorFactory.Spark(13, Motor.Neo), "angular",
                 getDisplayValuesHelper())
                 .setupSimulatedMotor((5.0 * 68.0 / 24.0) * (80.0 / 24.0), Units.lbsToKilograms(22),
                         Inches.of(19), Degrees.of(0), Degrees.of(360),
@@ -70,23 +70,9 @@ public class ExampleSubsystem extends GenericSubsystem {
         return angularMotor;
     }
 
-    public VerticalPositionControlMotor verticalControlledMotor() {
-        VerticalPositionControlMotor verticalMotor = new VerticalPositionControlMotor(MotorFactory.Neo(16), "vertical",
-                getDisplayValuesHelper())
-                .setupSimulatedMotor(5, Kilograms.of(20), Meters.of(0.05), Meters.of(0), 
-                Meters.of(2), Meters.of(0), Meters.of(0.5),1.0, 0.1)
-                .setVisualizer(mechanismSimulation, new Pose3d(0.75, 0, 0.25, new Rotation3d()));
-
-        verticalMotor.setValues(new GenericPID(0.01, 0.000025, 0.003));
-        verticalMotor.setMotorFeedFwd(new MotorFeedFwdConstants(0.0, 0.01, 0.0, false));
-        verticalMotor.setIZone(3);
-        verticalMotor.setOutputRange(-12, 12);
-        return verticalMotor;
-    }
-
     public Command getDefaultCommand(DoubleSupplier speed) {
-        return Commands.parallel(Commands.defer(() -> setPercentControlMotorReference(speed), Set.of()),
-                setVelocityControlMotorReference(() -> -speed.getAsDouble() * 1000));
+        return Commands.run(() -> 
+        motor.set(speed.getAsDouble()), this);
     }
 
     public Command setPercentControlMotorReference(DoubleSupplier reference) {
@@ -177,7 +163,7 @@ public class ExampleSubsystem extends GenericSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        angularMotor.draw();
+        angularMotor.periodicUpdate();
 //        verticalMotor.draw();
     }
 
