@@ -1,6 +1,5 @@
 {
     "userConfig": "competition_mode.json",
-    "logLevel": "CONFIG",
     "driveType": "YAGSL_SWERVE_DRIVE",
     "trackWidth": 16.8,
     "wheelBase": 18.5,
@@ -8,8 +7,5 @@
     "physicalMaxSpeed": 5.93,
     "driveMotorGearRatio": 1.0,
     "gamePieceA": "Coral",
-    "gamePieceB": "Algae",
-    "devices": {
-        "gyro": "gyro_settings.json"
-    }
+    "gamePieceB": "Algae"
 }

@@ -1,6 +1,7 @@
 {
     "name": "velocity_motor",
-    "type": "neo",
+    "controller": "spark",
+    "type": "Neo",
     "id": 14,
     "gearing": 1.0,
     "momentOfInertiaKgMSq": 1.0,

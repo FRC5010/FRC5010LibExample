@@ -1,15 +1,17 @@
-package org.frc5010.common.config.json;
+package org.frc5010.common.config.json.devices;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.config.ConfigConstants;
+import org.frc5010.common.motors.MotorConstants.Motor;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.MotorFactory;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
-import java.io.IOException;
-import org.frc5010.common.arch.GenericDeviceHandler;
-import org.frc5010.common.config.ConfigConstants;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.MotorFactory;
-import org.frc5010.common.motors.MotorConstants.Motor;
 
 /** A class for reading device configurations from JSON files. */
 public class DeviceConfigReader {
@@ -50,7 +52,7 @@ public class DeviceConfigReader {
    * @throws DatabindException   if the file cannot be parsed
    * @throws IOException         if there is an error reading the file
    */
-  public static void readDeviceConfig(GenericDeviceHandler system, File deviceFile, String key)
+  public static void readDeviceConfig(GenericSubsystem system, File deviceFile, String key)
       throws StreamReadException, DatabindException, IOException {
     switch (key) {
       case "gyro":
@@ -69,6 +71,24 @@ public class DeviceConfigReader {
             VelocityMotorConfigurationJson.class);
         system.addDevice(
             motorConfigurationJson.name, motorConfigurationJson.configure(system));
+        break;
+        case "yams_elevator":
+        YamsElevatorConfigurationJson yamsElevatorConfigurationJson = new ObjectMapper().readValue(deviceFile,
+            YamsElevatorConfigurationJson.class);
+        system.addDevice(
+            yamsElevatorConfigurationJson.motorSetup.name, yamsElevatorConfigurationJson.configure(system));
+        break;
+        case "yams_arm":
+        YamsArmConfigurationJson yamsArmConfigurationJson = new ObjectMapper().readValue(deviceFile,
+            YamsArmConfigurationJson.class);
+        system.addDevice(
+            yamsArmConfigurationJson.motorSetup.name, yamsArmConfigurationJson.configure(system));
+        break;
+        case "yams_turret":
+        YamsTurretConfigurationJson yamsTurretConfigurationJson = new ObjectMapper().readValue(deviceFile,
+            YamsTurretConfigurationJson.class);
+        system.addDevice(
+            yamsTurretConfigurationJson.motorSetup.name, yamsTurretConfigurationJson.configure(system));
         break;
       default:
         break;

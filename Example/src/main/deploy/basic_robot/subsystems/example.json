@@ -1,7 +1,10 @@
 {
     "devices": {
         "percent_motor": "percent_motor.json",
-        "velocity_motor": "velocity_motor.json"
+        "velocity_motor": "velocity_motor.json",
+        "yams_elevator": "yams_elevator.json",
+        "yams_arm": "yams_arm.json",
+        "yams_turret": "yams_turret.json"
     },
     "display": true
 }
