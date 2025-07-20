@@ -63,7 +63,7 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     this.fieldLayout = fieldLayout;
     poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, cameraToRobot);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
-
+    visionLayout.addString("Primary Strategy " + name, () -> poseEstimator.getPrimaryStrategy().name());
   }
 
   public PhotonVisionPoseCamera(
@@ -82,6 +82,7 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     visionLayout.addDouble("Observations", () -> input.poseObservations.length);
     poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, cameraToRobot);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
+    visionLayout.addString("Primary Strategy " + name, () -> poseEstimator.getPrimaryStrategy().name());
   }
 
   /** Update the camera and target with the latest result */
@@ -92,7 +93,6 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     List<PoseObservation> observations = new ArrayList<>();
 
     super.updateCameraInfo();
-    SmartDashboard.putString("Primary Strategy " + name, poseEstimator.getPrimaryStrategy().name());
     Set<Short> tagIds = new HashSet<>();
 
     for (PhotonPipelineResult camResult : camResults) {
@@ -115,9 +115,9 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
         // Add tag IDs
         camResult.multitagResult.map(it -> tagIds.addAll(it.fiducialIDsUsed));
 
-        SmartDashboard.putNumber("Total Distance To Tag " + name, totalTagDistance);
-        SmartDashboard.putNumber("Photon Ambiguity " + name, camResult.getBestTarget().poseAmbiguity);
-        SmartDashboard.putNumberArray("Photon Camera " + name + " POSE", new double[] {
+        SmartDashboard.putNumber("Camera/" + name() + "/Total Distance To Tag " + name, totalTagDistance);
+        SmartDashboard.putNumber("Camera/" + name() + "/Photon Ambiguity " + name, camResult.getBestTarget().poseAmbiguity);
+        SmartDashboard.putNumberArray("Camera/" + name() + "/Photon Camera " + name + " POSE", new double[] {
             robotPose.getX(), robotPose.getY(), robotPose.getRotation().toRotation2d().getDegrees()
         });
 

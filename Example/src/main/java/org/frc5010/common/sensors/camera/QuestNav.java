@@ -253,7 +253,6 @@ public class QuestNav implements PoseProvider {
 
     public double getCaptureTime() {
         double t = timestamp.getAtomic().serverTime;
-        SmartDashboard.putNumber("Quest Timestamp", t);
         updateFrameCount();
         return t;
     }
@@ -330,7 +329,7 @@ public class QuestNav implements PoseProvider {
     }
 
     public void resetPose(Pose3d pose) {
-        SmartDashboard.putBoolean("Reset Pose", true);
+        SmartDashboard.putBoolean(networkTableRoot + "/Reset Pose", true);
         initializedPosition = true;
         softReset(pose);
     }
@@ -389,15 +388,15 @@ public class QuestNav implements PoseProvider {
             cleanUpQuestCommand();
             updateVelocity();
             updateObservations();
-            SmartDashboard.putBoolean("Reset Pose", false);
+            SmartDashboard.putBoolean(networkTableRoot + "/Reset Pose", false);
 
             Pose2d currPose = getRobotPose().get().toPose2d();
-            SmartDashboard.putNumberArray("Quest POSE", new double[] {
+            SmartDashboard.putNumberArray(networkTableRoot + "/Quest POSE", new double[] {
                     currPose.getX(), currPose.getY(), currPose.getRotation().getDegrees()
             });
 
             ChassisSpeeds velocity = getVelocity();
-            SmartDashboard.putNumberArray("Velocity", new double[] { velocity.vxMetersPerSecond,
+            SmartDashboard.putNumberArray(networkTableRoot + "/Velocity", new double[] { velocity.vxMetersPerSecond,
                     velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond });
         }
         logInput(networkTableRoot);
@@ -434,7 +433,7 @@ public class QuestNav implements PoseProvider {
                             .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
                     _calculatedOffsetToRobotCenterCount++;
 
-                    SmartDashboard.putNumberArray("Quest Calculated Offset to Robot Center", new double[] {
+                    SmartDashboard.putNumberArray(networkTableRoot + "/Quest Calculated Offset to Robot Center", new double[] {
                             _calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY() });
 
                 }).onlyIf(() -> getRotation().getMeasureZ().in(Degrees) > 30));

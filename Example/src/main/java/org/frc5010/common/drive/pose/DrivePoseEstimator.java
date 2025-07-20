@@ -278,8 +278,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
         }
       }
     }
-    SmartDashboard.putBoolean("April Tag Pose Updating", visionUpdated);
-    SmartDashboard.putBoolean("Acceptor Pose Updating", accepterUpdating);
+
     aprilTagVisible = visionUpdated;
     updatingPoseAcceptor = accepterUpdating;
   }

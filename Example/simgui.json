@@ -707,23 +707,18 @@
         "open": true
       },
       "Shuffleboard": {
-        "ExampleSubsystem": {
+        "Pose": {
           "open": true
         },
         "open": true
       },
       "SmartDashboard": {
-        "Elevator": {
-          "mechanism": {
-            "open": true
-          }
-        },
-        "open": true,
-        "swerve": {
-          "open": true
-        }
+        "open": true
       },
       "Tuning": {
+        "Arm": {
+          "open": true
+        },
         "Elevator": {
           "ElevatorMotor": {
             "open": true
@@ -732,8 +727,7 @@
         },
         "Turret": {
           "open": true
-        },
-        "open": true
+        }
       }
     }
   },
