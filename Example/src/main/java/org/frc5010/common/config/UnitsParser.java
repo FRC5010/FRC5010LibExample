@@ -66,6 +66,19 @@ public class UnitsParser {
     public final static String AMPS = "amps";
     public final static String VOLTS = "volts";
     public final static String SEC = "sec";
+    public final static String MS = "ms";
+    public final static String US = "us";
+    public final static String NS = "ns";
+    public final static String KG = "kg";
+    public final static String G = "g";
+    public final static String MG = "mg";
+    public final static String OZ = "oz";
+    public final static String LBS = "lbs";
+    public final static String STONE = "stone";
+    public final static String TONS = "tons";
+    private static final String FPS = "ft/s";
+    private static final String FPS2 = "ft/s^2";
+
     /**
      * Converts a magnitude and a unit into a {@link Distance} object.
      * 
@@ -96,7 +109,7 @@ public class UnitsParser {
             case "inch":
             case "inches":
                 return Inches.of(magnitude);
-            case "ft":
+            case FT:
             case "foot":
             case "feet":
                 return Feet.of(magnitude);
@@ -104,11 +117,11 @@ public class UnitsParser {
             case "millimeter":
             case "millimeters":
                 return Millimeters.of(magnitude);
-            case "cm":
+            case CM:
             case "centimeter":
             case "centimeters":
                 return Centimeters.of(magnitude);
-            case "yd":
+            case YD:
             case "yard":
             case "yards":
                 return Feet.of(magnitude * 3);
@@ -142,7 +155,7 @@ public class UnitsParser {
      */
     public static LinearVelocity parseVelocity(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "m/s":
+            case MPS:
             case "m/sec":
             case "meter/sec":
             case "meters/sec":
@@ -156,7 +169,7 @@ public class UnitsParser {
             case "inch/second":
             case "inches/second":
                 return InchesPerSecond.of(magnitude);
-            case "ft/s":
+            case FPS:
             case "ft/sec":
             case "foot/sec":
             case "feet/sec":
@@ -231,7 +244,7 @@ public class UnitsParser {
      */
     public static LinearAcceleration parseAccelleration(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "m/s^2":
+            case MPS2:
             case "m/s/s":
             case "m/s2":
             case "m/sec/sec":
@@ -257,7 +270,7 @@ public class UnitsParser {
             case "inches/second2":
             case "inches/second^2":
                 return InchesPerSecond.of(magnitude).per(Second);
-            case "ft/s^2":
+            case FPS2:
             case "ft/s/s":
             case "ft/s2":
             case "ft/sec/sec":
@@ -331,7 +344,7 @@ public class UnitsParser {
      */
     public static Current parseAmps(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "amps":
+            case AMPS:
             case "a":
             case "amp":
             case "ampere":
@@ -381,9 +394,9 @@ public class UnitsParser {
      */
     public static Voltage parseVolts(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
+            case VOLTS:
             case "v":
             case "volt":
-            case "volts":
             case "voltage":
                 return Volts.of(magnitude);
             case "mv":
@@ -432,11 +445,11 @@ public class UnitsParser {
     public static Time parseTime(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
             case "s":
-            case "sec":
+            case SEC:
             case "second":
             case "seconds":
                 return Seconds.of(magnitude);
-            case "ms":
+            case MS:
             case "millisecond":
             case "milliseconds":
                 return Seconds.of(magnitude * 0.001);
@@ -444,7 +457,7 @@ public class UnitsParser {
             case "microsecond":
             case "microseconds":
                 return Seconds.of(magnitude * 0.000001);
-            case "ns":
+            case NS:
             case "nanosecond":
             case "nanoseconds":
                 return Seconds.of(magnitude * 0.000000001);
@@ -491,34 +504,34 @@ public class UnitsParser {
      */
     public static Mass parseMass(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "kg":
+            case KG:
             case "kgs":
             case "kilogram":
             case "kilograms":
                 return Kilograms.of(magnitude);
-            case "g":
+            case G:
             case "gram":
             case "grams":
                 return Kilograms.of(magnitude * 0.001);
-            case "mg":
+            case MG:
             case "milligram":
             case "milligrams":
                 return Kilograms.of(magnitude * 0.000001);
-            case "ton":
+            case TONS:
             case "t":
-            case "tons":
+            case "ton":
                 return Kilograms.of(magnitude * 1000);
-            case "oz":
+            case OZ:
             case "ounce":
             case "ounces":
                 return Ounces.of(magnitude);
-            case "lbs":
+            case LBS:
             case "lb":
             case "pound":
             case "pounds":
                 return Pounds.of(magnitude);
             case "st":
-            case "stone":
+            case STONE:
             case "stones":
                 return Kilograms.of(magnitude * 6.35029);
             default:
@@ -550,10 +563,10 @@ public class UnitsParser {
      */
     public static Angle parseAngle(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "deg":
+            case DEG:
             case "degrees":
                 return Degrees.of(magnitude);
-            case "rad":
+            case RAD:
             case "radians":
                 return Radians.of(magnitude);
             default:
@@ -586,14 +599,14 @@ public class UnitsParser {
      */
     public static AngularVelocity parseAngularVelocity(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "deg/s":
+            case DEGPS:
             case "deg/sec":
             case "deg/second":
             case "degrees/s":
             case "degrees/sec":
             case "degrees/second":
                 return DegreesPerSecond.of(magnitude);
-            case "rad/s":
+            case RADPS:
             case "rad/sec":
             case "rad/second":
             case "rads/s":
@@ -634,14 +647,14 @@ public class UnitsParser {
      */
     public static AngularAcceleration parseAngularAcceleration(double magnitude, String unit) {
         switch (unit.trim().toLowerCase()) {
-            case "deg/s^2":
+            case DEGPS2:
             case "deg/s/s":
             case "deg/s2":
             case "degrees/s/s":
             case "degrees/s^2":
             case "degrees/s2":
                 return DegreesPerSecondPerSecond.of(magnitude);
-            case "rads/s^2":
+            case RADPS2:
             case "rads/s/s":
             case "rads/s2":
             case "radians":

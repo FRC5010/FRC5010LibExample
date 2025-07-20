@@ -4,6 +4,7 @@
 
 package org.frc5010.common.config.json.devices;
 
+import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
 import org.frc5010.common.motors.MotorController5010;
 
@@ -18,16 +19,22 @@ public class MotorSetupJson {
     }
 
     public String name;
-    public String logLevel = "HIGH";
+    public String logLevel = "LOW";
     public String motorType;
     public String controllerType;
     public int canId;
     public FollowerMotorJson[] followers = new FollowerMotorJson[0];
     public String idleMode = "BRAKE";
-    public UnitValueJson currentLimit = new UnitValueJson(40, "amps");
+    public UnitValueJson currentLimit = new UnitValueJson(40, UnitsParser.AMPS);
     public boolean inverted = false;
     public int numberOfMotors = 1;
 
+    /**
+     * Configures the followers of the given SmartMotorControllerConfig with the followers from the given MotorSetupJson.
+     * 
+     * @param motorConfig the SmartMotorControllerConfig to configure
+     * @param motorSetup the MotorSetupJson from which to get the followers
+     */
     public static void setupFollowers(SmartMotorControllerConfig motorConfig, MotorSetupJson motorSetup) {
         if (motorSetup.followers != null && motorSetup.followers.length > 0) {
             motorSetup.numberOfMotors += motorSetup.followers.length;

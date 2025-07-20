@@ -92,6 +92,11 @@
           "visible": true
         }
       },
+      "/Shuffleboard/ExampleRobot/Auto Modes": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/Pose/Pose Field": {
         "CARPET0": {
           "image": ".\\pictures\\carpet.png",
@@ -682,15 +687,53 @@
     }
   },
   "NetworkTables": {
+    "persistent": {
+      "Shuffleboard": {
+        "BabySwerve": {
+          "BabySwerve": {
+            "open": true
+          }
+        },
+        "ExampleRobot": {
+          "ExampleRobot": {
+            "open": true
+          },
+          "open": true
+        }
+      }
+    },
     "transitory": {
       "FMSInfo": {
         "open": true
       },
+      "Shuffleboard": {
+        "ExampleSubsystem": {
+          "open": true
+        },
+        "open": true
+      },
       "SmartDashboard": {
+        "Elevator": {
+          "mechanism": {
+            "open": true
+          }
+        },
         "open": true,
         "swerve": {
           "open": true
         }
+      },
+      "Tuning": {
+        "Elevator": {
+          "ElevatorMotor": {
+            "open": true
+          },
+          "open": true
+        },
+        "Turret": {
+          "open": true
+        },
+        "open": true
       }
     }
   },

@@ -9,12 +9,9 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.Optional;
-
 import com.thethriftybot.ThriftyNova;
 import com.thethriftybot.ThriftyNova.CurrentType;
 import com.thethriftybot.ThriftyNova.EncoderType;
-
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -30,6 +27,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import java.util.Optional;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -133,7 +131,7 @@ public class NovaWrapper extends SmartMotorController
   @Override
   public void setPosition(Angle angle)
   {
-    setpointPosition = angle == null ? Optional.empty() : Optional.of(angle);
+    setpointPosition = Optional.ofNullable(angle);
   }
 
   @Override
@@ -151,7 +149,7 @@ public class NovaWrapper extends SmartMotorController
   @Override
   public void setVelocity(AngularVelocity angle)
   {
-    setpointVelocity = angle == null ? Optional.empty() : Optional.of(angle);
+    setpointVelocity = Optional.ofNullable(angle);
   }
 
   @Override
@@ -307,13 +305,13 @@ public class NovaWrapper extends SmartMotorController
   }
 
   @Override
-  public Current getSupplyCurrent()
+  public Optional<Current> getSupplyCurrent()
   {
     if (m_sim.isPresent())
     {
-      return Amps.of(RoboRioSim.getVInCurrent());
+      return Optional.of(Amps.of(RoboRioSim.getVInCurrent()));
     }
-    return Amps.of(m_nova.getSupplyCurrent());
+    return Optional.of(Amps.of(m_nova.getSupplyCurrent()));
   }
 
   @Override
@@ -443,17 +441,5 @@ public class NovaWrapper extends SmartMotorController
         "[WARNING] Thrifty Nova's have no configuration class, returning the ThriftyNova Object.",
         true);
     return m_nova;
-  }
-
-  @Override
-  public Optional<Angle> getMechanismSetpoint()
-  {
-    return setpointPosition;
-  }
-
-  @Override
-  public Optional<Distance> getSetpoint()
-  {
-    return setpointPosition.map(it -> config.convertFromMechanism(it));
   }
 }

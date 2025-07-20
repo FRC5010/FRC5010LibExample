@@ -45,11 +45,10 @@
         "val": 100,
         "uom": "deg"
     },
-    "gearing": [3, 4],
-    "voltageCompensation": {
-        "val": 12,
-        "uom": "volts"
-    },
+    "gearing": [
+        3,
+        4
+    ],
     "startingPosition": {
         "val": 0,
         "uom": "deg"

@@ -4,13 +4,13 @@
 
 package org.frc5010.common.config.json.devices;
 
-import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
 import org.frc5010.common.motors.MotorController5010;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Pivot;
@@ -23,7 +23,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 /**
  * Configuration for a YamsTurret
  */
-public class YamsTurretConfigurationJson implements DeviceConfiguration {
+public class YamsPivotConfigurationJson implements DeviceConfiguration {
     public MotorSetupJson motorSetup = new MotorSetupJson();
     public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
     public UnitValueJson lowerHardLimit = new UnitValueJson(0, UnitsParser.DEG);
@@ -32,7 +32,7 @@ public class YamsTurretConfigurationJson implements DeviceConfiguration {
     public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
     public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
     public double[] gearing;
-    public UnitValueJson voltageCompensation = new UnitValueJson(12, "volts");
+    public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
     public UnitValueJson startingPosition = new UnitValueJson(0, UnitsParser.DEG);
     public double moi;
 
@@ -44,7 +44,7 @@ public class YamsTurretConfigurationJson implements DeviceConfiguration {
      * @return the configured pivot
      */
     @Override
-    public Object configure(GenericSubsystem deviceHandler) {
+    public Pivot configure(SubsystemBase deviceHandler) {
         MotorController5010 motor = DeviceConfigReader.getMotor(motorSetup.controllerType, motorSetup.motorType,
                 motorSetup.canId);
 

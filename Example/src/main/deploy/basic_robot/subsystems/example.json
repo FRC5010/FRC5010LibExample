@@ -4,7 +4,7 @@
         "velocity_motor": "velocity_motor.json",
         "yams_elevator": "yams_elevator.json",
         "yams_arm": "yams_arm.json",
-        "yams_turret": "yams_turret.json"
+        "yams_turret": "yams_pivot.json"
     },
     "display": true
 }

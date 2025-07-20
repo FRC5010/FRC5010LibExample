@@ -4,13 +4,13 @@
 
 package org.frc5010.common.config.json.devices;
 
-import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
 import org.frc5010.common.motors.MotorController5010;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.ArmConfig;
 import yams.mechanisms.positional.Arm;
@@ -23,19 +23,26 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 public class YamsArmConfigurationJson implements DeviceConfiguration {
     public MotorSetupJson motorSetup = new MotorSetupJson();
     public MotorSystemIdJson motorSystemId = new MotorSystemIdJson();
-    public UnitValueJson length = new UnitValueJson(0, "in");
+    public UnitValueJson length = new UnitValueJson(0, UnitsParser.IN);
     public UnitValueJson lowerHardLimit = new UnitValueJson(0, UnitsParser.DEG);
     public UnitValueJson upperHardLimit = new UnitValueJson(0, UnitsParser.DEG);
     public UnitValueJson startingAngle = new UnitValueJson(0, UnitsParser.DEG);
     public UnitValueJson lowerSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
     public UnitValueJson upperSoftLimit = new UnitValueJson(0, UnitsParser.DEG);
     public double[] gearing;
-    public UnitValueJson mass = new UnitValueJson(0, "lbs");
-    public UnitValueJson voltageCompensation = new UnitValueJson(12, "volts");
+    public UnitValueJson mass = new UnitValueJson(0, UnitsParser.LBS);
+    public UnitValueJson voltageCompensation = new UnitValueJson(12, UnitsParser.VOLTS);
     public UnitValueJson horizontalZero = new UnitValueJson(0, UnitsParser.DEG);
 
+    /**
+     * Configure the given GenericSubsystem with an arm using the given json
+     * configuration.
+     * 
+     * @param deviceHandler the GenericSubsystem to configure
+     * @return the configured arm
+     */
     @Override
-    public Object configure(GenericSubsystem deviceHandler) {
+    public Arm configure(SubsystemBase deviceHandler) {
         MotorController5010 motor = DeviceConfigReader.getMotor(motorSetup.controllerType, motorSetup.motorType,
                 motorSetup.canId);
 

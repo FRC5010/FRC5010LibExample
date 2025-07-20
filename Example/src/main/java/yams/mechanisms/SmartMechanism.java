@@ -1,10 +1,13 @@
 package yams.mechanisms;
 
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.Optional;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.gearing.Sprocket;
@@ -126,6 +129,26 @@ public abstract class SmartMechanism
   }
 
   /**
+   * Get the {@link SmartMotorController}
+   *
+   * @return {@link SmartMotorController} for the mechanism.
+   */
+  public SmartMotorController getMotorController()
+  {
+    return m_motor;
+  }
+
+  /**
+   * Get the {@link SmartMechanism}'s setpoint as an {@link Angle} if it exists.
+   *
+   * @return {@link Optional} setpoint {@link Angle} of the mechanism..
+   */
+  public Optional<Angle> getMechanismSetpoint()
+  {
+    return m_motor.getMechanismPositionSetpoint();
+  }
+
+  /**
    * Iterate sim
    */
   public abstract void simIterate();
@@ -134,4 +157,26 @@ public abstract class SmartMechanism
    * Update the mechanism's telemetry.
    */
   public abstract void updateTelemetry();
+
+  /**
+   * Get the {@link Mechanism2d} for the mechanism.
+   *
+   * @return {@link Mechanism2d} for the mechanism.
+   */
+  public Mechanism2d getMechanismWindow()
+  {
+    return mechanismWindow;
+  }
+
+  /**
+   * Update the mechanism's visualization state.
+   */
+  public abstract void visualizationUpdate();
+
+  /**
+   * Get the {@link Translation3d} of the mechanism using {@link Mechanism2d} coordinates.
+   *
+   * @return {@link Translation3d} of the mechanism.
+   */
+  public abstract Translation3d getRelativeMechanismPosition();
 }

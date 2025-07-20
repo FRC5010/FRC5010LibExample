@@ -2,7 +2,6 @@ package yams.motorcontrollers.local;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -233,7 +232,7 @@ public class SparkWrapper extends SmartMotorController
   @Override
   public void setPosition(Angle angle)
   {
-    setpointPosition = angle == null ? Optional.empty() : Optional.of(angle);
+    setpointPosition = Optional.ofNullable(angle);
   }
 
   @Override
@@ -251,7 +250,7 @@ public class SparkWrapper extends SmartMotorController
   @Override
   public void setVelocity(AngularVelocity angle)
   {
-    setpointVelocity = angle == null ? Optional.empty() : Optional.of(angle);
+    setpointVelocity = Optional.ofNullable(angle);
   }
 
   @Override
@@ -426,10 +425,11 @@ public class SparkWrapper extends SmartMotorController
   }
 
   @Override
-  public Current getSupplyCurrent()
+  public Optional<Current> getSupplyCurrent()
   {
-    DriverStation.reportError("[WARNING] Supply currently not supported on Spark", true);
-    return null;
+    return Optional.empty();
+//    DriverStation.reportError("[WARNING] Supply currently not supported on Spark", true);
+//    return null;
   }
 
   @Override
@@ -527,15 +527,5 @@ public class SparkWrapper extends SmartMotorController
   public Object getMotorControllerConfig()
   {
     return sparkBaseConfig;
-  }
-
-  @Override
-  public Optional<Angle> getMechanismSetpoint()
-  {
-    return setpointPosition;
-  }
-
-  public Optional<Distance> getSetpoint() {
-    return setpointPosition.map(it -> config.convertFromMechanism(it));
   }
 }

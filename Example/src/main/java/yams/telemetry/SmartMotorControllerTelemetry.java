@@ -1,255 +1,283 @@
 package yams.telemetry;
 
-import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Fahrenheit;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Temperature;
+import java.util.Map;
 import yams.motorcontrollers.SmartMotorController;
+import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class SmartMotorControllerTelemetry
 {
 
+
   /**
-   * Mechanism lower limit reached.
+   * {@link TelemetryVerbosity} for the {@link SmartMotorController}
    */
-  public boolean         mechanismLowerLimit = false;
-  /**
-   * Mechanism upper limit reached.
-   */
-  public boolean         mechanismUpperLimit = false;
-  /**
-   * Motor temperature cutoff reached.
-   */
-  public boolean         temperatureLimit    = false;
-  /**
-   * Velocity PID controller used.
-   */
-  public boolean         velocityControl     = false;
-  /**
-   * Elevator feedforward used.
-   */
-  public boolean         elevatorFeedforward = false;
-  /**
-   * Arm feedforward used.
-   */
-  public boolean         armFeedforward      = false;
-  /**
-   * Simple feedforward used.
-   */
-  public boolean         simpleFeedforward   = false;
-  /**
-   * Motion profiling used.
-   */
-  public boolean         motionProfile       = false;
-  /**
-   * Setpoint position given.
-   */
-  public double          setpointPosition    = 0;
-  /**
-   * Setpoint velocity given.
-   */
-  public double          setpointVelocity    = 0;
-  /**
-   * Feedforward voltage supplied to the {@link SmartMotorController}
-   */
-  public double          feedforwardVoltage  = 0.0;
-  /**
-   * PID Output voltage supplied to the {@link SmartMotorController}
-   */
-  public double          pidOutputVoltage    = 0.0;
-  /**
-   * Output voltage to the {@link SmartMotorController}
-   */
-  public double          outputVoltage       = 0.0;
-  /**
-   * Stator current (motor controller output current) to the Motor.
-   */
-  public double          statorCurrent       = 0.0;
-  /**
-   * Motor temperature.
-   */
-  public Temperature     temperature         = Fahrenheit.of(72);
-  /**
-   * Mechanism distance.
-   */
-  public Distance        distance            = Meters.of(0);
-  /**
-   * Mechanism linear velocity.
-   */
-  public LinearVelocity  linearVelocity      = MetersPerSecond.of(0);
-  /**
-   * Mechanism position.
-   */
-  public Angle           mechanismPosition;
-  /**
-   * Mechanism velocity.
-   */
-  public AngularVelocity mechanismVelocity;
-  /**
-   * Rotor position.
-   */
-  public Angle           rotorPosition;
-  /**
-   * Rotor velocity.
-   */
-  public AngularVelocity rotorVelocity;
+  private final TelemetryVerbosity                           verbosity = TelemetryVerbosity.HIGH;
+  private       Map<DoubleTelemetryField, DoubleTelemetry>   doubleFields;
+  private       Map<BooleanTelemetryField, BooleanTelemetry> boolFields;
+
   /**
    * Network table to publish to.
    */
-  private NetworkTable     table;
+  private NetworkTable                        dataNetworkTable;
   /**
-   * Mechanism lower limit boolean publisher
+   * Network table for tuning.
    */
-  private BooleanPublisher mechanismLowerLimitPublisher;
+  private NetworkTable                        tuningNetworkTable;
   /**
-   * Mechanism upper limit boolean publisher
+   * Telemetry config
    */
-  private BooleanPublisher mechanismUpperLimitPublisher;
+  private SmartMotorControllerTelemetryConfig config;
+
   /**
-   * Motor temperature limit hit.
+   * Setup Telemetry Pub/Sub fields.
+   *
+   * @param publishTable {@link NetworkTable} that holds all of the output fields.
+   * @param tuningTable  {@link NetworkTable} that holds all of the tuning fields.
+   * @param config       {@link SmartMotorControllerTelemetryConfig} to apply.
    */
-  private BooleanPublisher temperatureLimitPublisher;
-  /**
-   * Velocity control used.
-   */
-  private BooleanPublisher velocityControlPublisher;
-  /**
-   * Elevator feedforward used.
-   */
-  private BooleanPublisher elevatorFeedforwardPublisher;
-  /**
-   * Arm feedforward used.
-   */
-  private BooleanPublisher armFeedforwardPublisher;
-  /**
-   * Simple motor feedforward used.
-   */
-  private BooleanPublisher simpleFeedforwardPublisher;
-  /**
-   * Motion profile used.
-   */
-  private BooleanPublisher motionProfilePublisher;
-  /**
-   * Setpoint targetted.
-   */
-  private DoublePublisher  setpointPositionPublisher;
-  /**
-   * Setpoint velocity targetted.
-   */
-  private DoublePublisher  setpointVelocityPublisher;
-  /**
-   * Feedforward voltage output.
-   */
-  private DoublePublisher  feedforwardVoltagePublisher;
-  /**
-   * PID Output voltage.
-   */
-  private DoublePublisher  pidOutputVoltagePublisher;
-  /**
-   * Motor controller output voltage.
-   */
-  private DoublePublisher  outputVoltagePublisher;
-  /**
-   * Stator current output.
-   */
-  private DoublePublisher  statorCurrentPublisher;
-  /**
-   * Motor temperature
-   */
-  private DoublePublisher  temperaturePublisher;
-  /**
-   * Distance/Mechanism measurement
-   */
-  private DoublePublisher  measurementPositionPublisher;
-  /**
-   * Linear Velocity/Mechanism measurement velocity.
-   */
-  private DoublePublisher  measurementVelocityPublisher;
-  /**
-   * Mechanism position
-   */
-  private DoublePublisher  mechanismPositionPublisher;
-  /**
-   * Mechanism velocity
-   */
-  private DoublePublisher  mechanismVelocityPublisher;
-  /**
-   * Rotor position
-   */
-  private DoublePublisher  rotorPositionPublisher;
-  /**
-   * Rotor velocity.
-   */
-  private DoublePublisher  rotorVelocityPublisher;
+  public void setupTelemetry(NetworkTable publishTable, NetworkTable tuningTable,
+                             SmartMotorControllerTelemetryConfig config)
+  {
+    if (!publishTable.equals(this.dataNetworkTable))
+    {
+      dataNetworkTable = publishTable;
+      this.config = config;
+      doubleFields = config.getDoubleFields();
+      boolFields = config.getBoolFields();
+      for (Map.Entry<DoubleTelemetryField, DoubleTelemetry> entry : doubleFields.entrySet())
+      {
+        entry.getValue().setupNetworkTables(dataNetworkTable, tuningNetworkTable);
+      }
+      for (Map.Entry<DoubleTelemetryField, DoubleTelemetry> entry : doubleFields.entrySet())
+      {
+        entry.getValue().setupNetworkTables(dataNetworkTable, tuningNetworkTable);
+      }
+
+    }
+  }
+
 
   /**
    * Publish {@link SmartMotorController} telemetry to {@link NetworkTable}
-   *
-   * @param publishTable {@link NetworkTable} to publish to.
-   * @param verbosity    {@link TelemetryVerbosity} to publish.
    */
-  public void publish(NetworkTable publishTable, TelemetryVerbosity verbosity)
+  public void publish(SmartMotorController smc)
   {
-    if (!publishTable.equals(this.table))
+    SmartMotorControllerConfig cfg = smc.getConfig();
+    for (Map.Entry<BooleanTelemetryField, BooleanTelemetry> entry : boolFields.entrySet())
     {
-      table = publishTable;
-      mechanismLowerLimitPublisher = table.getBooleanTopic("Mechanism Lower Limit").publish();
-      mechanismUpperLimitPublisher = table.getBooleanTopic("Mechanism Upper Limit").publish();
-      temperatureLimitPublisher = table.getBooleanTopic("Temperature Limit").publish();
-      velocityControlPublisher = table.getBooleanTopic("Velocity Control").publish();
-      elevatorFeedforwardPublisher = table.getBooleanTopic("Elevator Feedforward").publish();
-      armFeedforwardPublisher = table.getBooleanTopic("Arm Feedforward").publish();
-      simpleFeedforwardPublisher = table.getBooleanTopic("Simple Feedforward").publish();
-      motionProfilePublisher = table.getBooleanTopic("Motion Profile").publish();
-      setpointPositionPublisher = table.getDoubleTopic("Setpoint Position (Rotations)").publish();
-      setpointVelocityPublisher = table.getDoubleTopic("Setpoint Velocity (Rotations per Second)").publish();
-      feedforwardVoltagePublisher = table.getDoubleTopic("Feedforward Voltage").publish();
-      pidOutputVoltagePublisher = table.getDoubleTopic("PID Output (Voltage)").publish();
-      outputVoltagePublisher = table.getDoubleTopic("Motor Output Voltage").publish();
-      statorCurrentPublisher = table.getDoubleTopic("Stator Current (Amps)").publish();
-      temperaturePublisher = table.getDoubleTopic("Temperature (Celsius)").publish();
-      measurementPositionPublisher = table.getDoubleTopic("Measurement Position (Meters)").publish();
-      measurementVelocityPublisher = table.getDoubleTopic("Measurement Velocity (Meters per Second)").publish();
-      mechanismPositionPublisher = table.getDoubleTopic("Mechanism Position (Rotations)").publish();
-      mechanismVelocityPublisher = table.getDoubleTopic("Mechanism Velocity (Rotations per Second)").publish();
-      rotorPositionPublisher = table.getDoubleTopic("Rotor Position (Rotations)").publish();
-      rotorVelocityPublisher = table.getDoubleTopic("Rotor Velocity (Rotations per Second)").publish();
+      BooleanTelemetry bt = entry.getValue();
+      switch (bt.getField())
+      {
+        case MechanismUpperLimit ->
+        {
+          cfg.getMechanismUpperLimit().ifPresent(upperLimit -> bt.set(smc.getMechanismPosition().gte(upperLimit)));
+        }
+        case MechanismLowerLimit ->
+        {
+          cfg.getMechanismLowerLimit().ifPresent(lowerLimit -> bt.set(smc.getMechanismPosition().lte(lowerLimit)));
+        }
+        case TemperatureLimit ->
+        {
+          cfg.getTemperatureCutoff().ifPresent(temperatureCutoff -> bt.set(smc.getTemperature()
+                                                                              .gte(temperatureCutoff)));
+        }
+        case VelocityControl ->
+        {
+          bt.set(smc.getMechanismSetpointVelocity().isPresent());
+        }
+        case ElevatorFeedForward ->
+        {
+          bt.set(cfg.getElevatorFeedforward().isPresent());
+        }
+        case ArmFeedForward ->
+        {
+          bt.set(cfg.getArmFeedforward().isPresent());
+        }
+        case SimpleMotorFeedForward ->
+        {
+          bt.set(cfg.getSimpleFeedforward().isPresent());
+        }
+        case MotionProfile ->
+        {
+          bt.set(cfg.getClosedLoopController().isPresent());
+        }
+      }
     }
-    if (table != null)
+    for (Map.Entry<DoubleTelemetryField, DoubleTelemetry> entry : doubleFields.entrySet())
     {
-      mechanismLowerLimitPublisher.set(mechanismLowerLimit);
-      mechanismUpperLimitPublisher.set(mechanismUpperLimit);
-      temperatureLimitPublisher.set(temperatureLimit);
-      velocityControlPublisher.set(velocityControl);
-      elevatorFeedforwardPublisher.set(elevatorFeedforward);
-      armFeedforwardPublisher.set(armFeedforward);
-      simpleFeedforwardPublisher.set(simpleFeedforward);
-      motionProfilePublisher.set(motionProfile);
-      setpointPositionPublisher.set(setpointPosition);
-      setpointVelocityPublisher.set(setpointVelocity);
-      feedforwardVoltagePublisher.set(feedforwardVoltage);
-      pidOutputVoltagePublisher.set(pidOutputVoltage);
-      outputVoltagePublisher.set(outputVoltage);
-      statorCurrentPublisher.set(statorCurrent);
-      temperaturePublisher.set(temperature.in(Celsius));
-      measurementPositionPublisher.set(distance.in(Meters));
-      measurementVelocityPublisher.set(linearVelocity.in(MetersPerSecond));
-      mechanismPositionPublisher.set(mechanismPosition.in(Rotations));
-      mechanismVelocityPublisher.set(mechanismVelocity.in(RotationsPerSecond));
-      rotorPositionPublisher.set(rotorPosition.in(Rotations));
-      rotorVelocityPublisher.set(rotorVelocity.in(RotationsPerSecond));
+      DoubleTelemetry dt = entry.getValue();
+      switch (dt.getField())
+      {
+        case SetpointPosition ->
+        {
+          smc.getMechanismPositionSetpoint().ifPresent(mechSetpoint -> dt.set(
+              cfg.getMechanismCircumference().isPresent() ? cfg.convertFromMechanism(mechSetpoint).in(Meters)
+                                                          : mechSetpoint.in(Radians)));
+        }
+        case SetpointVelocity ->
+        {
+          smc.getMechanismSetpointVelocity().ifPresent(mechSetpoint ->
+                                                           dt.set(cfg.getMechanismCircumference().isPresent() ?
+                                                                  cfg.convertFromMechanism(mechSetpoint)
+                                                                     .in(MetersPerSecond) :
+                                                                  mechSetpoint.in(RadiansPerSecond)));
+        }
+        case FeedforwardVoltage ->
+        {
+          // TODO: Remove
+//          smc.getFeedforwardVoltage();
+        }
+        case PIDOutputVoltage ->
+        {
+          // TODO: Remove
+//          smc.getPIDOutputVoltage();
+        }
+        case OutputVoltage ->
+        {
+          dt.set(smc.getVoltage().in(Volts));
+        }
+        case StatorCurrent ->
+        {
+          dt.set(smc.getStatorCurrent().in(Amps));
+        }
+        case SupplyCurrent ->
+        {
+          smc.getSupplyCurrent().ifPresent(current -> dt.set(current.in(Amps)));
+        }
+        case MotorTemperature ->
+        {
+          dt.set(smc.getTemperature().in(Fahrenheit));
+        }
+        case MeasurementPosition ->
+        {
+          cfg.getMechanismCircumference().ifPresent(circumference -> dt.set(smc.getMeasurementPosition().in(Meters)));
+        }
+        case MeasurementVelocity ->
+        {
+          cfg.getMechanismCircumference().ifPresent(circumference -> dt.set(smc.getMeasurementVelocity()
+                                                                               .in(MetersPerSecond)));
+        }
+        case MechanismPosition ->
+        {
+          dt.set(smc.getMechanismPosition().in(Radians));
+        }
+        case MechanismVelocity ->
+        {
+          dt.set(smc.getMechanismVelocity().in(RadiansPerSecond));
+        }
+        case RotorPosition ->
+        {
+          dt.set(smc.getRotorPosition().in(Radians));
+        }
+        case RotorVelocity ->
+        {
+          dt.set(smc.getRotorVelocity().in(RadiansPerSecond));
+        }
+      }
     }
+  }
+
+
+  public void applyTuningValues(SmartMotorController smartMotorController)
+  {
+
+    SmartMotorControllerConfig cfg = smartMotorController.getConfig();
+    for (Map.Entry<DoubleTelemetryField, DoubleTelemetry> entry : doubleFields.entrySet())
+    {
+      DoubleTelemetry dt = entry.getValue();
+      if (dt.tunable())
+      {
+        switch (dt.getField())
+        {
+          case SetpointPosition ->
+          {
+            cfg.getMechanismCircumference().ifPresentOrElse(circumference -> smartMotorController.setPosition(Meters.of(
+                dt.get())), () -> smartMotorController.setPosition(Radians.of(dt.get())));
+          }
+          case SetpointVelocity ->
+          {
+            cfg.getMechanismCircumference().ifPresentOrElse(circumference -> smartMotorController.setVelocity(
+                MetersPerSecond.of(
+                    dt.get())), () -> smartMotorController.setVelocity(RadiansPerSecond.of(dt.get())));
+          }
+        }
+      }
+    }
+  }
+
+  // TODO: Add docs.
+  public enum BooleanTelemetryField
+  {
+    MechanismUpperLimit("limits/Mechanism Upper Limit", false, false),
+    MechanismLowerLimit("limits/Mechanism Lower Limit", false, false),
+    TemperatureLimit("limits/Temperature Limit", false, false),
+    VelocityControl("control/Velocity Control", false, false),
+    ElevatorFeedForward("control/Elevator Feedforward", false, false),
+    ArmFeedForward("control/Arm Feedforward", false, false),
+    SimpleMotorFeedForward("control/Simple Motor Feedforward", false, false),
+    MotionProfile("control/Motion Profile", false, false);
+
+    private final boolean currentValue;
+    private final String  key;
+    private final boolean tunable;
+
+    BooleanTelemetryField(String fieldName, boolean defaultValue, boolean tunable)
+    {
+      key = fieldName;
+      currentValue = defaultValue;
+      this.tunable = tunable;
+    }
+
+    public BooleanTelemetry create()
+    {
+      return new BooleanTelemetry(key, currentValue, this, tunable);
+    }
+
+
+  }
+
+  public enum DoubleTelemetryField
+  {
+    SetpointPosition("Setpoint Position", 0, true),
+    SetpointVelocity("Setpoint Velocity", 0, false),
+    FeedforwardVoltage("Feedforward voltage", 0, false),
+    PIDOutputVoltage("PID Output voltage", 0, false),
+    OutputVoltage("Output Voltage", 0, false),
+    StatorCurrent("Stator Current", 0, false),
+    SupplyCurrent("Supply Current", 0, false),
+    MotorTemperature("Motor Temperature", 0, false),
+    MeasurementPosition("Measurement Position", 0, false),
+    MeasurementVelocity("Measurement Velocity", 0, false),
+    MechanismPosition("Mechanism Position", 0, false),
+    MechanismVelocity("Mechanism Velocity", 0, false),
+    RotorPosition("Rotor Position", 0, false),
+    RotorVelocity("Rotor Velocity", 0, false);
+
+    private final double  defaultVal;
+    private final String  key;
+    private final boolean tunable;
+
+    DoubleTelemetryField(String fieldName, double defaultValue, boolean tunable)
+    {
+      key = fieldName;
+      defaultVal = defaultValue;
+      this.tunable = tunable;
+    }
+
+    public DoubleTelemetry create()
+    {
+      return new DoubleTelemetry(key, defaultVal, this, tunable);
+    }
+
   }
 }

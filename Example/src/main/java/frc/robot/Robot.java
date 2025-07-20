@@ -23,8 +23,6 @@ public class Robot extends TimedRobot
 
   private RobotContainer m_robotContainer;
 
-  private Timer disabledTimer;
-
   public Robot()
   {
     instance = this;
@@ -44,10 +42,6 @@ public class Robot extends TimedRobot
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-    // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
-    // immediately when disabled, but then also let it be pushed more 
-    disabledTimer = new Timer();
 
     if (isSimulation())
     {
@@ -79,18 +73,12 @@ public class Robot extends TimedRobot
   public void disabledInit()
   {
     m_robotContainer.disabledBehavior();
-    disabledTimer.reset();
-    disabledTimer.start();
   }
 
   @Override
   public void disabledPeriodic()
   {
-    if (disabledTimer.hasElapsed(Constants.DrivebaseConstants.WHEEL_LOCK_TIME))
-    {
       m_robotContainer.disabledBehavior();
-      disabledTimer.stop();
-    }
   }
 
   /**
