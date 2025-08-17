@@ -4,12 +4,10 @@
 
 package org.frc5010.common.sensors.encoder;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-
 import edu.wpi.first.math.util.Units;
+import java.util.Optional;
 
 /** Add your docs here. */
 public class CanCoderEncoder implements GenericEncoder {
@@ -72,7 +70,7 @@ public class CanCoderEncoder implements GenericEncoder {
   public double getVelocityConversion() {
     return 1;
   }
-  
+
   @Override
   public void simulationUpdate(Optional<Double> position, Double velocity) {}
 }

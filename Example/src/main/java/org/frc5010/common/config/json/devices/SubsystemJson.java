@@ -1,13 +1,11 @@
 package org.frc5010.common.config.json.devices;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 import org.frc5010.common.arch.GenericSubsystem;
-
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 
 /** The base JSON class for subsystem configurations */
 public class SubsystemJson {
@@ -17,9 +15,10 @@ public class SubsystemJson {
   public boolean display = false;
   /** The logging level for the robot */
   public String logLevel = "COMPETITION";
-  
+
   /**
-   * Configures the subsystem by reading device configuration files and adding devices to the system.
+   * Configures the subsystem by reading device configuration files and adding devices to the
+   * system.
    *
    * @param system the system being configured
    * @param directory the directory containing device configuration files

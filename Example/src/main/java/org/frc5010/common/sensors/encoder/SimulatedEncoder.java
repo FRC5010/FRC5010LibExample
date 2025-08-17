@@ -4,10 +4,9 @@
 
 package org.frc5010.common.sensors.encoder;
 
-import java.util.Optional;
-
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import java.util.Optional;
 
 /** Add your docs here. */
 public class SimulatedEncoder implements GenericEncoder {
@@ -82,7 +81,7 @@ public class SimulatedEncoder implements GenericEncoder {
   public double getVelocityConversion() {
     return encoder.getDistancePerPulse();
   }
-  
+
   @Override
   public void simulationUpdate(Optional<Double> position, Double velocity) {}
 }

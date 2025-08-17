@@ -7,28 +7,27 @@ package org.frc5010.common.sensors.encoder;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 
-import java.util.Optional;
-
-import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
 import edu.wpi.first.wpilibj.RobotController;
+import java.util.Optional;
+import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
 
 /** Add your docs here. */
 public class TalonFXEncoder implements GenericEncoder {
   /** TalonFX motor */
   TalonFX motor;
-    /** TalonFX simulation */
+  /** TalonFX simulation */
   protected TalonFXSimState talonFXSim;
+
   double metersPerRotation = 1;
   double metersPerSecPerRPM = 1;
-  private static final double kMotorResistance = 0.002; // Assume 2mOhm resistance for voltage drop calculation
+  private static final double kMotorResistance =
+      0.002; // Assume 2mOhm resistance for voltage drop calculation
 
   public TalonFXEncoder(GenericTalonFXMotor motor) {
-    this.motor = (TalonFX)motor.getMotor();
+    this.motor = (TalonFX) motor.getMotor();
     talonFXSim = this.motor.getSimState();
     talonFXSim.Orientation = ChassisReference.CounterClockwise_Positive;
   }
@@ -62,7 +61,7 @@ public class TalonFXEncoder implements GenericEncoder {
   public double getVoltage() {
     return talonFXSim.getMotorVoltage();
   }
-  
+
   @Override
   public void reset() {
     setPosition(0);
@@ -91,7 +90,7 @@ public class TalonFXEncoder implements GenericEncoder {
 
   @Override
   public void setInverted(boolean inverted) {
-    if(inverted) {
+    if (inverted) {
       talonFXSim.Orientation = ChassisReference.Clockwise_Positive;
     } else {
       talonFXSim.Orientation = ChassisReference.CounterClockwise_Positive;
@@ -107,7 +106,7 @@ public class TalonFXEncoder implements GenericEncoder {
   public double getVelocityConversion() {
     return metersPerSecPerRPM;
   }
-  
+
   @Override
   public void simulationUpdate(Optional<Double> position, Double velocity) {
     // set the supply voltage of the TalonFX
@@ -115,6 +114,7 @@ public class TalonFXEncoder implements GenericEncoder {
       setPosition(position.get());
     }
     setRate(velocity);
-    talonFXSim.setSupplyVoltage(RobotController.getBatteryVoltage() - talonFXSim.getSupplyCurrent() * kMotorResistance);
+    talonFXSim.setSupplyVoltage(
+        RobotController.getBatteryVoltage() - talonFXSim.getSupplyCurrent() * kMotorResistance);
   }
 }

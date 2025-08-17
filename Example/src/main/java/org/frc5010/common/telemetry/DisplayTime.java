@@ -2,10 +2,6 @@ package org.frc5010.common.telemetry;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -14,6 +10,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a time to the dashboard */
 public class DisplayTime {
@@ -40,26 +38,31 @@ public class DisplayTime {
   /**
    * Add a time to the dashboard
    *
-   * @param unit     - time unit
+   * @param unit - time unit
    * @param unitTime - time in that unit
-   * @param name     - name of the time
-   * @param table    - name of the table
+   * @param name - name of the time
+   * @param table - name of the table
    */
-  public DisplayTime(final double unitTime, final TimeUnit unit, final String name, final String table) {
+  public DisplayTime(
+      final double unitTime, final TimeUnit unit, final String name, final String table) {
     this(unitTime, unit, name, table, LogLevel.COMPETITION);
   }
 
   /**
    * Add a time to the dashboard
    *
-   * @param unit     - time unit
+   * @param unit - time unit
    * @param unitTime - time in that unit
-   * @param name     - name of the time
-   * @param table    - name of the table
-   * @param debug    - debug mode
+   * @param name - name of the time
+   * @param table - name of the table
+   * @param debug - debug mode
    */
   public DisplayTime(
-      final double unitTime, final TimeUnit unit, final String name, final String table, final LogLevel logLevel) {
+      final double unitTime,
+      final TimeUnit unit,
+      final String name,
+      final String table,
+      final LogLevel logLevel) {
     time_ = new MutTime(unitTime, unit.getBaseUnit().convertFrom(unitTime, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
@@ -75,10 +78,10 @@ public class DisplayTime {
   /**
    * Add a time to the dashboard
    *
-   * @param unit     - time unit
+   * @param unit - time unit
    * @param unitTime - time in that unit
-   * @param name     - name of the time
-   * @param table    - name of the table
+   * @param name - name of the time
+   * @param table - name of the table
    */
   public DisplayTime(final Time unitTime, final String name, final String table) {
     this(unitTime, name, table, LogLevel.COMPETITION);
@@ -87,11 +90,11 @@ public class DisplayTime {
   /**
    * Add a time to the dashboard
    *
-   * @param unit     - time unit
+   * @param unit - time unit
    * @param unitTime - time in that unit
-   * @param name     - name of the time
-   * @param table    - name of the table
-   * @param debug    - debug mode
+   * @param name - name of the time
+   * @param table - name of the table
+   * @param debug - debug mode
    */
   public DisplayTime(
       final Time unitTime, final String name, final String table, final LogLevel logLevel) {
@@ -112,13 +115,14 @@ public class DisplayTime {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(time_.in(unit_));
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setTime(event.valueData.value.getDouble(), unit_, false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setTime(event.valueData.value.getDouble(), unit_, false);
+                    });
         setTime(subscriber_.get(), unit_, false);
       }
     }
@@ -141,8 +145,8 @@ public class DisplayTime {
   /**
    * Sets the time
    *
-   * @param time    - time in the given unit
-   * @param unit    - time unit
+   * @param time - time in the given unit
+   * @param unit - time unit
    * @param publish - whether or not to publish
    */
   public void setTime(final double time, final TimeUnit unit, final boolean publish) {
@@ -152,7 +156,7 @@ public class DisplayTime {
   /**
    * Sets the time
    *
-   * @param time    - the Time object representing the time to set
+   * @param time - the Time object representing the time to set
    * @param publish - whether or not to publish
    */
   public void setTime(final Time time, final boolean publish) {
@@ -179,8 +183,7 @@ public class DisplayTime {
   }
 
   /**
-   * Publishes the current time to the network table if the publish flag is
-   * true.
+   * Publishes the current time to the network table if the publish flag is true.
    *
    * @param publish - flag indicating whether to publish the time
    */

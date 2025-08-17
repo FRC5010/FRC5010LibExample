@@ -1,15 +1,13 @@
 package org.frc5010.common.sensors.absolute_encoder;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-
 import edu.wpi.first.wpilibj.Alert;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * SparkMax absolute encoder, attached through the data port. Credit: YAGSL for the original code
@@ -21,12 +19,12 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
   private Alert failureConfiguring;
   /** An {@link Alert} for if there is a failure configuring the encoder offset. */
   private Alert offsetFailure;
+
   private final AbsoluteEncoderConfig config;
   private final SparkBase motor;
 
   /**
-   * Create the {@link RevAbsoluteEncoder} object as a duty cycle from the {@link SparkMax}
-   * motor.
+   * Create the {@link RevAbsoluteEncoder} object as a duty cycle from the {@link SparkMax} motor.
    *
    * @param motor Motor to create the encoder from.
    * @param conversionFactor The conversion factor to set if the output is not from 0 to 360.
@@ -35,12 +33,9 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
     config = new AbsoluteEncoderConfig();
     failureConfiguring =
         new Alert(
-            "Encoders",
-            "Failure configuring SparkMax Analog Encoder",
-            Alert.AlertType.kWarning);
+            "Encoders", "Failure configuring SparkMax Analog Encoder", Alert.AlertType.kWarning);
     offsetFailure =
-        new Alert(
-            "Encoders", "Failure to set Absolute Encoder Offset", Alert.AlertType.kWarning);
+        new Alert("Encoders", "Failure to set Absolute Encoder Offset", Alert.AlertType.kWarning);
     if (motor instanceof SparkMax) {
       this.motor = motor;
       encoder = this.motor.getAbsoluteEncoder();
@@ -174,7 +169,7 @@ public class RevAbsoluteEncoder extends GenericAbsoluteEncoder {
   public double getVelocityConversion() {
     return 1;
   }
-  
+
   @Override
   public void simulationUpdate(Optional<Double> position, Double velocity) {}
 }

@@ -4,17 +4,15 @@
 
 package org.frc5010.common.sensors.camera;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.frc5010.common.drive.pose.PoseProvider;
-import org.frc5010.common.vision.VisionConstants;
-
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import java.util.ArrayList;
+import java.util.List;
+import org.frc5010.common.drive.pose.PoseProvider;
+import org.frc5010.common.vision.VisionConstants;
 
 /** A generic camera interface */
 public abstract class GenericCamera implements PoseProvider {
@@ -119,7 +117,9 @@ public abstract class GenericCamera implements PoseProvider {
    *
    * @return whether or not the camera has a valid target
    */
-  public boolean hasValidTarget() { return input.hasTarget; }
+  public boolean hasValidTarget() {
+    return input.hasTarget;
+  }
 
   /**
    * Returns the yaw of the target in degrees along the horizontal X axis of the camera.

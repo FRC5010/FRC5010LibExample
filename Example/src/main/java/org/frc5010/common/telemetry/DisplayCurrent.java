@@ -2,10 +2,6 @@ package org.frc5010.common.telemetry;
 
 import static edu.wpi.first.units.Units.Amps;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -14,6 +10,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.MutCurrent;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a current to the dashboard */
 public class DisplayCurrent {
@@ -40,10 +38,10 @@ public class DisplayCurrent {
   /**
    * Add a current to the dashboard
    *
-   * @param unit       - current unit
+   * @param unit - current unit
    * @param unitLength - current in that unit
-   * @param name       - name of the variable
-   * @param table      - name of the table
+   * @param name - name of the variable
+   * @param table - name of the table
    */
   public DisplayCurrent(
       final double current, final CurrentUnit unit, final String name, final String table) {
@@ -53,14 +51,18 @@ public class DisplayCurrent {
   /**
    * Add a current to the dashboard
    *
-   * @param unit       - current unit
+   * @param unit - current unit
    * @param unitLength - current in that unit
-   * @param name       - name of the variable
-   * @param table      - name of the table
-   * @param debug      - debug mode
+   * @param name - name of the variable
+   * @param table - name of the table
+   * @param debug - debug mode
    */
   public DisplayCurrent(
-      final double current, final CurrentUnit unit, final String name, final String table, LogLevel logLevel) {
+      final double current,
+      final CurrentUnit unit,
+      final String name,
+      final String table,
+      LogLevel logLevel) {
     current_ = new MutCurrent(current, unit.getBaseUnit().convertFrom(current, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
@@ -77,8 +79,8 @@ public class DisplayCurrent {
   /**
    * Add a current to the dashboard
    *
-   * @param unit  - current with units
-   * @param name  - name of the variable
+   * @param unit - current with units
+   * @param name - name of the variable
    * @param table - name of the table
    */
   public DisplayCurrent(final Current current, final String name, final String table) {
@@ -88,8 +90,8 @@ public class DisplayCurrent {
   /**
    * Add a current to the dashboard
    *
-   * @param unit  - current with units
-   * @param name  - name of the variable
+   * @param unit - current with units
+   * @param name - name of the variable
    * @param table - name of the table
    * @param debug - debug mode
    */
@@ -112,13 +114,14 @@ public class DisplayCurrent {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(current_.in(unit_));
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setCurrent(event.valueData.value.getDouble(), unit_, false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setCurrent(event.valueData.value.getDouble(), unit_, false);
+                    });
         setCurrent(subscriber_.get(), unit_, false);
       }
     }
@@ -129,7 +132,7 @@ public class DisplayCurrent {
   /**
    * Sets the current
    *
-   * @param unit       - current unit
+   * @param unit - current unit
    * @param unitLength - current in that unit
    */
   public void setCurrent(final double current, final CurrentUnit unit) {
@@ -139,7 +142,7 @@ public class DisplayCurrent {
   /**
    * Sets the current
    *
-   * @param unit    - current unit
+   * @param unit - current unit
    * @param current - current in that unit
    * @param publish - publish the value
    */
@@ -177,8 +180,7 @@ public class DisplayCurrent {
   }
 
   /**
-   * Publishes the Current to the network table if the publish flag is
-   * true.
+   * Publishes the Current to the network table if the publish flag is true.
    *
    * @param publish - flag indicating whether to publish the current
    */

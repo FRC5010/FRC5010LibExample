@@ -4,22 +4,20 @@
 
 package org.frc5010.common.subsystems;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import org.frc5010.common.arch.GenericSubsystem;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class SegmentedLedSystem extends GenericSubsystem {
   /** Creates a new NewLedSubsystem. */

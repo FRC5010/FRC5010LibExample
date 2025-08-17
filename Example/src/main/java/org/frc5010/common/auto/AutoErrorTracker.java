@@ -6,7 +6,6 @@ package org.frc5010.common.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +21,6 @@ public class AutoErrorTracker extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
-
   private void logXYTarget(Pose2d pose) {
     Pose2d currentPose = AutoBuilder.getCurrentPose();
     double error = currentPose.getTranslation().getDistance(pose.getTranslation());
@@ -37,7 +35,6 @@ public class AutoErrorTracker extends Command {
 
     errorSum += error * 0.02;
     SmartDashboard.putNumber("Auto Error Sum", errorSum);
-    
   }
 
   // Called when the command is initially scheduled.
@@ -50,7 +47,7 @@ public class AutoErrorTracker extends Command {
   @Override
   public void end(boolean interrupted) {
     PathPlannerLogging.setLogTargetPoseCallback(null);
-    
+
     SmartDashboard.putNumber("Auto Error Min", minError);
     SmartDashboard.putNumber("Auto Error Max", maxError);
     SmartDashboard.putNumber("Auto Error Sum", errorSum);

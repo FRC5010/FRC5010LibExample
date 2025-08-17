@@ -6,11 +6,6 @@ package org.frc5010.common.motors.control;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import org.frc5010.common.constants.GenericPID;
-import org.frc5010.common.constants.MotorFeedFwdConstants;
-import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
-import org.frc5010.common.sensors.encoder.TalonFXEncoder;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -22,6 +17,10 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
+import org.frc5010.common.sensors.encoder.TalonFXEncoder;
 
 /** Add your docs here. */
 public class TalonFXController extends GenericPIDController {
@@ -29,14 +28,11 @@ public class TalonFXController extends GenericPIDController {
   protected GenericTalonFXMotor motor;
   protected ControlRequest request;
   protected PIDControlType controlType = PIDControlType.DUTY_CYCLE;
-  /**
-   * Current TalonFX configuration.
-   */
+  /** Current TalonFX configuration. */
   private TalonFXConfiguration configuration = new TalonFXConfiguration();
-  /**
-   * Current TalonFX Configurator.
-   */
+  /** Current TalonFX Configurator. */
   private TalonFXConfigurator cfg;
+
   protected double reference = 0.0;
   protected double tolerance;
 
@@ -48,32 +44,27 @@ public class TalonFXController extends GenericPIDController {
     setControlType(controlType);
   }
 
-  /**
-   * Refreshes the TalonFX configuration to ensure we have the latest PID
-   * configuration.
-   */
+  /** Refreshes the TalonFX configuration to ensure we have the latest PID configuration. */
   private void refreshTalonConfigs() {
     cfg.refresh(configuration);
   }
 
   /**
-   * Sends a control request to the TalonFX motor based on the set control type
-   * and
-   * reference point.
+   * Sends a control request to the TalonFX motor based on the set control type and reference point.
    *
-   * @param reference   The reference point to be set. Units depend on the control
-   *                    type.
+   * @param reference The reference point to be set. Units depend on the control type.
    * @param feedforward The feedforward value to be used.
    */
   private void sendControlRequest(double reference, double feedforward) {
     switch (controlType) {
-      case NONE: return;
+      case NONE:
+        return;
       case POSITION:
-        ((PositionVoltage) request).withPosition(reference)
-            .withFeedForward(feedforward);
+        ((PositionVoltage) request).withPosition(reference).withFeedForward(feedforward);
         break;
       case VELOCITY:
-        ((VelocityVoltage) request).withVelocity(reference)
+        ((VelocityVoltage) request)
+            .withVelocity(reference)
             .withFeedForward(feedforward)
             .withEnableFOC(motor.isFOCEnabled());
         break;
@@ -84,47 +75,39 @@ public class TalonFXController extends GenericPIDController {
         ((VoltageOut) request).withOutput(Volts.of(reference));
         break;
       case PROFILED_POSITION:
-        ((MotionMagicVoltage) request).withPosition(reference)
-            .withFeedForward(feedforward);
+        ((MotionMagicVoltage) request).withPosition(reference).withFeedForward(feedforward);
         break;
       case PROFILED_VELOCITY:
-        ((MotionMagicVelocityVoltage) request).withVelocity(reference)
-            .withFeedForward(feedforward);
+        ((MotionMagicVelocityVoltage) request).withVelocity(reference).withFeedForward(feedforward);
         break;
       default:
         throw new IllegalArgumentException("Unsupported TalonFX control type");
     }
     internalMotor.setControl(request);
-    
   }
 
   /**
-   * Checks if the motor is at the target setpoint. If the motor is being
-   * controlled in
-   * velocity control mode, the absolute difference between the current velocity
-   * and the
-   * target velocity is checked against the tolerance. If the motor is being
-   * controlled in
-   * position control mode, the absolute difference between the current position
-   * and the
-   * target position is checked against the tolerance. If the motor is being
-   * controlled in
-   * duty cycle control mode, the function returns false.
+   * Checks if the motor is at the target setpoint. If the motor is being controlled in velocity
+   * control mode, the absolute difference between the current velocity and the target velocity is
+   * checked against the tolerance. If the motor is being controlled in position control mode, the
+   * absolute difference between the current position and the target position is checked against the
+   * tolerance. If the motor is being controlled in duty cycle control mode, the function returns
+   * false.
    *
    * @return true if the motor is at the target setpoint, false otherwise.
    */
   @Override
   public boolean isAtTarget() {
-      switch (controlType) {
-        case VELOCITY:
-          double velocity = internalMotor.getVelocity().getValueAsDouble();
-          return Math.abs(getReference() - velocity) < tolerance;
-        case POSITION:
-          double position = internalMotor.getPosition().getValueAsDouble();
-          return Math.abs(getReference() - position) < tolerance;
-        default:
-          return false;
-      }
+    switch (controlType) {
+      case VELOCITY:
+        double velocity = internalMotor.getVelocity().getValueAsDouble();
+        return Math.abs(getReference() - velocity) < tolerance;
+      case POSITION:
+        double position = internalMotor.getPosition().getValueAsDouble();
+        return Math.abs(getReference() - position) < tolerance;
+      default:
+        return false;
+    }
   }
 
   /**
@@ -150,31 +133,24 @@ public class TalonFXController extends GenericPIDController {
   /**
    * Sets the PID configuration values for the TalonFX motor.
    *
-   * <p>
-   * This function will take the PID values and apply them to the TalonFX motor.
-   * The
-   * kP, kI, kD, and kS constants are set using the {@link TalonFXConfigurator}
-   * class.
+   * <p>This function will take the PID values and apply them to the TalonFX motor. The kP, kI, kD,
+   * and kS constants are set using the {@link TalonFXConfigurator} class.
    *
    * @param pid the PID values to set.
    */
   @Override
   public void setValues(GenericPID pid) {
     cfg.refresh(configuration.Slot0);
-    cfg.apply(
-        configuration.Slot0.withKP(pid.getkP())
-            .withKI(pid.getkI())
-            .withKD(pid.getkD()));
+    cfg.apply(configuration.Slot0.withKP(pid.getkP()).withKI(pid.getkI()).withKD(pid.getkD()));
   }
 
   /**
    * Not implemented.
-   * 
+   *
    * @param f the feedforward value.
    */
   @Override
-  public void setF(double f) {
-  }
+  public void setF(double f) {}
 
   /**
    * Sets the integral zone for the PID controller.
@@ -182,8 +158,7 @@ public class TalonFXController extends GenericPIDController {
    * @param iZone the integral zone value to be set.
    */
   @Override
-  public void setIZone(double iZone) {
-  }
+  public void setIZone(double iZone) {}
 
   @Override
   public void setReference(double reference) {
@@ -193,8 +168,7 @@ public class TalonFXController extends GenericPIDController {
   /**
    * Sets the reference point of the PID controller.
    *
-   * @param reference   The reference point to be set. Units depend on the control
-   *                    type.
+   * @param reference The reference point to be set. Units depend on the control type.
    * @param controlType The type of control to be used.
    * @param feedforward The feedforward value to be used.
    */
@@ -217,12 +191,10 @@ public class TalonFXController extends GenericPIDController {
         case NONE:
           break;
         case POSITION:
-          request = new PositionVoltage(reference)
-              .withEnableFOC(motor.isFOCEnabled());
+          request = new PositionVoltage(reference).withEnableFOC(motor.isFOCEnabled());
           break;
         case VELOCITY:
-          request = new VelocityVoltage(reference)
-              .withEnableFOC(motor.isFOCEnabled());
+          request = new VelocityVoltage(reference).withEnableFOC(motor.isFOCEnabled());
           break;
         case DUTY_CYCLE:
           request = new DutyCycleOut(reference).withEnableFOC(motor.isFOCEnabled());
@@ -246,12 +218,13 @@ public class TalonFXController extends GenericPIDController {
   /**
    * Retrieves the current PID configuration values.
    *
-   * @return A GenericPID object containing the proportional (kP), integral (kI),
-   *         derivative (kD), and feedforward (kS) constants.
+   * @return A GenericPID object containing the proportional (kP), integral (kI), derivative (kD),
+   *     and feedforward (kS) constants.
    */
   @Override
   public GenericPID getValues() {
-    GenericPID pidConfig = new GenericPID(configuration.Slot0.kP, configuration.Slot0.kI, configuration.Slot0.kD);
+    GenericPID pidConfig =
+        new GenericPID(configuration.Slot0.kP, configuration.Slot0.kI, configuration.Slot0.kD);
     return pidConfig;
   }
 
@@ -373,17 +346,17 @@ public class TalonFXController extends GenericPIDController {
    */
   @Override
   public void setOutputRange(double min, double max) { // TODO: Implement
-    //throw new UnsupportedOperationException("Not implemented for TalonFX");
+    // throw new UnsupportedOperationException("Not implemented for TalonFX");
   }
 
   /**
-   * Configure the PID controller for absolute control. This is the same as
-   * absolute encoder control, but for the TalonFX.
+   * Configure the PID controller for absolute control. This is the same as absolute encoder
+   * control, but for the TalonFX.
    *
-   * @param offset   The offset of the absolute position sensor.
+   * @param offset The offset of the absolute position sensor.
    * @param inverted Whether the sensor is inverted or not.
-   * @param min      The minimum position value.
-   * @param max      The maximum position value.
+   * @param min The minimum position value.
+   * @param max The maximum position value.
    */
   @Override
   public void configureAbsoluteControl(double offset, boolean inverted, double min, double max) {
@@ -404,7 +377,8 @@ public class TalonFXController extends GenericPIDController {
   public void setProfiledMaxAcceleration(double maxAcceleration) {
     cfg.refresh(configuration.MotionMagic);
     configuration.MotionMagic.MotionMagicAcceleration = maxAcceleration;
-    //configuration.MotionMagic.MotionMagicJerk = ((TalonFXEncoder) motor.getMotorEncoder()).velocityToRotationsPerMin(maxAcceleration) / 3600.0;
+    // configuration.MotionMagic.MotionMagicJerk = ((TalonFXEncoder)
+    // motor.getMotorEncoder()).velocityToRotationsPerMin(maxAcceleration) / 3600.0;
     cfg.apply(configuration.MotionMagic);
   }
 
@@ -418,11 +392,10 @@ public class TalonFXController extends GenericPIDController {
   }
 
   public void applyConfig() {
-        StatusCode status = StatusCode.StatusCodeNotInitialized;
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = cfg.apply(configuration);
-      if (status.isOK())
-        break;
+      if (status.isOK()) break;
     }
     if (!status.isOK()) {
       System.out.println("Could not configure device. Error: " + status.toString());

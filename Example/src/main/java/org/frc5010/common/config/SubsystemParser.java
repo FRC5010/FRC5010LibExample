@@ -1,19 +1,16 @@
 package org.frc5010.common.config;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.arch.GenericSubsystem;
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-import org.frc5010.common.config.json.devices.SubsystemJson;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import edu.wpi.first.wpilibj.Filesystem;
+import java.io.File;
+import java.io.IOException;
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.config.json.devices.SubsystemJson;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 
 public class SubsystemParser {
   /** The mechanism simulation */
@@ -36,12 +33,12 @@ public class SubsystemParser {
     this.robot = robot;
   }
 
-/**
- * Checks if a specific configuration file exists in the given directory.
- *
- * @param directory the directory to check for the configuration file
- * @param configFile the name of the configuration file to verify existence
- */
+  /**
+   * Checks if a specific configuration file exists in the given directory.
+   *
+   * @param directory the directory to check for the configuration file
+   * @param configFile the name of the configuration file to verify existence
+   */
   private void checkDirectory(File directory, String configFile) {
     assert new File(directory, configFile).exists();
   }

@@ -2,10 +2,6 @@ package org.frc5010.common.auto.pathplanner;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -15,14 +11,12 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PPLibTelemetry;
 import com.pathplanner.lib.util.PathPlannerLogging;
-
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.MathUtil;
@@ -36,6 +30,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** Base pathfinding command */
 public class PathfindingCommand5010 extends Command {
@@ -60,7 +57,6 @@ public class PathfindingCommand5010 extends Command {
   private static boolean pregenUsed;
 
   private static boolean CommandRunning = false;
-
 
   private PathPlannerPath currentPath;
   private PathPlannerTrajectory currentTrajectory;
@@ -266,20 +262,19 @@ public class PathfindingCommand5010 extends Command {
     Pathfinding.setGoalPosition(end.getTranslation());
   }
 
-  public static void updatePregen(PathConstraints constraints, Pose2d robotPose, GoalEndState endState, RobotConfig config) {
+  public static void updatePregen(
+      PathConstraints constraints, Pose2d robotPose, GoalEndState endState, RobotConfig config) {
     if (Pathfinding.isNewPathAvailable()) {
       pathPregen = Pathfinding.getCurrentPath(constraints, endState);
       if (null != pathPregen) {
 
-        trajPregen = new PathPlannerTrajectory(
-          pathPregen, new ChassisSpeeds(), robotPose.getRotation(), config);
+        trajPregen =
+            new PathPlannerTrajectory(
+                pathPregen, new ChassisSpeeds(), robotPose.getRotation(), config);
         pregenUsed = false;
       }
     }
   }
-  
-  
-
 
   @Override
   public void initialize() {
@@ -317,7 +312,7 @@ public class PathfindingCommand5010 extends Command {
   }
 
   public static boolean isCommandRunning() {
-    return CommandRunning; 
+    return CommandRunning;
   }
 
   @Override
@@ -339,7 +334,6 @@ public class PathfindingCommand5010 extends Command {
 
     if (!skipUpdates && Pathfinding.isNewPathAvailable()) {
       currentPath = Pathfinding.getCurrentPath(constraints, goalEndState);
-    
 
       if (currentPath != null) {
         currentTrajectory =

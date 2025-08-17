@@ -1,14 +1,12 @@
 package org.frc5010.common.telemetry;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.IntegerTopic;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a long to the dashboard */
 public class DisplayLong {
@@ -35,8 +33,8 @@ public class DisplayLong {
    * Add a long to the dashboard
    *
    * @param defaultValue the default value
-   * @param name         the name
-   * @param table        the table
+   * @param name the name
+   * @param table the table
    */
   public DisplayLong(final long defaultValue, final String name, final String table) {
     this(defaultValue, name, table, LogLevel.COMPETITION);
@@ -46,11 +44,12 @@ public class DisplayLong {
    * Add a long to the dashboard
    *
    * @param defaultValue the default value
-   * @param name         the name
-   * @param table        the table
-   * @param debug        which log level to dipslay at
+   * @param name the name
+   * @param table the table
+   * @param debug which log level to dipslay at
    */
-  public DisplayLong(final long defaultValue, final String name, final String table, final LogLevel logLevel) {
+  public DisplayLong(
+      final long defaultValue, final String name, final String table, final LogLevel logLevel) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
@@ -62,13 +61,14 @@ public class DisplayLong {
         if (isDisplayed_) topic_.setPersistent(true);
         if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
           subscriber_ = topic_.subscribe(value_);
-          listenerHandle_ = NetworkTableInstance.getDefault()
-              .addListener(
-                  subscriber_,
-                  EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                  event -> {
-                    setValue(event.valueData.value.getInteger(), false);
-                  });
+          listenerHandle_ =
+              NetworkTableInstance.getDefault()
+                  .addListener(
+                      subscriber_,
+                      EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                      event -> {
+                        setValue(event.valueData.value.getInteger(), false);
+                      });
           setValue(subscriber_.get(), false);
         }
         publisher_.setDefault(value_);
@@ -99,7 +99,7 @@ public class DisplayLong {
   /**
    * Set the value
    *
-   * @param value   the value
+   * @param value the value
    * @param publish - whether or not to publish
    */
   public synchronized void setValue(final long value, final boolean publish) {

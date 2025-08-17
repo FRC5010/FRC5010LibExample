@@ -4,14 +4,12 @@
 
 package org.frc5010.common.sensors.camera;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import java.util.Optional;
+import java.util.function.Supplier;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /** A simulated camera using the PhotonVision library. */
 public class SimulatedVisualTargetCamera extends SimulatedCamera {
@@ -19,15 +17,15 @@ public class SimulatedVisualTargetCamera extends SimulatedCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
-   * @param fieldLayout   - the field layout
-   * @param strategy      - the pose strategy
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param fieldLayout - the field layout
+   * @param strategy - the pose strategy
    * @param cameraToRobot - the camera-to-robot transform
-   * @param poseSupplier  - the pose supplier
-   * @param width         - the camera width
-   * @param height        - the camera height
-   * @param fov           - the camera field of view
+   * @param poseSupplier - the pose supplier
+   * @param width - the camera width
+   * @param height - the camera height
+   * @param fov - the camera field of view
    */
   public SimulatedVisualTargetCamera(
       String name,
@@ -35,7 +33,10 @@ public class SimulatedVisualTargetCamera extends SimulatedCamera {
       AprilTagFieldLayout fieldLayout,
       PoseStrategy strategy,
       Transform3d cameraToRobot,
-      Supplier<Pose2d> poseSupplier, int width, int height, double fov) {
+      Supplier<Pose2d> poseSupplier,
+      int width,
+      int height,
+      double fov) {
     super(name, colIndex, fieldLayout, strategy, cameraToRobot, poseSupplier, width, height, fov);
   }
 

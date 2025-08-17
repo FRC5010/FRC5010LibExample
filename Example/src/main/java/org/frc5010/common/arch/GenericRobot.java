@@ -1,10 +1,18 @@
 package org.frc5010.common.arch;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.config.RobotParser;
 import org.frc5010.common.config.SubsystemParser;
@@ -17,17 +25,6 @@ import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.frc5010.common.telemetry.WpiDataLogging;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 
 /** Robots should extend this class as the entry point into using the library */
 public abstract class GenericRobot extends GenericMechanism implements GenericDeviceHandler {
@@ -115,12 +112,12 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   protected void initializeDisplay() {
     displayValues = new DisplayValuesHelper(shuffleTab.getTitle(), logPrefix, true, 2);
     operator.ifPresent(
-      op -> {
-        if (!op.isPluggedIn()) {
-          operator = driver;
-          driver.ifPresent(it -> it.setSingleControllerMode(true));
-        }
-      });
+        op -> {
+          if (!op.isPluggedIn()) {
+            operator = driver;
+            driver.ifPresent(it -> it.setSingleControllerMode(true));
+          }
+        });
     SmartDashboard.putData("Robot Visual", mechVisual);
 
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -151,7 +148,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /** Initialize the robot depending on whether we are simulating or not */
   @Override
   protected void initRealOrSim() {
-    if (RobotBase.isReal() ) {
+    if (RobotBase.isReal()) {
       WpiDataLogging.start(true);
     } else {
       WpiDataLogging.start(false);
@@ -166,11 +163,9 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
+   * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   public void configureButtonBindings() {
@@ -192,7 +187,8 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
     // TODO: Figure out Pathplanner Warmup Command
     if (AutoBuilder.isConfigured()) {
-      selectableCommand = new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());
+      selectableCommand =
+          new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser());
       if (null != selectableCommand) {
         shuffleTab.add("Auto Modes", selectableCommand.getSendableChooser()).withSize(2, 1);
       }
@@ -201,14 +197,15 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
 
   /**
    * Adds auto commands to the auto selector
-   * 
-   * @param name    the name of the command
+   *
+   * @param name the name of the command
    * @param command the command to add
    * @throws IllegalStateException if the auto chooser is not initialized
    */
   public void addAutoToChooser(String name, Command command) {
     if (null == selectableCommand) {
-      throw new IllegalStateException("Auto chooser not initialized. Call buildAutoCommands() first");
+      throw new IllegalStateException(
+          "Auto chooser not initialized. Call buildAutoCommands() first");
     }
     selectableCommand.addOption(name, command);
   }
@@ -223,9 +220,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
     return generateAutoCommand(selectableCommand.get().asProxy());
   }
 
-  /**
-   * Executes periodic behavior when the robot is disabled.
-   */
+  /** Executes periodic behavior when the robot is disabled. */
   @Override
   public void disabledBehavior() {
     selectableCommand.periodic();
@@ -266,7 +261,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /**
    * Add a controller to the configuration
    *
-   * @param name       the name of the controller
+   * @param name the name of the controller
    * @param controller the controller
    */
   public void addController(String name, Controller controller) {
@@ -286,7 +281,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /**
    * Add a subsystem to the configuration
    *
-   * @param name      the name of the subsystem
+   * @param name the name of the subsystem
    * @param subsystem the subsystem
    */
   public void addSubsystem(String name, GenericSubsystem subsystem) {
@@ -296,7 +291,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   /**
    * Add a mechanism to the configuration
    *
-   * @param name      the name of the mechanism
+   * @param name the name of the mechanism
    * @param mechanism the mechanism
    */
   @Override
@@ -366,7 +361,7 @@ public abstract class GenericRobot extends GenericMechanism implements GenericDe
   }
 
   public void resetDrivePose() {
-    GenericDrivetrain drivetrain =  (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN); 
+    GenericDrivetrain drivetrain = (GenericDrivetrain) subsystems.get(ConfigConstants.DRIVETRAIN);
   }
 
   /**

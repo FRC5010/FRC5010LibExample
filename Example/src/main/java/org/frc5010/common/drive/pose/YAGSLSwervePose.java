@@ -4,13 +4,12 @@
 
 package org.frc5010.common.drive.pose;
 
-import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 
 public class YAGSLSwervePose extends GenericPose {
   private YAGSLSwerveDrivetrain drivetrain;

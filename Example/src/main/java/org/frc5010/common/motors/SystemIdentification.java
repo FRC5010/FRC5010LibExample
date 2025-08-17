@@ -11,8 +11,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
@@ -23,29 +21,22 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
 
 /** Add your docs here. */
 public class SystemIdentification {
-  /**
-   * Tracks the voltage being applied to a motor
-   */
+  /** Tracks the voltage being applied to a motor */
   private static final MutVoltage m_appliedVoltage = new MutVoltage(0, 0, Volts);
-  /**
-   * Tracks the distance travelled of a position motor
-   */
+  /** Tracks the distance travelled of a position motor */
   private static final MutAngle m_distance = new MutAngle(0, 0, Rotations);
-  /**
-   * Tracks the velocity of a positional motor
-   */
-  private static final MutAngularVelocity m_velocity = new MutAngularVelocity(0, 9, RotationsPerSecond);
-  /**
-   * Tracks the rotations of an angular motor
-   */
+  /** Tracks the velocity of a positional motor */
+  private static final MutAngularVelocity m_velocity =
+      new MutAngularVelocity(0, 9, RotationsPerSecond);
+  /** Tracks the rotations of an angular motor */
   private static final MutAngle m_anglePosition = new MutAngle(0, 0, Degrees);
-  /**
-   * Tracks the velocity of an angular motor
-   */
-  private static final MutAngularVelocity m_angVelocity = new MutAngularVelocity(0, 0, DegreesPerSecond);
+  /** Tracks the velocity of an angular motor */
+  private static final MutAngularVelocity m_angVelocity =
+      new MutAngularVelocity(0, 0, DegreesPerSecond);
 
   public static SysIdRoutine rpmSysIdRoutine(
       MotorController5010 motor,
@@ -54,10 +45,7 @@ public class SystemIdentification {
       SubsystemBase subsystemBase) {
 
     return new SysIdRoutine(
-        new Config(
-            Volts.of(1).div(Seconds.of(1)),
-            Volts.of(1),
-            Seconds.of(10)),
+        new Config(Volts.of(1).div(Seconds.of(1)), Volts.of(1), Seconds.of(10)),
         new SysIdRoutine.Mechanism(
             (Voltage voltage) -> motor.set(voltage.in(Volts) / RobotController.getBatteryVoltage()),
             log -> {

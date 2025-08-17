@@ -4,15 +4,13 @@
 
 package org.frc5010.common.sensors.camera;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Transform3d;
 import java.util.List;
 import java.util.Optional;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Transform3d;
 
 /** A camera using the PhotonVision library. */
 public class PhotonVisionCamera extends GenericCamera {
@@ -30,8 +28,8 @@ public class PhotonVisionCamera extends GenericCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
    * @param cameraToRobot - the camera-to-robot transform
    */
   public PhotonVisionCamera(String name, int colIndex, Transform3d cameraToRobot) {

@@ -1,14 +1,12 @@
 package org.frc5010.common.telemetry;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a double to the dashboard */
 public class DisplayDouble {
@@ -35,8 +33,8 @@ public class DisplayDouble {
    * Add a double to the dashboard
    *
    * @param defaultValue the default value
-   * @param name         the name
-   * @param table        the table
+   * @param name the name
+   * @param table the table
    */
   public DisplayDouble(final double defaultValue, final String name, final String table) {
     this(defaultValue, name, table, LogLevel.COMPETITION);
@@ -46,11 +44,12 @@ public class DisplayDouble {
    * Add a double to the dashboard
    *
    * @param defaultValue the default value
-   * @param name         the name
-   * @param table        the table
-   * @param debug        debug
+   * @param name the name
+   * @param table the table
+   * @param debug debug
    */
-  public DisplayDouble(final double defaultValue, final String name, final String table, final LogLevel logLevel) {
+  public DisplayDouble(
+      final double defaultValue, final String name, final String table, final LogLevel logLevel) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
@@ -64,13 +63,14 @@ public class DisplayDouble {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(value_);
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setValue(event.valueData.value.getDouble(), false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setValue(event.valueData.value.getDouble(), false);
+                    });
         setValue(subscriber_.get(), false);
       }
     }
@@ -99,7 +99,7 @@ public class DisplayDouble {
   /**
    * Set the value
    *
-   * @param value   the value to set
+   * @param value the value to set
    * @param publish whether or not to publish the value
    */
   public synchronized void setValue(final double value, final boolean publish) {

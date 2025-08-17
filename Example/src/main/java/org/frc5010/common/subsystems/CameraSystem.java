@@ -4,8 +4,9 @@
 
 package org.frc5010.common.subsystems;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
-
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.constants.Constants;
 import org.frc5010.common.sensors.camera.GenericCamera;
@@ -13,9 +14,6 @@ import org.frc5010.common.sensors.camera.SimulatedCamera;
 import org.ironmaple.simulation.SimulatedArena;
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.VisionTargetSim;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is an abstract class that needs to be implemented by any subclass of CameraSystem. It
@@ -27,7 +25,7 @@ public abstract class CameraSystem extends GenericSubsystem {
 
   protected String HAS_VALID_TARGET = "hasValidTarget";
   protected TargetModel targetModel = new TargetModel(0.3556);
-    
+
   /**
    * Creates a new CameraSystem.
    *
@@ -51,20 +49,21 @@ public abstract class CameraSystem extends GenericSubsystem {
 
   @Override
   public void simulationPeriodic() {
-    List<Pose3d> gpas = SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA);
+    List<Pose3d> gpas =
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA);
     SimulatedCamera.visionSim.removeVisionTargets("GPA");
     for (Pose3d gpa : gpas) {
       VisionTargetSim simTarget = new VisionTargetSim(gpa, targetModel);
       SimulatedCamera.visionSim.addVisionTargets("GPA", simTarget);
     }
-    List<Pose3d> gpbs = SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB);
+    List<Pose3d> gpbs =
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB);
     SimulatedCamera.visionSim.removeVisionTargets("GPB");
     for (Pose3d gpb : gpbs) {
       VisionTargetSim simTarget = new VisionTargetSim(gpb, targetModel);
       SimulatedCamera.visionSim.addVisionTargets("GPB", simTarget);
     }
   }
-
 
   /**
    * This is an abstract method that needs to be implemented by any subclass of CameraSystem. It is

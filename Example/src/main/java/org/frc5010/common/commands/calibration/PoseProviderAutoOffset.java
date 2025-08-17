@@ -4,10 +4,6 @@
 
 package org.frc5010.common.commands.calibration;
 
-import java.util.function.Supplier;
-
-import org.frc5010.common.drive.GenericDrivetrain;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,6 +11,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import java.util.function.Supplier;
+import org.frc5010.common.drive.GenericDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PoseProviderAutoOffset {
@@ -28,17 +26,21 @@ public class PoseProviderAutoOffset {
   private static String name = "";
 
   /** Creates a new PoseProviderAutoOffset. */
-  public static Command createPoseProviderAutoOffset(Supplier<Pose2d> rawPoseSupplier, GenericDrivetrain drivetrain,
-      Rotation2d rotation, String name) {
+  public static Command createPoseProviderAutoOffset(
+      Supplier<Pose2d> rawPoseSupplier,
+      GenericDrivetrain drivetrain,
+      Rotation2d rotation,
+      String name) {
     PoseProviderAutoOffset.drivetrain = drivetrain;
     PoseProviderAutoOffset.pose = rawPoseSupplier;
     PoseProviderAutoOffset.cameraRotation = rotation;
     PoseProviderAutoOffset.name = name;
-    return Commands.run(PoseProviderAutoOffset::execute).beforeStarting(PoseProviderAutoOffset::init);
+    return Commands.run(PoseProviderAutoOffset::execute)
+        .beforeStarting(PoseProviderAutoOffset::init);
   }
 
-  public static Command createPoseProviderAutoOffset(Supplier<Pose2d> rawPoseSupplier, GenericDrivetrain drivetrain,
-      Rotation2d rotation) {
+  public static Command createPoseProviderAutoOffset(
+      Supplier<Pose2d> rawPoseSupplier, GenericDrivetrain drivetrain, Rotation2d rotation) {
     return createPoseProviderAutoOffset(rawPoseSupplier, drivetrain, rotation, "");
   }
 
@@ -48,10 +50,12 @@ public class PoseProviderAutoOffset {
     Rotation2d angle = getHeading();
     Translation2d displacement = currentPose2d.getTranslation();
 
-    double x = ((angle.getCos() - 1) * displacement.getX() + angle.getSin() * displacement.getY())
-        / (2 * (1 - angle.getCos()));
-    double y = ((-1 * angle.getSin()) * displacement.getX() + (angle.getCos() - 1) * displacement.getY())
-        / (2 * (1 - angle.getCos()));
+    double x =
+        ((angle.getCos() - 1) * displacement.getX() + angle.getSin() * displacement.getY())
+            / (2 * (1 - angle.getCos()));
+    double y =
+        ((-1 * angle.getSin()) * displacement.getX() + (angle.getCos() - 1) * displacement.getY())
+            / (2 * (1 - angle.getCos()));
 
     return new Translation2d(x, y);
   }
@@ -70,8 +74,10 @@ public class PoseProviderAutoOffset {
 
   public static Pose2d getPose() {
     Pose2d raw = pose.get();
-    Pose2d zeroOffset = new Pose2d(raw.getTranslation().minus(initPose.getTranslation()),
-        raw.getRotation().minus(initPose.getRotation()));
+    Pose2d zeroOffset =
+        new Pose2d(
+            raw.getTranslation().minus(initPose.getTranslation()),
+            raw.getRotation().minus(initPose.getRotation()));
     Pose2d rotationAccounted = zeroOffset.rotateBy(cameraRotation);
     return rotationAccounted;
   }
@@ -83,14 +89,18 @@ public class PoseProviderAutoOffset {
     if (null != pose.get()) {
       Translation2d offset = calculateOffsetToRobotCenter();
 
-      _calculatedOffsetToRobotCenter = _calculatedOffsetToRobotCenter
-          .times((double) _calculatedOffsetToRobotCenterCount
-              / (_calculatedOffsetToRobotCenterCount + 1))
-          .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
+      _calculatedOffsetToRobotCenter =
+          _calculatedOffsetToRobotCenter
+              .times(
+                  (double) _calculatedOffsetToRobotCenterCount
+                      / (_calculatedOffsetToRobotCenterCount + 1))
+              .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
       _calculatedOffsetToRobotCenterCount++;
     }
-    SmartDashboard.putNumberArray(name + " Camera Calculated Offset to Robot Center", new double[] {
-        _calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY() });
-
+    SmartDashboard.putNumberArray(
+        name + " Camera Calculated Offset to Robot Center",
+        new double[] {
+          _calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY()
+        });
   }
 }

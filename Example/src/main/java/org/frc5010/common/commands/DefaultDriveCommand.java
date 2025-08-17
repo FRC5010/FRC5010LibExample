@@ -1,19 +1,17 @@
 package org.frc5010.common.commands;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.frc5010.common.arch.Persisted;
-import org.frc5010.common.drive.GenericDrivetrain;
-import org.frc5010.common.mechanisms.DriveConstantsDef;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 /** A default driving command */
 public class DefaultDriveCommand extends Command {
@@ -37,11 +35,11 @@ public class DefaultDriveCommand extends Command {
   /**
    * Creates a new DefaultDriveCommand
    *
-   * @param drivetrainSubsystem  The drivetrain subsystem
+   * @param drivetrainSubsystem The drivetrain subsystem
    * @param translationXSupplier The supplier for the X translation
    * @param translationYSupplier The supplier for the Y translation
-   * @param rotationSupplier     The supplier for the rotation
-   * @param fieldOrientedDrive   Whether the drive is field-oriented
+   * @param rotationSupplier The supplier for the rotation
+   * @param fieldOrientedDrive Whether the drive is field-oriented
    */
   public DefaultDriveCommand(
       GenericDrivetrain drivetrainSubsystem,
@@ -54,8 +52,10 @@ public class DefaultDriveCommand extends Command {
     this.m_translationYSupplier = translationYSupplier;
     this.m_rotationSupplier = rotationSupplier;
     this.fieldOrientedDrive = fieldOrientedDrive;
-    maxChassisVelocity = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
-    maxChassisRotation = new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
+    maxChassisVelocity =
+        new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_VELOCITY, Double.class);
+    maxChassisRotation =
+        new Persisted<Double>(DriveConstantsDef.MAX_CHASSIS_ROTATION, Double.class);
     joystick = drivetrainSubsystem.getMechVisual().getRoot("joystick", 30, 30);
     xAxis = new LoggedMechanismLigament2d("xAxis", 1, 90, 6, new Color8Bit(Color.kDarkRed));
     yAxis = new LoggedMechanismLigament2d("yAxis", 1, 180, 6, new Color8Bit(Color.kDarkSalmon));
@@ -86,10 +86,12 @@ public class DefaultDriveCommand extends Command {
     heading.setAngle(180 * r);
 
     if (fieldOrientedDrive.get()) {
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          x * maxChassisVelocity.get(),
-          y * maxChassisVelocity.get(),
-          r * maxChassisRotation.get(),drivetrainSubsystem.getHeading());
+      ChassisSpeeds chassisSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              x * maxChassisVelocity.get(),
+              y * maxChassisVelocity.get(),
+              r * maxChassisRotation.get(),
+              drivetrainSubsystem.getHeading());
       drivetrainSubsystem.drive(chassisSpeeds);
     } else {
       drivetrainSubsystem.drive(

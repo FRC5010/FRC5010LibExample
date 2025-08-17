@@ -7,15 +7,14 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.motors.function.PercentControlMotor;
 import org.frc5010.common.sensors.Controller;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 
 /** This is an example robot class. */
 public class ExampleRobot extends GenericRobot {
@@ -39,12 +38,17 @@ public class ExampleRobot extends GenericRobot {
     //     .onFalse(exampleSubsystem.setVelocityControlMotorReference(() -> 0));
     // driver.createAButton().whileTrue(exampleSubsystem.setAngularMotorReference(() -> 90))
     //     .whileFalse(exampleSubsystem.setAngularMotorReference(() -> 0));
-//    driver.createBButton().whileTrue(((YAGSLSwerveDrivetrain)drivetrain).driveToPose(new Pose2d(8, 4, new Rotation2d())));
+    //    driver.createBButton().whileTrue(((YAGSLSwerveDrivetrain)drivetrain).driveToPose(new
+    // Pose2d(8, 4, new Rotation2d())));
     driver.createAButton().whileTrue(exampleSubsystem.setElevatorHeight(() -> Meters.of(0.5)));
     driver.createBButton().whileTrue(exampleSubsystem.setElevatorHeight(() -> Meters.of(2)));
-    driver.createXButton().whileTrue(exampleSubsystem.setArmAngle(() -> Degrees.of(90)))
+    driver
+        .createXButton()
+        .whileTrue(exampleSubsystem.setArmAngle(() -> Degrees.of(90)))
         .whileFalse(exampleSubsystem.setArmAngle(() -> Degrees.of(0)));
-    driver.createYButton().whileTrue(exampleSubsystem.setPivotAngle(() -> Degrees.of(90)))
+    driver
+        .createYButton()
+        .whileTrue(exampleSubsystem.setPivotAngle(() -> Degrees.of(90)))
         .whileFalse(exampleSubsystem.setPivotAngle(() -> Degrees.of(0)));
     driver.createRightBumper().whileTrue(exampleSubsystem.driveElevator(() -> 0.5));
     driver.createLeftBumper().whileTrue(exampleSubsystem.driveElevator(() -> -0.5));
@@ -54,7 +58,8 @@ public class ExampleRobot extends GenericRobot {
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
     driver.setRightTrigger(driver.createRightTrigger());
-    exampleSubsystem.setDefaultCommand(exampleSubsystem.getDefaultCommand(() -> operator.getLeftYAxis()));
+    exampleSubsystem.setDefaultCommand(
+        exampleSubsystem.getDefaultCommand(() -> operator.getLeftYAxis()));
     drivetrain.setDefaultCommand(drivetrain.createDefaultCommand(driver));
   }
 
@@ -73,5 +78,4 @@ public class ExampleRobot extends GenericRobot {
     super.buildAutoCommands();
     selectableCommand.addOption("Do Nothing", Commands.none());
   }
-
 }

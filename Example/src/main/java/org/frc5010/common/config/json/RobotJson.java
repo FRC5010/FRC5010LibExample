@@ -4,16 +4,14 @@
 
 package org.frc5010.common.config.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.constants.Constants;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** The base JSON class for robot configurations */
 public class RobotJson {

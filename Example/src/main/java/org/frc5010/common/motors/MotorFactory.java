@@ -4,6 +4,7 @@
 
 package org.frc5010.common.motors;
 
+import edu.wpi.first.wpilibj.util.Color;
 import org.frc5010.common.motors.MotorConstants.Motor;
 import org.frc5010.common.motors.function.DriveTrainMotor;
 import org.frc5010.common.motors.function.FollowerMotor;
@@ -11,36 +12,35 @@ import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
 import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
 import org.frc5010.common.motors.hardware.GenericThriftyNovaMotor;
 
-import edu.wpi.first.wpilibj.util.Color;
-
 /** Add your docs here. */
 public class MotorFactory {
   protected static int simEncoderPort = 10;
   protected static int visualColorIndex = 0;
-  protected static Color[] visualColors = new Color[] {
-      Color.kRed,
-      Color.kOrange,
-      Color.kYellow,
-      Color.kGreen,
-      Color.kBlue,
-      Color.kPurple,
-      Color.kCyan,
-      Color.kMagenta,
-      Color.kViolet,
-      Color.kPink,
-      Color.kWhite,
-      Color.kBrown,
-      Color.kDarkRed,
-      Color.kDarkOrange,
-      Color.kYellowGreen,
-      Color.kDarkGreen,
-      Color.kDarkBlue,
-      Color.kDarkViolet,
-      Color.kDarkCyan,
-      Color.kDarkMagenta,
-      Color.kDarkSalmon,
-      Color.kGray
-  };
+  protected static Color[] visualColors =
+      new Color[] {
+        Color.kRed,
+        Color.kOrange,
+        Color.kYellow,
+        Color.kGreen,
+        Color.kBlue,
+        Color.kPurple,
+        Color.kCyan,
+        Color.kMagenta,
+        Color.kViolet,
+        Color.kPink,
+        Color.kWhite,
+        Color.kBrown,
+        Color.kDarkRed,
+        Color.kDarkOrange,
+        Color.kYellowGreen,
+        Color.kDarkGreen,
+        Color.kDarkBlue,
+        Color.kDarkViolet,
+        Color.kDarkCyan,
+        Color.kDarkMagenta,
+        Color.kDarkSalmon,
+        Color.kGray
+      };
 
   public static int getNextSimEncoderPort() {
     return simEncoderPort++;
@@ -74,9 +74,9 @@ public class MotorFactory {
   public static MotorController5010 TalonFX(int canId, Motor config) {
     switch (config) {
       case KrakenX60:
-      return new GenericTalonFXMotor(canId, config);
+        return new GenericTalonFXMotor(canId, config);
       default:
-      throw new IllegalArgumentException("TalonFX can not use " + config + " config");
+        throw new IllegalArgumentException("TalonFX can not use " + config + " config");
     }
   }
 

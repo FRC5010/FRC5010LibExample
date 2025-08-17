@@ -17,7 +17,6 @@
   "inverted": {
     "drive": true,
     "angle": true
-
   },
   "absoluteEncoderInverted": true,
   "location": {

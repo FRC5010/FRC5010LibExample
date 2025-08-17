@@ -4,6 +4,11 @@
 
 package org.frc5010.common.sensors.camera;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,17 +16,10 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.frc5010.common.sensors.gyro.GenericGyro;
 import org.frc5010.common.vision.LimelightHelpers;
 import org.frc5010.common.vision.LimelightHelpers.PoseEstimate;
 import org.frc5010.common.vision.LimelightHelpers.RawFiducial;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Limelight Camera */
 public class LimeLightCamera extends GenericCamera {
@@ -33,11 +31,9 @@ public class LimeLightCamera extends GenericCamera {
   /**
    * Constructor with megatag chooser for AprilTags
    *
-   * @param name           the name of the camera, 'limelight-' will be prepended
-   *                       to the name
-   * @param colIndex       the column index of the display tab
-   * @param megatagChooser boolean supplier to choose between M1 and M2 for pose
-   *                       estimation
+   * @param name the name of the camera, 'limelight-' will be prepended to the name
+   * @param colIndex the column index of the display tab
+   * @param megatagChooser boolean supplier to choose between M1 and M2 for pose estimation
    */
   public LimeLightCamera(String name, int colIndex, BooleanSupplier megatagChooser) {
     super("limelight-" + name, colIndex, new Transform3d());
@@ -47,8 +43,7 @@ public class LimeLightCamera extends GenericCamera {
   /**
    * Constructor without megatag chooser, M1 is always chosen
    *
-   * @param name     the name of the camera, 'limelight-' will be prepended to the
-   *                 name
+   * @param name the name of the camera, 'limelight-' will be prepended to the name
    * @param colIndex the column index of the display tab
    */
   public LimeLightCamera(String name, int colIndex) {
@@ -59,12 +54,10 @@ public class LimeLightCamera extends GenericCamera {
   /**
    * Constructor with megatag chooser for AprilTags or targets
    *
-   * @param name           the name of the camera, 'limelight-' will be prepended
-   *                       to the name
-   * @param colIndex       the column index of the display tab
-   * @param cameraToRobot  the camera position relative to the robot's center
-   * @param megatagChooser boolean supplier to choose between M1 and M2 for pose
-   *                       estimation
+   * @param name the name of the camera, 'limelight-' will be prepended to the name
+   * @param colIndex the column index of the display tab
+   * @param cameraToRobot the camera position relative to the robot's center
+   * @param megatagChooser boolean supplier to choose between M1 and M2 for pose estimation
    */
   public LimeLightCamera(
       String name, int colIndex, Transform3d cameraToRobot, BooleanSupplier megatagChooser) {
@@ -76,9 +69,8 @@ public class LimeLightCamera extends GenericCamera {
   /**
    * Constructor for targeting cameras without megatag chooser
    *
-   * @param name          the name of the camera, 'limelight-' will be prepended
-   *                      to the name
-   * @param colIndex      the column index of the display tab
+   * @param name the name of the camera, 'limelight-' will be prepended to the name
+   * @param colIndex the column index of the display tab
    * @param cameraToRobot the camera position relative to the robot's center
    */
   public LimeLightCamera(String name, int colIndex, Transform3d cameraToRobot) {
@@ -93,8 +85,9 @@ public class LimeLightCamera extends GenericCamera {
    * @return the robot's estimated pose
    */
   protected Optional<PoseEstimate> getRobotPoseEstimateM1() {
-    Optional<PoseEstimate> poseEstimate = validatePoseEstimate(
-        Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue(name)));
+    Optional<PoseEstimate> poseEstimate =
+        validatePoseEstimate(
+            Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue(name)));
 
     if (poseEstimate.isPresent() && null != poseEstimate.get().pose && null != gyroSupplier) {
       SmartDashboard.putNumber("MT1 Angle", poseEstimate.get().pose.getRotation().getDegrees());
@@ -110,11 +103,12 @@ public class LimeLightCamera extends GenericCamera {
    * @return the robot's estimated pose
    */
   protected Optional<PoseEstimate> getRobotPoseEstimateM2() {
-    Optional<PoseEstimate> poseEstimate = validatePoseEstimate(
-        Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name)));
+    Optional<PoseEstimate> poseEstimate =
+        validatePoseEstimate(
+            Optional.ofNullable(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name)));
     return poseEstimate;
   }
-  
+
   /**
    * Validate the pose estimate
    *
@@ -156,21 +150,24 @@ public class LimeLightCamera extends GenericCamera {
   public void updateCameraInfo() {
     if (null != gyroSupplier.get()) {
       GenericGyro gyro = gyroSupplier.get();
-      LimelightHelpers.SetRobotOrientation(name, gyro.getAngle(), gyro.getRate(), 0.0, 0.0, 0.0, 0.0);
+      LimelightHelpers.SetRobotOrientation(
+          name, gyro.getAngle(), gyro.getRate(), 0.0, 0.0, 0.0, 0.0);
     } else if (null != angleResetSupplier.get()) {
-      LimelightHelpers.SetRobotOrientation(name, angleResetSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
+      LimelightHelpers.SetRobotOrientation(
+          name, angleResetSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0);
     }
 
     LimelightHelpers.getLatestResults(name);
     List<PoseObservation> observations = new ArrayList<>();
     if (hasValidTarget()) {
-      Optional<PoseEstimate> poseEstimate = megatagChooser.getAsBoolean() ? getRobotPoseEstimateM1() : getRobotPoseEstimateM2();
+      Optional<PoseEstimate> poseEstimate =
+          megatagChooser.getAsBoolean() ? getRobotPoseEstimateM1() : getRobotPoseEstimateM2();
       if (poseEstimate.isPresent()) {
         Pose2d currPose = poseEstimate.get().pose;
         if (null != currPose) {
-          SmartDashboard.putNumberArray("Limelight POSE", new double[] {
-              currPose.getX(), currPose.getY(), currPose.getRotation().getDegrees()
-          });
+          SmartDashboard.putNumberArray(
+              "Limelight POSE",
+              new double[] {currPose.getX(), currPose.getY(), currPose.getRotation().getDegrees()});
         }
       }
       targetPose = Optional.of(LimelightHelpers.getTargetPose3d_RobotSpace(name));
@@ -197,10 +194,11 @@ public class LimeLightCamera extends GenericCamera {
       }
 
       // Save tag IDs to inputs objects
-      input.tagIds = Arrays.stream(LimelightHelpers.getRawFiducials(name))
-                            .mapToInt(fiducial -> fiducial.id)
-                            .distinct()
-                            .toArray();
+      input.tagIds =
+          Arrays.stream(LimelightHelpers.getRawFiducials(name))
+              .mapToInt(fiducial -> fiducial.id)
+              .distinct()
+              .toArray();
     }
   }
 
@@ -227,15 +225,28 @@ public class LimeLightCamera extends GenericCamera {
   }
 
   public void setRobotToCameraOnLL() {
-    LimelightHelpers.setCameraPose_RobotSpace(name, robotToCamera.getX(), -robotToCamera.getY(), robotToCamera.getZ(),
-        robotToCamera.getRotation().getX(), robotToCamera.getRotation().getY(), robotToCamera.getRotation().getZ());
+    LimelightHelpers.setCameraPose_RobotSpace(
+        name,
+        robotToCamera.getX(),
+        -robotToCamera.getY(),
+        robotToCamera.getZ(),
+        robotToCamera.getRotation().getX(),
+        robotToCamera.getRotation().getY(),
+        robotToCamera.getRotation().getZ());
   }
 
-  public double determineConfidence( PoseEstimate estimate) {
-    Stream<RawFiducial> fiducialStream = Arrays.stream(LimelightHelpers.getRawFiducials(name))
-        .sorted((raw1, raw2) -> raw1.ambiguity == raw2.ambiguity ? 0 : (raw1.ambiguity > raw2.ambiguity ? 1 : -1));
-    double min_ambiguity = fiducialStream.findFirst().map(fiducial -> fiducial.ambiguity).orElse(100.0);
-    double confidence = estimate.avgTagDist > 2 ? 1.0 : min_ambiguity * Math.max(estimate.avgTagDist / 2, 0.5);
+  public double determineConfidence(PoseEstimate estimate) {
+    Stream<RawFiducial> fiducialStream =
+        Arrays.stream(LimelightHelpers.getRawFiducials(name))
+            .sorted(
+                (raw1, raw2) ->
+                    raw1.ambiguity == raw2.ambiguity
+                        ? 0
+                        : (raw1.ambiguity > raw2.ambiguity ? 1 : -1));
+    double min_ambiguity =
+        fiducialStream.findFirst().map(fiducial -> fiducial.ambiguity).orElse(100.0);
+    double confidence =
+        estimate.avgTagDist > 2 ? 1.0 : min_ambiguity * Math.max(estimate.avgTagDist / 2, 0.5);
     SmartDashboard.putNumber("Limelight Confidence", confidence);
     return confidence;
   }

@@ -4,18 +4,16 @@
 
 package org.frc5010.common.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SmartSwerveDrive extends Command {
@@ -27,7 +25,7 @@ public class SmartSwerveDrive extends Command {
 
   /** Creates a new SmartDrive. */
   public SmartSwerveDrive(
-    GenericSwerveDrivetrain swerveSubsystem,
+      GenericSwerveDrivetrain swerveSubsystem,
       DoubleSupplier xSpdFunction,
       DoubleSupplier ySpdFunction,
       DoubleSupplier turnSpdFunction,
@@ -94,10 +92,12 @@ public class SmartSwerveDrive extends Command {
 
     if (fieldOrientedDrive.getAsBoolean()) {
       Alliance alliance = allianceSupplier.get();
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(    
+      chassisSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
               alliance == Alliance.Red ? -xSpeed : xSpeed,
               alliance == Alliance.Red ? -ySpeed : ySpeed,
-              turnSpeed, correctedRotation);
+              turnSpeed,
+              correctedRotation);
     } else {
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnSpeed);
     }

@@ -7,30 +7,28 @@ package org.frc5010.common.commands.calibration;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.util.function.Supplier;
-
-import org.frc5010.common.arch.GenericCommand;
-import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
-import org.frc5010.common.telemetry.DisplayDouble;
-import org.frc5010.common.telemetry.DisplayLength;
-import org.frc5010.common.telemetry.DisplayValuesHelper;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.function.Supplier;
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
+import org.frc5010.common.telemetry.DisplayDouble;
+import org.frc5010.common.telemetry.DisplayLength;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class WheelRadiusCharacterization extends GenericCommand {
 
-  private DisplayValuesHelper displayValuesHelper = new DisplayValuesHelper("Wheel Characterization", logPrefix);
+  private DisplayValuesHelper displayValuesHelper =
+      new DisplayValuesHelper("Wheel Characterization", logPrefix);
   private DisplayDouble wheelRadius;
   private DisplayDouble trackRadius;
   private DisplayDouble currentConfigWheelRadius;
   private DisplayLength wheelDiameter;
-
 
   private final double RAMP_RATE = 1.0;
   private final double ROTATION_SPEED = 2.0;
@@ -55,8 +53,7 @@ public class WheelRadiusCharacterization extends GenericCommand {
     trackRadius = displayValuesHelper.makeDisplayDouble("Track Radius");
     currentConfigWheelRadius = displayValuesHelper.makeDisplayDouble("Current Config Wheel Radius");
     wheelDiameter = displayValuesHelper.makeDisplayLength("Wheel Diameter");
-    
-    
+
     drivetrain = swerve;
     robotRotationRadius = getRotationRadius();
     trackRadius.setValue(robotRotationRadius);
@@ -76,20 +73,19 @@ public class WheelRadiusCharacterization extends GenericCommand {
     SwerveModulePosition[] modules = drivetrain.getModulePositions();
     double[] positions = new double[modules.length];
     for (int i = 0; i < modules.length; i++) {
-      positions[i] = modules[i].distanceMeters / (drivetrain.getSwerveConstants().getWheelDiameter() / 2.0);
+      positions[i] =
+          modules[i].distanceMeters / (drivetrain.getSwerveConstants().getWheelDiameter() / 2.0);
     }
     return positions;
   }
 
   private void refreshCurrentModulePositions() {
-      wheelPositions = getCurrentModulePositions();
+    wheelPositions = getCurrentModulePositions();
   }
 
   private void refreshCurrentModulePositions(double[] positions) {
     wheelPositions = positions;
   }
-
-
 
   // Called when the command is initially scheduled.
   @Override
@@ -114,7 +110,6 @@ public class WheelRadiusCharacterization extends GenericCommand {
   public void execute() {
     rotateRobot(ROTATION_SPEED);
     if (time.hasElapsed(dataCollectionDelay.in(Seconds))) {
-      
 
       Rotation2d currentRotation;
       if (null != gyroOverride) {
@@ -122,7 +117,6 @@ public class WheelRadiusCharacterization extends GenericCommand {
       } else {
         currentRotation = drivetrain.getHeading();
       }
-
 
       double[] currentPositions = getCurrentModulePositions();
 
@@ -140,18 +134,16 @@ public class WheelRadiusCharacterization extends GenericCommand {
       gyroChange += Math.abs(currentRotation.minus(lastAngle).getRadians());
       lastAngle = currentRotation;
 
-      double radius = (gyroChange * robotRotationRadius) / moduleMovement; 
+      double radius = (gyroChange * robotRotationRadius) / moduleMovement;
       wheelRadius.setValue(radius);
       wheelDiameter.setLength(Meters.of(radius * 2.0));
     }
-
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void stop(boolean interrupted) {
-    firstCycle =true;
+    firstCycle = true;
   }
 
   // Returns true when the command should end.

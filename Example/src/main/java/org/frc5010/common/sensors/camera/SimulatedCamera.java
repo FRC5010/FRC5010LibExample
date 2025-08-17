@@ -8,7 +8,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,15 +34,15 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
-   * @param fieldLayout   - the field layout
-   * @param strategy      - the pose strategy
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param fieldLayout - the field layout
+   * @param strategy - the pose strategy
    * @param cameraToRobot - the camera-to-robot transform
-   * @param poseSupplier  - the pose supplier
-   * @param width         - the camera width
-   * @param height        - the camera height
-   * @param fov           - the camera field of view
+   * @param poseSupplier - the pose supplier
+   * @param width - the camera width
+   * @param height - the camera height
+   * @param fov - the camera field of view
    */
   public SimulatedCamera(
       String name,
@@ -52,7 +51,9 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
       PoseStrategy strategy,
       Transform3d cameraToRobot,
       Supplier<Pose2d> poseSupplier,
-      int width, int height, double fov) {
+      int width,
+      int height,
+      double fov) {
     super(name, colIndex, fieldLayout, strategy, cameraToRobot, poseSupplier);
     if (!tagsLoaded) {
       visionSim.addAprilTags(fieldLayout);
@@ -86,16 +87,16 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
-   * @param fieldLayout   - the field layout
-   * @param strategy      - the pose strategy
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param fieldLayout - the field layout
+   * @param strategy - the pose strategy
    * @param cameraToRobot - the camera-to-robot transform
-   * @param poseSupplier  - the pose supplier
-   * @param fiducialIds   - the list of fiducial IDs
-   * @param width         - the width of the camera
-   * @param height        - the height of the camera
-   * @param fov           - the field of view
+   * @param poseSupplier - the pose supplier
+   * @param fiducialIds - the list of fiducial IDs
+   * @param width - the width of the camera
+   * @param height - the height of the camera
+   * @param fov - the field of view
    */
   public SimulatedCamera(
       String name,
@@ -105,7 +106,9 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
       Transform3d cameraToRobot,
       Supplier<Pose2d> poseSupplier,
       List<Integer> fiducialIds,
-      int width, int height, double fov) {
+      int width,
+      int height,
+      double fov) {
     this(name, colIndex, fieldLayout, strategy, cameraToRobot, poseSupplier);
     this.fiducialIds = fiducialIds;
     visionLayout.addDouble("Target ID", () -> target.map(it -> it.getFiducialId()).orElse(-1));
@@ -114,12 +117,12 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
-   * @param fieldLayout   - the field layout
-   * @param strategy      - the pose strategy
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param fieldLayout - the field layout
+   * @param strategy - the pose strategy
    * @param cameraToRobot - the camera-to-robot transform
-   * @param poseSupplier  - the pose supplier
+   * @param poseSupplier - the pose supplier
    */
   public SimulatedCamera(
       String name,
@@ -137,9 +140,10 @@ public class SimulatedCamera extends PhotonVisionPoseCamera {
     super.updateCameraInfo();
     if (camResult.hasTargets()) {
       if (fiducialIds.size() > 0) {
-        target = camResult.getTargets().stream()
-            .filter(it -> fiducialIds.contains(it.getFiducialId()))
-            .findFirst();
+        target =
+            camResult.getTargets().stream()
+                .filter(it -> fiducialIds.contains(it.getFiducialId()))
+                .findFirst();
       } else {
         target = Optional.ofNullable(camResult.getBestTarget());
       }

@@ -4,17 +4,15 @@
 
 package org.frc5010.common.sensors.camera;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 /** A camera using the PhotonVision library. */
 public class PhotonVisionFiducialTargetCamera extends PhotonVisionPoseCamera {
@@ -24,11 +22,11 @@ public class PhotonVisionFiducialTargetCamera extends PhotonVisionPoseCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
-   * @param fieldLayout   - the field layout
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param fieldLayout - the field layout
    * @param cameraToRobot - the camera-to-robot transform
-   * @param fiducialIds   - the list of fiducial IDs
+   * @param fiducialIds - the list of fiducial IDs
    */
   public PhotonVisionFiducialTargetCamera(
       String name,
@@ -48,20 +46,24 @@ public class PhotonVisionFiducialTargetCamera extends PhotonVisionPoseCamera {
   public void updateCameraInfo() {
     super.updateCameraInfo();
     if (camResult.hasTargets()) {
-      target = camResult.getTargets().stream()
-          .filter(it -> fiducialIds.contains(it.getFiducialId()))
-          .findFirst();
+      target =
+          camResult.getTargets().stream()
+              .filter(it -> fiducialIds.contains(it.getFiducialId()))
+              .findFirst();
 
       input.hasTarget = target.isPresent();
-      input.latestTargetRotation = target
-          .map(it -> new TargetRotation(new Rotation3d(0, it.getPitch(), it.getYaw())))
-          .orElse(new TargetRotation(new Rotation3d()));
-      input.latestTargetPose = target
-          .map(it -> {
-            Transform3d targetTrans = robotToCamera.plus(it.getBestCameraToTarget());
-            return new Pose3d(targetTrans.getTranslation(), targetTrans.getRotation());
-          })
-          .orElse(new Pose3d());
+      input.latestTargetRotation =
+          target
+              .map(it -> new TargetRotation(new Rotation3d(0, it.getPitch(), it.getYaw())))
+              .orElse(new TargetRotation(new Rotation3d()));
+      input.latestTargetPose =
+          target
+              .map(
+                  it -> {
+                    Transform3d targetTrans = robotToCamera.plus(it.getBestCameraToTarget());
+                    return new Pose3d(targetTrans.getTranslation(), targetTrans.getRotation());
+                  })
+              .orElse(new Pose3d());
     }
   }
 }

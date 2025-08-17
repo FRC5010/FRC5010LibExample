@@ -4,20 +4,6 @@
 
 package org.frc5010.common.drive.pose;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.frc5010.common.arch.GenericSubsystem;
-import org.frc5010.common.commands.calibration.PoseProviderAutoOffset;
-import org.frc5010.common.drive.GenericDrivetrain;
-import org.frc5010.common.drive.pose.PoseProvider.PoseObservation;
-import org.frc5010.common.drive.pose.PoseProvider.ProviderType;
-import org.frc5010.common.subsystems.LEDStripSegment;
-import org.frc5010.common.vision.AprilTags;
-import org.frc5010.common.vision.VisionConstants;
-
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,12 +16,23 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.commands.calibration.PoseProviderAutoOffset;
+import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.drive.pose.PoseProvider.PoseObservation;
+import org.frc5010.common.drive.pose.PoseProvider.ProviderType;
+import org.frc5010.common.subsystems.LEDStripSegment;
+import org.frc5010.common.vision.AprilTags;
+import org.frc5010.common.vision.VisionConstants;
 
 /** A class to handle estimating the pose of the robot */
 public class DrivePoseEstimator extends GenericSubsystem {
@@ -49,6 +46,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
   private boolean disableVisionUpdateCommand = false;
   /** List of PoseProviders */
   private List<PoseProvider> poseProviders = new ArrayList<>();
+
   private boolean aprilTagVisible = false;
   private boolean updatingPoseAcceptor = false;
 
@@ -57,8 +55,11 @@ public class DrivePoseEstimator extends GenericSubsystem {
   private boolean poseAcceptable = false;
 
   public static enum State {
-    DISABLED_FIELD(ProviderType.FIELD_BASED), DISABLED_ENV(ProviderType.ENVIRONMENT_BASED),
-    ENABLED_FIELD(ProviderType.FIELD_BASED), ENABLED_ENV(ProviderType.ENVIRONMENT_BASED), ALL(ProviderType.ALL),
+    DISABLED_FIELD(ProviderType.FIELD_BASED),
+    DISABLED_ENV(ProviderType.ENVIRONMENT_BASED),
+    ENABLED_FIELD(ProviderType.FIELD_BASED),
+    ENABLED_ENV(ProviderType.ENVIRONMENT_BASED),
+    ALL(ProviderType.ALL),
     ODOMETRY_ONLY(ProviderType.NONE);
 
     public ProviderType type;
@@ -81,19 +82,28 @@ public class DrivePoseEstimator extends GenericSubsystem {
 
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
     tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
-    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray()).withPosition(11, 2).withSize(4, 2);
+    tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray())
+        .withPosition(11, 2)
+        .withSize(4, 2);
 
     tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees()))
         .withPosition(11, 4);
     tab.add("Pose Field", field2d).withPosition(0, 0).withSize(11, 5);
 
-    tab.addStringArray("Providers Active", () -> {
-      String[] providerActive = new String[poseProviders.size()];
-      for (int i = 0; i < poseProviders.size(); i++) {
-        providerActive[i] = poseProviders.get(i).getClass().getSimpleName() + ": " + poseProviders.get(i).isConnected();
-      }
-      return providerActive;
-    }).withSize(6, 2).withPosition(0, 5);
+    tab.addStringArray(
+            "Providers Active",
+            () -> {
+              String[] providerActive = new String[poseProviders.size()];
+              for (int i = 0; i < poseProviders.size(); i++) {
+                providerActive[i] =
+                    poseProviders.get(i).getClass().getSimpleName()
+                        + ": "
+                        + poseProviders.get(i).isConnected();
+              }
+              return providerActive;
+            })
+        .withSize(6, 2)
+        .withPosition(0, 5);
     tab.addBoolean("April Tag Visible", () -> aprilTagVisible).withPosition(6, 5);
     tab.addBoolean("Acceptor Updating", () -> updatingPoseAcceptor).withPosition(8, 5);
     tab.addString("Estimator State", () -> state.name());
@@ -106,8 +116,8 @@ public class DrivePoseEstimator extends GenericSubsystem {
       }
     }
 
-    new Trigger(() -> DriverStation.isDisabled()).onFalse(Commands.runOnce(() -> setState(State.ALL)));
-
+    new Trigger(() -> DriverStation.isDisabled())
+        .onFalse(Commands.runOnce(() -> setState(State.ALL)));
   }
 
   public Function<Integer, Color8Bit> displayProviderStatuses(int length) {
@@ -188,13 +198,13 @@ public class DrivePoseEstimator extends GenericSubsystem {
     Pose3d pose = getCurrentPose3d();
     Quaternion rotation = pose.getRotation().getQuaternion();
     return new double[] {
-        pose.getX(),
-        pose.getY(),
-        pose.getZ(),
-        rotation.getW(),
-        rotation.getX(),
-        rotation.getY(),
-        rotation.getZ()
+      pose.getX(),
+      pose.getY(),
+      pose.getZ(),
+      rotation.getW(),
+      rotation.getX(),
+      rotation.getY(),
+      rotation.getZ()
     };
   }
 
@@ -213,17 +223,12 @@ public class DrivePoseEstimator extends GenericSubsystem {
   /**
    * Executes the updates of the pose estimator using the pose providers.
    *
-   * <p>
-   * DISABLED_FIELD - reads pose from AT camera providers and updates the Env
-   * providers with low ambiguity poses from a distance
-   * DISABLED_ENV - reads pose from Env providers, expecting a pose reset to be
-   * provided
-   * ENABLED_FIELD - reads pose from the AT camera providers and updates the Env
-   * providers if the pose is high caliber and close
-   * ENABLED_ENV - reads the pose from the Env providers and expects given pose to
-   * be correct
-   * ALL - reads and fuses poses from both Env and Field sources, resetting Env
-   * pose based on update
+   * <p>DISABLED_FIELD - reads pose from AT camera providers and updates the Env providers with low
+   * ambiguity poses from a distance DISABLED_ENV - reads pose from Env providers, expecting a pose
+   * reset to be provided ENABLED_FIELD - reads pose from the AT camera providers and updates the
+   * Env providers if the pose is high caliber and close ENABLED_ENV - reads the pose from the Env
+   * providers and expects given pose to be correct ALL - reads and fuses poses from both Env and
+   * Field sources, resetting Env pose based on update
    *
    * @return the command that updates the pose estimator
    */
@@ -233,38 +238,53 @@ public class DrivePoseEstimator extends GenericSubsystem {
     boolean accepterUpdating = false;
     poseAcceptable = false;
     if (!disableVisionUpdateCommand) {
-      for (PoseProvider provider : poseProviders.stream()
-          .filter(it -> it.isConnected() && (state.type == ProviderType.ALL || it.getType() == state.type))
-          .collect(Collectors.toList())) {
+      for (PoseProvider provider :
+          poseProviders.stream()
+              .filter(
+                  it ->
+                      it.isConnected()
+                          && (state.type == ProviderType.ALL || it.getType() == state.type))
+              .collect(Collectors.toList())) {
         List<PoseObservation> observations = provider.getObservations();
         for (PoseObservation observation : observations) {
-          boolean rejectPose = (provider.getType() != ProviderType.ENVIRONMENT_BASED) &&
-              observation.tagCount() == 0 // Must have at least one tag
-              || (observation.tagCount() == 1
-                  && observation.ambiguity() > VisionConstants.maxAmbiguity) // Cannot be high ambiguity
-              || Math.abs(observation.pose().getZ()) > VisionConstants.maxZError // Must have realistic Z coordinate
+          boolean rejectPose =
+              (provider.getType() != ProviderType.ENVIRONMENT_BASED)
+                      && observation.tagCount() == 0 // Must have at least one tag
+                  || (observation.tagCount() == 1
+                      && observation.ambiguity()
+                          > VisionConstants.maxAmbiguity) // Cannot be high ambiguity
+                  || Math.abs(observation.pose().getZ())
+                      > VisionConstants.maxZError // Must have realistic Z coordinate
 
-              // Must be within the field boundaries
-              || observation.pose().getX() < 0.0
-              || observation.pose().getX() > AprilTags.aprilTagFieldLayout.getFieldLength()
-              || observation.pose().getY() < 0.0
-              || observation.pose().getY() > AprilTags.aprilTagFieldLayout.getFieldWidth();
+                  // Must be within the field boundaries
+                  || observation.pose().getX() < 0.0
+                  || observation.pose().getX() > AprilTags.aprilTagFieldLayout.getFieldLength()
+                  || observation.pose().getY() < 0.0
+                  || observation.pose().getY() > AprilTags.aprilTagFieldLayout.getFieldWidth();
 
           Pose3d robotPose = observation.pose();
           if (!rejectPose) {
             visionUpdated |= true;
-            poseTracker.getVisionConsumer().accept(
-                robotPose.toPose2d(), observation.timestamp(), provider.getStdDeviations(observation));
+            poseTracker
+                .getVisionConsumer()
+                .accept(
+                    robotPose.toPose2d(),
+                    observation.timestamp(),
+                    provider.getStdDeviations(observation));
           }
 
           // Decides if pose would be good to update
-          poseAcceptable |= activateAcceptorUpdates
-              && provider.getType() == ProviderType.FIELD_BASED
-              && (state == State.ENABLED_FIELD || state == State.ALL)
-              && observation.ambiguity() < CONFIDENCE_RESET_THRESHOLD
-              && (DriverStation.isDisabled() ||
-                  (!DriverStation.isDisabled()
-                      && robotPose.getTranslation().getDistance(getCurrentPose3d().getTranslation()) < 0.1));
+          poseAcceptable |=
+              activateAcceptorUpdates
+                  && provider.getType() == ProviderType.FIELD_BASED
+                  && (state == State.ENABLED_FIELD || state == State.ALL)
+                  && observation.ambiguity() < CONFIDENCE_RESET_THRESHOLD
+                  && (DriverStation.isDisabled()
+                      || (!DriverStation.isDisabled()
+                          && robotPose
+                                  .getTranslation()
+                                  .getDistance(getCurrentPose3d().getTranslation())
+                              < 0.1));
         }
       }
     }
@@ -288,10 +308,9 @@ public class DrivePoseEstimator extends GenericSubsystem {
   }
 
   /**
-   * Force the pose estimator to a particular pose. This is useful for indicating
-   * to the software when you have manually moved your robot in a particular
-   * position on the field (EX: when you place it on the field at the start of the
-   * match).
+   * Force the pose estimator to a particular pose. This is useful for indicating to the software
+   * when you have manually moved your robot in a particular position on the field (EX: when you
+   * place it on the field at the start of the match).
    *
    * @param pose the pose to reset to
    */
@@ -334,7 +353,8 @@ public class DrivePoseEstimator extends GenericSubsystem {
    * @return the pose of the closest tag
    */
   public Pose3d getPoseFromClosestTag() {
-    Pose3d targetPose = AprilTags.aprilTagFieldLayout.getTagPose(getClosestTagToRobot()).orElse(getCurrentPose3d());
+    Pose3d targetPose =
+        AprilTags.aprilTagFieldLayout.getTagPose(getClosestTagToRobot()).orElse(getCurrentPose3d());
     field2d.getObject("Closest Tag").setPose(targetPose.toPose2d());
     return targetPose;
   }

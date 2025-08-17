@@ -8,17 +8,17 @@ import com.revrobotics.spark.SparkMax;
 
 /** Add your docs here. */
 public class SparkLimit {
-    private SparkMax motor;
+  private SparkMax motor;
 
-    public SparkLimit(SparkMax motor) {
-        this.motor = motor;
-    }
+  public SparkLimit(SparkMax motor) {
+    this.motor = motor;
+  }
 
-    public boolean getForwardLimit() {
-        return motor.getForwardLimitSwitch().isPressed();
-    }
+  public boolean getForwardLimit() {
+    return motor.getForwardLimitSwitch().isPressed();
+  }
 
-    public boolean getReverseLimit() {
-        return motor.getReverseLimitSwitch().isPressed();
-    }
+  public boolean getReverseLimit() {
+    return motor.getReverseLimitSwitch().isPressed();
+  }
 }

@@ -4,13 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.sensors.Controller;
-
-import edu.wpi.first.wpilibj2.command.Command;
 
 /** This is an example robot class. */
 public class BabySwerve extends GenericRobot {
@@ -24,8 +23,7 @@ public class BabySwerve extends GenericRobot {
   }
 
   @Override
-  public void configureButtonBindings(Controller driver, Controller operator) {
-  }
+  public void configureButtonBindings(Controller driver, Controller operator) {}
 
   @Override
   public void setupDefaultCommands(Controller driver, Controller operator) {
@@ -41,5 +39,4 @@ public class BabySwerve extends GenericRobot {
   public Command generateAutoCommand(Command autoCommand) {
     return drivetrain.generateAutoCommand(autoCommand);
   }
-
 }

@@ -4,27 +4,23 @@
 
 package org.frc5010.common.arch;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.motors.function.GenericFunctionalMotor;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-/**
- * Base class for subsystems that provides default logging and network table
- * support
- */
+/** Base class for subsystems that provides default logging and network table support */
 public class GenericSubsystem extends SubsystemBase
     implements WpiHelperInterface, GenericDeviceHandler {
   /** The network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
+
   protected final DisplayValuesHelper displayValues;
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
@@ -32,7 +28,9 @@ public class GenericSubsystem extends SubsystemBase
   protected LoggedMechanism2d mechanismSimulation;
   /** The map of devices created by the configuration system */
   protected Map<String, Object> devices = new HashMap<>();
-  protected Alert loggingAlert = new Alert(logPrefix + " Logging Mode is not COMPETITION!", AlertType.kWarning);
+
+  protected Alert loggingAlert =
+      new Alert(logPrefix + " Logging Mode is not COMPETITION!", AlertType.kWarning);
 
   /** Creates a new LoggedSubsystem. */
   public GenericSubsystem(LoggedMechanism2d mechanismSimulation) {
@@ -78,7 +76,7 @@ public class GenericSubsystem extends SubsystemBase
   /**
    * Add a device to the configuration
    *
-   * @param name   the name of the device
+   * @param name the name of the device
    * @param device the device
    */
   @Override
@@ -89,7 +87,8 @@ public class GenericSubsystem extends SubsystemBase
   public void setLoggingLevel(LogLevel logLevel) {
     displayValues.setLoggingLevel(logLevel);
     if (logLevel == LogLevel.COMPETITION) {
-      loggingAlert.set(false);;
+      loggingAlert.set(false);
+      ;
     } else {
       loggingAlert.set(true);
     }
@@ -117,8 +116,8 @@ public class GenericSubsystem extends SubsystemBase
   }
 
   /**
-   * Called every time the scheduler runs while the robot is enabled. Used to
-   * update display values and draw motor graphics.
+   * Called every time the scheduler runs while the robot is enabled. Used to update display values
+   * and draw motor graphics.
    */
   @Override
   public void periodic() {
@@ -132,8 +131,7 @@ public class GenericSubsystem extends SubsystemBase
   }
 
   /**
-   * Called every time the scheduler runs while the robot is in simulation mode.
-   * Used to update
+   * Called every time the scheduler runs while the robot is in simulation mode. Used to update
    * simulation models.
    */
   @Override
@@ -163,7 +161,6 @@ public class GenericSubsystem extends SubsystemBase
    * @param display a boolean indicating whether to enable or disable the display
    */
   public void setDisplay(boolean display) {
-    if (display) 
-      displayValues.makeDisplayed();
+    if (display) displayValues.makeDisplayed();
   }
 }

@@ -4,9 +4,6 @@
 
 package org.frc5010.common.drive.pose;
 
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +12,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.sensors.gyro.GenericGyro;
 
 /** A pose estimator for differential drive */
 public class DifferentialPose extends GenericPose {

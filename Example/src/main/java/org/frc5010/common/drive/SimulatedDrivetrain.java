@@ -4,20 +4,10 @@
 
 package org.frc5010.common.drive;
 
-import org.frc5010.common.arch.Persisted;
-import org.frc5010.common.constants.RobotConstantsDef;
-import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.drive.pose.SimulatedPose;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -27,6 +17,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import org.frc5010.common.arch.Persisted;
+import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.pose.SimulatedPose;
+import org.frc5010.common.sensors.gyro.GenericGyro;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 /** Add your docs here. */
 public class SimulatedDrivetrain extends GenericDrivetrain {
@@ -55,10 +53,11 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
   public void driveWithFeedforwards(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
     this.chassisSpeeds = chassisSpeeds;
     Pose2d pose = poseEstimator.getCurrentPose();
-    Transform2d direction = new Transform2d(
-        new Translation2d(
-            chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
-        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
+    Transform2d direction =
+        new Transform2d(
+            new Translation2d(
+                chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
+            new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
     pose = pose.transformBy(direction);
     poseEstimator.resetToPose(pose);
 
@@ -82,11 +81,12 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
         (Pose2d pose) -> getPoseEstimator().resetToPose(pose),
         this::getChassisSpeeds, // Current ChassisSpeeds supplier
         this::drive, // Method that will drive the robot given ChassisSpeeds
-        new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic
-                                        // drive trains
+        new PPHolonomicDriveController( // PPHolonomicController is the built in path following
+            // controller for holonomic
+            // drive trains
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-        ),
+            ),
         config, // The robot configuration
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
@@ -101,17 +101,18 @@ public class SimulatedDrivetrain extends GenericDrivetrain {
           return false;
         },
         this // Reference to this subsystem to set requirements
-    );
+        );
   }
 
   @Override
   public void drive(ChassisSpeeds chassisSpeeds) {
     this.chassisSpeeds = chassisSpeeds;
     Pose2d pose = poseEstimator.getCurrentPose();
-    Transform2d direction = new Transform2d(
-        new Translation2d(
-            chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
-        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
+    Transform2d direction =
+        new Transform2d(
+            new Translation2d(
+                chassisSpeeds.vxMetersPerSecond * 0.02, chassisSpeeds.vyMetersPerSecond * 0.02),
+            new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.02));
     pose = pose.transformBy(direction);
     poseEstimator.resetToPose(pose);
 

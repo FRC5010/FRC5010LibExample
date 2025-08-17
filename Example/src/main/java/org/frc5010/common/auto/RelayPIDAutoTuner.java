@@ -4,14 +4,13 @@
 
 package org.frc5010.common.auto;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.ArrayList;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RelayPIDAutoTuner extends Command {
@@ -25,9 +24,13 @@ public class RelayPIDAutoTuner extends Command {
   private final ArrayList<Double> switchTimeList = new ArrayList<>();
   private double lastOutput = 0;
   private double zeroValue;
-  
+
   /** Creates a new RelayPIDAutoTuner. */
-  public RelayPIDAutoTuner(Consumer<Double> valueConsumer, Supplier<Double> valueSupplier, double relayAmplitude, Subsystem... requirements) {
+  public RelayPIDAutoTuner(
+      Consumer<Double> valueConsumer,
+      Supplier<Double> valueSupplier,
+      double relayAmplitude,
+      Subsystem... requirements) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.relayAmplitude = relayAmplitude;
     this.valueConsumer = valueConsumer;
@@ -56,7 +59,7 @@ public class RelayPIDAutoTuner extends Command {
   public void execute() {
     double time = timer.get();
     double error = valueSupplier.get().doubleValue() - zeroValue;
-    
+
     double relayValue = relay(error);
     if (relayValue * lastOutput < 0) {
       switchTimeList.add(time);
@@ -68,9 +71,8 @@ public class RelayPIDAutoTuner extends Command {
     outputList.add(lastOutput);
     errorList.add(error);
     timeList.add(time);
-    
+
     SmartDashboard.putNumber("Relay Output", lastOutput);
-    
   }
 
   private double calculateOscillationPeriod() {
@@ -120,14 +122,12 @@ public class RelayPIDAutoTuner extends Command {
     SmartDashboard.putNumber("kP System", kP);
     SmartDashboard.putNumber("kI System", kI);
     SmartDashboard.putNumber("kD System", kD);
-
   }
-
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    tunePID(); 
+    tunePID();
   }
 
   // Returns true when the command should end.

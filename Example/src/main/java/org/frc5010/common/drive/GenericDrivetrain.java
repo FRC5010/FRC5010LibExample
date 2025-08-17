@@ -6,29 +6,9 @@ package org.frc5010.common.drive;
 
 import static edu.wpi.first.units.Units.Kilogram;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-import org.frc5010.common.arch.GenericSubsystem;
-import org.frc5010.common.commands.DefaultDriveCommand;
-import org.frc5010.common.constants.Constants;
-import org.frc5010.common.drive.pose.DrivePoseEstimator;
-import org.frc5010.common.sensors.Controller;
-import org.frc5010.common.telemetry.DisplayBoolean;
-import org.ironmaple.simulation.SimulatedArena;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,6 +26,23 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+import org.frc5010.common.arch.GenericSubsystem;
+import org.frc5010.common.commands.DefaultDriveCommand;
+import org.frc5010.common.constants.Constants;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.sensors.Controller;
+import org.frc5010.common.telemetry.DisplayBoolean;
+import org.ironmaple.simulation.SimulatedArena;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 /** Generic class for defining drivetrain behavior */
 public abstract class GenericDrivetrain extends GenericSubsystem {
@@ -54,17 +51,26 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   /** Whether or not the robot is field oriented */
   protected DisplayBoolean isFieldOrientedDrive;
   /**
-   * Load the RobotConfig from the GUI settings. You should probably
-   * store this in your Constants file
+   * Load the RobotConfig from the GUI settings. You should probably store this in your Constants
+   * file
    */
   protected RobotConfig config;
+
   protected DisplayBoolean hasIssues;
   protected DoubleSupplier angleSpeedSupplier = null;
-  public Supplier<Double> maxForwardAcceleration, maxBackwardAcceleration, maxLeftAcceleration, maxRightAcceleration;
-  public Supplier<Double> maxForwardVelocity, maxBackwardVelocity, maxLeftVelocity, maxRightVelocity;
+  public Supplier<Double> maxForwardAcceleration,
+      maxBackwardAcceleration,
+      maxLeftAcceleration,
+      maxRightAcceleration;
+  public Supplier<Double> maxForwardVelocity,
+      maxBackwardVelocity,
+      maxLeftVelocity,
+      maxRightVelocity;
   protected Pose2d obstaclePosition = new Pose2d();
   protected Pose2d[] unavoidableVertices = new Pose2d[0];
-  protected double obstacleRadius = 0.0, robotRadius = 0.0, maxRobotDimensionDeviation = 0.0,
+  protected double obstacleRadius = 0.0,
+      robotRadius = 0.0,
+      maxRobotDimensionDeviation = 0.0,
       maxObstacleDimensionDeviation = 0.0;
   protected int obstacleAvoidanceResolution = 0;
   protected double previousLeftXInput = 0.0, previousLeftYInput = 0.0, previousRightXInput = 0.0;
@@ -81,11 +87,12 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
       // A default config in case the GUI settings can't be loaded
-      config = new RobotConfig(Kilogram.of(68).magnitude(),
-          SingleJointedArmSim.estimateMOI(0.5, Kilogram.of(68).magnitude()),
-          new ModuleConfig(0.1, 4.5, 1.19,
-              DCMotor.getNEO(1), 40, 4),
-          0.5);
+      config =
+          new RobotConfig(
+              Kilogram.of(68).magnitude(),
+              SingleJointedArmSim.estimateMOI(0.5, Kilogram.of(68).magnitude()),
+              new ModuleConfig(0.1, 4.5, 1.19, DCMotor.getNEO(1), 40, 4),
+              0.5);
     }
 
     isFieldOrientedDrive = displayValues.makeDisplayBoolean("Field Oriented Drive");
@@ -138,7 +145,8 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    *
    * @param direction vector defining the direction and speed
    */
-  public abstract void driveWithFeedforwards(ChassisSpeeds direction, DriveFeedforwards feedforwards);
+  public abstract void driveWithFeedforwards(
+      ChassisSpeeds direction, DriveFeedforwards feedforwards);
 
   /**
    * Drive with ChassisSpeeds
@@ -160,12 +168,10 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   public abstract void setAutoBuilder();
 
   /** Called when the robot is disabled */
-  public void disabledBehavior() {
-  }
+  public void disabledBehavior() {}
 
   /** Called when the configuring the button bindings */
-  public void configureButtonBindings(Controller driver, Controller operator) {
-  }
+  public void configureButtonBindings(Controller driver, Controller operator) {}
 
   /** Toggles the field oriented drive mode */
   public void toggleFieldOrientedDrive() {
@@ -181,16 +187,14 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   }
 
   /** Locks the wheels */
-  public void lockWheels() {
-  }
+  public void lockWheels() {}
 
   /**
    * Creates a default command for the GenericDrivetrain.
    *
    * @param driver the controller used to control the drivetrain
-   * @return a DefaultDriveCommand instance that drives the drivetrain based on
-   *         the controller
-   *         inputs
+   * @return a DefaultDriveCommand instance that drives the drivetrain based on the controller
+   *     inputs
    */
   public Command createDefaultCommand(Controller driver) {
     return new DefaultDriveCommand(
@@ -205,9 +209,8 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
    * Creates a default test command for the GenericDrivetrain.
    *
    * @param driver the controller used to control the drivetrain
-   * @return a DefaultDriveCommand instance that drives the drivetrain based on
-   *         the controller
-   *         inputs
+   * @return a DefaultDriveCommand instance that drives the drivetrain based on the controller
+   *     inputs
    */
   public Command createDefaultTestCommand(Controller driver) {
     return new DefaultDriveCommand(
@@ -219,12 +222,10 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   }
 
   /** Resets the encoders */
-  public void resetEncoders() {
-  }
+  public void resetEncoders() {}
 
   /**
-   * Generates an auto command that resets the encoders before starting and
-   * continues until the
+   * Generates an auto command that resets the encoders before starting and continues until the
    * GenericDrivetrain has issues.
    *
    * @param autoCommand the command to be executed
@@ -234,29 +235,27 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     if (CommandScheduler.getInstance().isComposed(autoCommand)) {
       return autoCommand;
     } else {
-      return autoCommand
-          .beforeStarting(
-              () -> {
-
-              })
-          .until(() -> hasIssues());
+      return autoCommand.beforeStarting(() -> {}).until(() -> hasIssues());
     }
-
   }
 
   @Override
   public void simulationPeriodic() {
     int count = 0;
-    List<Pose3d> gpas = SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA);
+    List<Pose3d> gpas =
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA);
     for (Pose3d gpa : gpas) {
-      getField2d().getObject("GPA" + count++).setPose(
-          new Pose2d(gpa.getX(), gpa.getY(), gpa.getRotation().toRotation2d()));
+      getField2d()
+          .getObject("GPA" + count++)
+          .setPose(new Pose2d(gpa.getX(), gpa.getY(), gpa.getRotation().toRotation2d()));
     }
     count = 0;
-    List<Pose3d> gpbs = SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB);
+    List<Pose3d> gpbs =
+        SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB);
     for (Pose3d gpb : gpbs) {
-      getField2d().getObject("GPB" + count++).setPose(
-          new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
+      getField2d()
+          .getObject("GPB" + count++)
+          .setPose(new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
     }
   }
 
@@ -267,15 +266,21 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     if (RobotBase.isSimulation()) {
       SimulatedArena.getInstance().placeGamePiecesOnField();
       int count = 0;
-      for (Pose3d gpa : SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA)) {
-        getField2d().getObject("CARPET" + count).setPose(new Pose2d(gpa.getX(), gpa.getY(), new Rotation2d()));
-        getField2d().getObject("GPA" + count)
+      for (Pose3d gpa :
+          SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceA)) {
+        getField2d()
+            .getObject("CARPET" + count)
+            .setPose(new Pose2d(gpa.getX(), gpa.getY(), new Rotation2d()));
+        getField2d()
+            .getObject("GPA" + count)
             .setPose(new Pose2d(gpa.getX(), gpa.getY(), gpa.getRotation().toRotation2d()));
         count++;
       }
       count = 0;
-      for (Pose3d gpb : SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB)) {
-        getField2d().getObject("GPB" + count)
+      for (Pose3d gpb :
+          SimulatedArena.getInstance().getGamePiecesByType(Constants.Simulation.gamePieceB)) {
+        getField2d()
+            .getObject("GPB" + count)
             .setPose(new Pose2d(gpb.getX(), gpb.getY(), gpb.getRotation().toRotation2d()));
         count++;
       }
@@ -284,8 +289,10 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
 
   public abstract Field2d getField2d();
 
-  public void setAccelerationSuppliers(Supplier<Double> maxForwardAcceleration,
-      Supplier<Double> maxBackwardAcceleration, Supplier<Double> maxLeftAcceleration,
+  public void setAccelerationSuppliers(
+      Supplier<Double> maxForwardAcceleration,
+      Supplier<Double> maxBackwardAcceleration,
+      Supplier<Double> maxLeftAcceleration,
       Supplier<Double> maxRightAcceleration) {
     this.maxForwardAcceleration = maxForwardAcceleration;
     this.maxBackwardAcceleration = maxBackwardAcceleration;
@@ -293,16 +300,24 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     this.maxRightAcceleration = maxRightAcceleration;
   }
 
-  public void setVelocitySuppliers(Supplier<Double> maxForwardVelocity, Supplier<Double> maxBackwardVelocity,
-      Supplier<Double> maxRightVelocity, Supplier<Double> maxLeftVelocity) {
+  public void setVelocitySuppliers(
+      Supplier<Double> maxForwardVelocity,
+      Supplier<Double> maxBackwardVelocity,
+      Supplier<Double> maxRightVelocity,
+      Supplier<Double> maxLeftVelocity) {
     this.maxForwardVelocity = maxForwardVelocity;
     this.maxBackwardVelocity = maxBackwardVelocity;
     this.maxRightVelocity = maxRightVelocity;
     this.maxLeftVelocity = maxLeftVelocity;
   }
 
-  public void setUpCircularObstacle(Pose2d obstaclePosition, Pose2d[] unavoidableVertices, double obstacleRadius,
-      double robotRadius, double maxRobotDimensionDeviation, double maxObstacleDimensionDeviation,
+  public void setUpCircularObstacle(
+      Pose2d obstaclePosition,
+      Pose2d[] unavoidableVertices,
+      double obstacleRadius,
+      double robotRadius,
+      double maxRobotDimensionDeviation,
+      double maxObstacleDimensionDeviation,
       int resolution) {
     this.obstaclePosition = obstaclePosition;
     this.unavoidableVertices = unavoidableVertices;
@@ -330,11 +345,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   protected double highXLimit = Units.feetToMeters(54);
   protected double highYLimit = Units.feetToMeters(27);
 
-  public void initGlassWidget() {
-  }
+  public void initGlassWidget() {}
 
-  public void updateGlassWidget() {
-  }
+  public void updateGlassWidget() {}
 
   public static void useGlass(boolean shouldUseGlass) {
     useGlass = shouldUseGlass;
@@ -343,8 +356,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   /**
    * Checks if the GenericDrivetrain has any issues.
    *
-   * @return false if the GenericDrivetrain does not have any issues, true
-   *         otherwise.
+   * @return false if the GenericDrivetrain does not have any issues, true otherwise.
    */
   public boolean hasIssues() {
 
@@ -352,15 +364,18 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     if (issueCheckCycles > 10) {
       issueCheckCycles = 0;
 
-      boolean doesCanHaveIssues = RobotController.getCANStatus().transmitErrorCount
-          + RobotController.getCANStatus().receiveErrorCount > 0;
+      boolean doesCanHaveIssues =
+          RobotController.getCANStatus().transmitErrorCount
+                  + RobotController.getCANStatus().receiveErrorCount
+              > 0;
 
       Translation2d currTranslation = getPoseEstimator().getCurrentPose().getTranslation();
-      boolean positionOk = !DriverStation.isAutonomous()
-          || (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit)
-              && (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit)
-              && (!Double.isNaN(currTranslation.getX())
-                  && !Double.isNaN(currTranslation.getY()));
+      boolean positionOk =
+          !DriverStation.isAutonomous()
+              || (currTranslation.getX() >= lowLimit && currTranslation.getY() >= lowLimit)
+                  && (currTranslation.getX() <= highXLimit && currTranslation.getY() <= highYLimit)
+                  && (!Double.isNaN(currTranslation.getX())
+                      && !Double.isNaN(currTranslation.getY()));
 
       if (doesCanHaveIssues) {
         badConnections++;
@@ -388,5 +403,4 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     }
     return false;
   }
-
 }

@@ -8,9 +8,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Second;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -19,6 +16,8 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class NewLEDSubsystem extends SubsystemBase {
   private int kPort = 0, kLength = 0;
@@ -59,22 +58,39 @@ public class NewLEDSubsystem extends SubsystemBase {
   }
 
   public LEDPattern getRainbowPattern(double percentScrollingSpeed) {
-    return LEDPattern.rainbow(255, 255).scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
+    return LEDPattern.rainbow(255, 255)
+        .scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
   }
 
   public LEDPattern getSolidPattern(Color color) {
     return LEDPattern.solid(color);
   }
 
-  public LEDPattern getMaskedPattern(LEDPattern basePattern, double percentVisible, double percentScrollingSpeed) {
+  public LEDPattern getMaskedPattern(
+      LEDPattern basePattern, double percentVisible, double percentScrollingSpeed) {
     Map<Double, Color> maskSteps = Map.of(0.0, Color.kWhite, percentVisible, Color.kBlack);
-    LEDPattern mask = LEDPattern.steps(maskSteps).scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
+    LEDPattern mask =
+        LEDPattern.steps(maskSteps)
+            .scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
     return basePattern.mask(mask);
   }
 
-  public LEDPattern getBand(LEDPattern basePattern, double bandCenter, double percentWidth, double percentScrollingSpeed) {
-    Map<Double, Color> maskSteps = Map.of(0.0, Color.kBlack, bandCenter - (percentWidth / 2), Color.kWhite, bandCenter - (percentWidth / 2), Color.kBlack);
-    LEDPattern mask = LEDPattern.steps(maskSteps).scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
+  public LEDPattern getBand(
+      LEDPattern basePattern,
+      double bandCenter,
+      double percentWidth,
+      double percentScrollingSpeed) {
+    Map<Double, Color> maskSteps =
+        Map.of(
+            0.0,
+            Color.kBlack,
+            bandCenter - (percentWidth / 2),
+            Color.kWhite,
+            bandCenter - (percentWidth / 2),
+            Color.kBlack);
+    LEDPattern mask =
+        LEDPattern.steps(maskSteps)
+            .scrollAtRelativeSpeed(Percent.per(Second).of(percentScrollingSpeed));
     return basePattern.mask(mask);
   }
 

@@ -4,9 +4,6 @@
 
 package org.frc5010.common.drive.pose;
 
-import org.frc5010.common.drive.pose.DrivePoseEstimator.VisionConsumer;
-import org.frc5010.common.sensors.gyro.GenericGyro;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,6 +14,8 @@ import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc5010.common.drive.pose.DrivePoseEstimator.VisionConsumer;
+import org.frc5010.common.sensors.gyro.GenericGyro;
 
 /** Base class for all pose estimators */
 public abstract class GenericPose {
@@ -68,7 +67,7 @@ public abstract class GenericPose {
   public void setVisionConsumer(VisionConsumer visionConsumer) {
     this.visionConsumer = visionConsumer;
   }
-  
+
   /**
    * Update the robot pose on the field.
    *

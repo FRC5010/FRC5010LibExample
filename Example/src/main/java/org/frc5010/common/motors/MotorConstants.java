@@ -7,30 +7,41 @@ package org.frc5010.common.motors;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RPM;
 
-import java.util.function.Function;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import java.util.function.Function;
 
 /** Add your docs here. */
 public class MotorConstants {
   public static enum Motor {
-    Neo(Amps.of(40), RPM.of(5676), (Integer numberOfMotors) -> DCMotor.getNEO(numberOfMotors), 42), 
-    Neo550(Amps.of(20), RPM.of(11000),  (Integer numberOfMotors) -> DCMotor.getNeo550(numberOfMotors), 42), 
-    KrakenX60(Amps.of(40), RPM.of(6000),  (Integer numberOfMotors) -> DCMotor.getKrakenX60(numberOfMotors), 1023)
-    ;
+    Neo(Amps.of(40), RPM.of(5676), (Integer numberOfMotors) -> DCMotor.getNEO(numberOfMotors), 42),
+    Neo550(
+        Amps.of(20),
+        RPM.of(11000),
+        (Integer numberOfMotors) -> DCMotor.getNeo550(numberOfMotors),
+        42),
+    KrakenX60(
+        Amps.of(40),
+        RPM.of(6000),
+        (Integer numberOfMotors) -> DCMotor.getKrakenX60(numberOfMotors),
+        1023);
 
     public Current currentLimit = Amps.of(20);
     public AngularVelocity maxRpm;
     public Function<Integer, DCMotor> motorSim;
     public double ticsPerRotation;
-    
-    private Motor(Current currentLimit, AngularVelocity rpm, Function<Integer, DCMotor> motorSim, double ticsPerRotation) {
+
+    private Motor(
+        Current currentLimit,
+        AngularVelocity rpm,
+        Function<Integer, DCMotor> motorSim,
+        double ticsPerRotation) {
       this.currentLimit = currentLimit;
       maxRpm = rpm;
       this.motorSim = motorSim;
     }
+
     public DCMotor getMotorSimulationType() {
       return getMotorSimulationType(1);
     }

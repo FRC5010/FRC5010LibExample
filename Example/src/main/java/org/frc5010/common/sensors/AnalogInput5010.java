@@ -6,9 +6,7 @@ package org.frc5010.common.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
-
 import java.util.Optional;
-
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 
 /** A class for supporting an analog input on the roboRIO */

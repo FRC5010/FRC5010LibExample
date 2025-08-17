@@ -4,12 +4,11 @@
 
 package org.frc5010.common.arch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Class for SequentialCommandGroup which provides logging and network table values */
 public class GenericCommandSequence extends Command implements WpiHelperInterface {
@@ -17,7 +16,6 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
   protected String logPrefix = getName();
   /** Network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
-  
 
   private final List<Command> m_commands = new ArrayList<>();
   protected int m_currentCommandIndex = -1;
@@ -89,7 +87,13 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
 
     if (!m_commands.isEmpty()) {
       m_commands.get(0).initialize();
-      logCurrentAction(": Running command " + m_commands.get(m_currentCommandIndex).getName() + " : " + m_currentCommandIndex + " of " + m_commands.size());
+      logCurrentAction(
+          ": Running command "
+              + m_commands.get(m_currentCommandIndex).getName()
+              + " : "
+              + m_currentCommandIndex
+              + " of "
+              + m_commands.size());
     }
   }
 
@@ -106,7 +110,13 @@ public class GenericCommandSequence extends Command implements WpiHelperInterfac
       currentCommand.end(false);
       m_currentCommandIndex++;
       if (m_currentCommandIndex < m_commands.size()) {
-        logCurrentAction(": Running command " + m_commands.get(m_currentCommandIndex).getName() + " : " + m_currentCommandIndex + " of " + m_commands.size());
+        logCurrentAction(
+            ": Running command "
+                + m_commands.get(m_currentCommandIndex).getName()
+                + " : "
+                + m_currentCommandIndex
+                + " of "
+                + m_commands.size());
         m_commands.get(m_currentCommandIndex).initialize();
       }
     }

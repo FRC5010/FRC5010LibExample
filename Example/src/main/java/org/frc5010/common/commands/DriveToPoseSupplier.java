@@ -4,14 +4,6 @@
 
 package org.frc5010.common.commands;
 
-import java.util.function.Supplier;
-
-import org.frc5010.common.arch.GenericCommand;
-import org.frc5010.common.constants.GenericPID;
-import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
-import org.frc5010.common.telemetry.DisplayDouble;
-import org.frc5010.common.telemetry.DisplayValuesHelper;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,16 +15,21 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.Supplier;
+import org.frc5010.common.arch.GenericCommand;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
+import org.frc5010.common.telemetry.DisplayDouble;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
 
-/**
- * A command that will automatically drive the robot to a particular position
- */
+/** A command that will automatically drive the robot to a particular position */
 public class DriveToPoseSupplier extends GenericCommand {
   /** The subsystem that this command will run on */
   private GenericSwerveDrivetrain swerveSubsystem;
   /** The PID constants for translation */
+  private DisplayValuesHelper displayValuesHelper =
+      new DisplayValuesHelper("PID Values", logPrefix);
 
-  private DisplayValuesHelper displayValuesHelper = new DisplayValuesHelper("PID Values", logPrefix);
   private DisplayDouble translationkP;
   private DisplayDouble translationkD;
   private DisplayDouble rotationkP;
@@ -90,29 +87,31 @@ public class DriveToPoseSupplier extends GenericCommand {
   /**
    * Creates a new DriveToPosition command.
    *
-   * @param swerveSubsystem    The drivetrain subsystem
-   * @param poseProvider       The pose provider
+   * @param swerveSubsystem The drivetrain subsystem
+   * @param poseProvider The pose provider
    * @param targetPoseProvider The target pose provider
-   * @param offset             The offset of the target pose
+   * @param offset The offset of the target pose
    */
   public DriveToPoseSupplier(
       GenericSwerveDrivetrain swerveSubsystem,
       Supplier<Pose2d> poseProvider,
       Supplier<Pose2d> targetPoseProvider,
-      Transform2d offset, double maxAcceleration) {
+      Transform2d offset,
+      double maxAcceleration) {
     this.maxAcceleration = maxAcceleration;
-    translationConstraints = new TrapezoidProfile.Constraints(
-        MAX_VELOCITY,
-        maxAcceleration);
-  
-    thetaConstraints = new TrapezoidProfile.Constraints(
-        maxAngularSpeed,
-        MAX_ANGULAR_ACCELERATION);
+    translationConstraints = new TrapezoidProfile.Constraints(MAX_VELOCITY, maxAcceleration);
 
-    distanceController = new ProfiledPIDController(
-        pidTranslation.getkP(), pidTranslation.getkI(), pidTranslation.getkD(), translationConstraints);
-    thetaController = new ProfiledPIDController(
-        pidRotation.getkP(), pidRotation.getkI(), pidRotation.getkD(), thetaConstraints);
+    thetaConstraints = new TrapezoidProfile.Constraints(maxAngularSpeed, MAX_ANGULAR_ACCELERATION);
+
+    distanceController =
+        new ProfiledPIDController(
+            pidTranslation.getkP(),
+            pidTranslation.getkI(),
+            pidTranslation.getkD(),
+            translationConstraints);
+    thetaController =
+        new ProfiledPIDController(
+            pidRotation.getkP(), pidRotation.getkI(), pidRotation.getkD(), thetaConstraints);
 
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerveSubsystem = swerveSubsystem;
@@ -148,11 +147,16 @@ public class DriveToPoseSupplier extends GenericCommand {
 
   public Translation2d getVectorToTarget() {
     Transform2d toTarget = targetPoseProvider.get().minus(poseProvider.get());
-    return new Translation2d(toTarget.getX()/toTarget.getTranslation().getNorm(), toTarget.getY()/toTarget.getTranslation().getNorm());
+    return new Translation2d(
+        toTarget.getX() / toTarget.getTranslation().getNorm(),
+        toTarget.getY() / toTarget.getTranslation().getNorm());
   }
 
   public double getDistanceToTarget() {
-    return targetPoseProvider.get().getTranslation().getDistance(poseProvider.get().getTranslation());
+    return targetPoseProvider
+        .get()
+        .getTranslation()
+        .getDistance(poseProvider.get().getTranslation());
   }
 
   public double getFutureDistanceToTarget() {
@@ -164,19 +168,27 @@ public class DriveToPoseSupplier extends GenericCommand {
   }
 
   public Rotation2d getAngleToTarget() {
-    return new Translation2d(targetPoseProvider.get().getX() - poseProvider.get().getX(), targetPoseProvider.get().getY() - poseProvider.get().getY()).getAngle().plus(Rotation2d.k180deg);
+    return new Translation2d(
+            targetPoseProvider.get().getX() - poseProvider.get().getX(),
+            targetPoseProvider.get().getY() - poseProvider.get().getY())
+        .getAngle()
+        .plus(Rotation2d.k180deg);
   }
 
   public Rotation2d getFutureAngleToTarget() {
     Translation2d futurePose = getFuturePosition();
-    return new Translation2d(targetPoseProvider.get().getX() - futurePose.getX(), targetPoseProvider.get().getY() - futurePose.getY()).getAngle().plus(Rotation2d.k180deg);
+    return new Translation2d(
+            targetPoseProvider.get().getX() - futurePose.getX(),
+            targetPoseProvider.get().getY() - futurePose.getY())
+        .getAngle()
+        .plus(Rotation2d.k180deg);
   }
 
   public DriveToPoseSupplier withInitialVelocity(Supplier<ChassisSpeeds> speedSupplier) {
     initialVelocity = speedSupplier;
     return this;
   }
- 
+
   private void updateTargetPose(Pose2d pose) {
     targetPose = pose;
 
@@ -186,8 +198,11 @@ public class DriveToPoseSupplier extends GenericCommand {
   }
 
   private void updateSpeedTowardsTarget() {
-    currentVelocity = new Translation2d(initialVelocity.get().vxMetersPerSecond, initialVelocity.get().vyMetersPerSecond);
-    speedTowardsTarget = Math.min(
+    currentVelocity =
+        new Translation2d(
+            initialVelocity.get().vxMetersPerSecond, initialVelocity.get().vyMetersPerSecond);
+    speedTowardsTarget =
+        Math.min(
             0.0,
             -currentVelocity
                 .rotateBy(
@@ -207,30 +222,28 @@ public class DriveToPoseSupplier extends GenericCommand {
     distanceController.setD(translationkD.getValue());
 
     thetaController.setP(rotationkP.getValue());
-    thetaController.setD(rotationkD.getValue()); 
+    thetaController.setD(rotationkD.getValue());
 
     Pose2d robotPose = poseProvider.get();
     onTargetCounter = 0;
 
     Translation2d toTarget = getVectorToTarget();
-    thetaController.reset(robotPose.getRotation().getRadians(), initialVelocity.get().omegaRadiansPerSecond);
+    thetaController.reset(
+        robotPose.getRotation().getRadians(), initialVelocity.get().omegaRadiansPerSecond);
     updateSpeedTowardsTarget();
-    
+
     distanceController.reset(getDistanceToTarget(), speedTowardsTarget);
 
     lastSetpointTranslation = robotPose.getTranslation();
     lastSetpointRotation = targetPoseProvider.get().getRotation();
     lastTime = Timer.getTimestamp();
-  
 
     if (null != targetPoseProvider.get()) {
       updateTargetPose(targetPoseProvider.get().transformBy(targetTransform));
     }
-    
+
     previousTime = Timer.getFPGATimestamp();
   }
-
-
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -248,24 +261,26 @@ public class DriveToPoseSupplier extends GenericCommand {
     // System.out.println(robotPose2d);
 
     // System.out.println(robotPose);
-    
- 
-    
 
- 
     double minFFRadius = 0.05;
     double maxFFRadius = 0.1;
-    currentVelocity = new Translation2d(initialVelocity.get().vxMetersPerSecond, initialVelocity.get().vyMetersPerSecond);
+    currentVelocity =
+        new Translation2d(
+            initialVelocity.get().vxMetersPerSecond, initialVelocity.get().vyMetersPerSecond);
     double distanceToGoal = getDistanceToTarget();
     double futureDistanceToGoal = getFutureDistanceToTarget();
-    double ffInclusionFactor = MathUtil.clamp((distanceToGoal - minFFRadius) / (maxFFRadius - minFFRadius), 0.0, 1.0);
+    double ffInclusionFactor =
+        MathUtil.clamp((distanceToGoal - minFFRadius) / (maxFFRadius - minFFRadius), 0.0, 1.0);
     // distanceController.reset(
     //     lastSetpointTranslation.getDistance(targetPose.getTranslation()),
     //     distanceController.getSetpoint().velocity);
     deltaTime = Timer.getFPGATimestamp() - previousTime;
     previousTime = Timer.getFPGATimestamp();
 
-    double translationalSpeed = distanceToGoal > 0.25 ? distanceController.calculate(futureDistanceToGoal, 0.0) : distanceController.calculate(distanceToGoal, 0.0);
+    double translationalSpeed =
+        distanceToGoal > 0.25
+            ? distanceController.calculate(futureDistanceToGoal, 0.0)
+            : distanceController.calculate(distanceToGoal, 0.0);
     Rotation2d movementAngle = getAngleToTarget();
 
     lastSetpointTranslation =
@@ -275,28 +290,42 @@ public class DriveToPoseSupplier extends GenericCommand {
                     Math.atan2(
                         robotPose2d.getTranslation().getY() - targetPose.getTranslation().getY(),
                         robotPose2d.getTranslation().getX() - targetPose.getTranslation().getX())))
-            .transformBy(new Transform2d(distanceController.getSetpoint().position, 0.0, new Rotation2d()))
+            .transformBy(
+                new Transform2d(distanceController.getSetpoint().position, 0.0, new Rotation2d()))
             .getTranslation();
-    
+
     double speedX = movementAngle.getCos() * translationalSpeed;
     double speedY = movementAngle.getSin() * translationalSpeed;
 
-
-
-    thetaSpeed = thetaController.calculate(robotPose2d.getRotation().getRadians(), new TrapezoidProfile.State(
-                    targetPose.getRotation().getRadians(),
-                    (targetPose.getRotation().minus(lastSetpointRotation)).getRadians()
-                        / (Timer.getTimestamp() - lastTime)));
+    thetaSpeed =
+        thetaController.calculate(
+            robotPose2d.getRotation().getRadians(),
+            new TrapezoidProfile.State(
+                targetPose.getRotation().getRadians(),
+                (targetPose.getRotation().minus(lastSetpointRotation)).getRadians()
+                    / (Timer.getTimestamp() - lastTime)));
 
     lastSetpointRotation = targetPose.getRotation();
 
     lastTime = Timer.getTimestamp();
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        speedX + distanceController.getSetpoint().velocity*movementAngle.getCos()*ffInclusionFactor, speedY + distanceController.getSetpoint().velocity*movementAngle.getSin()*ffInclusionFactor, thetaSpeed + thetaController.getSetpoint().velocity*Math.min(ffInclusionFactor*5, 1.0), swerveSubsystem.getHeading());
+    ChassisSpeeds chassisSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            speedX
+                + distanceController.getSetpoint().velocity
+                    * movementAngle.getCos()
+                    * ffInclusionFactor,
+            speedY
+                + distanceController.getSetpoint().velocity
+                    * movementAngle.getSin()
+                    * ffInclusionFactor,
+            thetaSpeed
+                + thetaController.getSetpoint().velocity * Math.min(ffInclusionFactor * 5, 1.0),
+            swerveSubsystem.getHeading());
 
     SmartDashboard.putNumber("X Speed", chassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Y Speed", chassisSpeeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Distance Velocity Setpoint", distanceController.getSetpoint().velocity);
+    SmartDashboard.putNumber(
+        "Distance Velocity Setpoint", distanceController.getSetpoint().velocity);
     SmartDashboard.putNumber("Theta Speed", chassisSpeeds.omegaRadiansPerSecond);
     SmartDashboard.putBoolean("Distance Controller At Setpoint", distanceController.atGoal());
     SmartDashboard.putNumber("VelocityError", distanceController.getVelocityError());
@@ -312,8 +341,7 @@ public class DriveToPoseSupplier extends GenericCommand {
   public void stop(boolean interrupted) {
     onTargetCounter = 0;
     SmartDashboard.putBoolean("DriveToPositionInterrupted", interrupted);
-    swerveSubsystem.drive(
-        new ChassisSpeeds(0, 0, 0));
+    swerveSubsystem.drive(new ChassisSpeeds(0, 0, 0));
   }
 
   // Returns true when the command should end.

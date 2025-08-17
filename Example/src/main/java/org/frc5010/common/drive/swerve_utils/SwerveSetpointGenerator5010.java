@@ -3,14 +3,9 @@ package org.frc5010.common.drive.swerve_utils;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,6 +16,9 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Swerve setpoint generator based on a version created by FRC team 254.
@@ -74,11 +72,11 @@ public class SwerveSetpointGenerator5010 {
       PathConstraints5010 constraints,
       double dt,
       double inputVoltage) {
-    
+
     if (Double.isNaN(desiredStateRobotRelative.vxMetersPerSecond)) {
       System.out.println("Problem");
     }
-    
+
     if (Double.isNaN(inputVoltage)) {
       inputVoltage = 12.0;
     } else {
@@ -98,7 +96,7 @@ public class SwerveSetpointGenerator5010 {
       double factor1 = 1.0, factor2 = 1.0, factor3 = 1.0, factor = 1.0;
       if (xVel > constraints.getMaxRightVelocity() && xVel != 0) {
         factor1 = constraints.getMaxRightVelocity() / xVel;
-      } else if(xVel < constraints.getMaxLeftVelocity() && xVel != 0) {
+      } else if (xVel < constraints.getMaxLeftVelocity() && xVel != 0) {
         factor1 = constraints.getMaxLeftVelocity() / xVel;
       }
       if (yVel > constraints.getMaxForwardVelocity() && yVel != 0) {

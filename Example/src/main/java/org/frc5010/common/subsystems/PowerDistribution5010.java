@@ -1,14 +1,12 @@
 package org.frc5010.common.subsystems;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-import org.frc5010.common.arch.GenericSubsystem;
-
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import java.util.HashMap;
+import java.util.Map;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+import org.frc5010.common.arch.GenericSubsystem;
 
 public class PowerDistribution5010 extends GenericSubsystem {
   private PowerDistribution powerDistribution;

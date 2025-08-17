@@ -2,10 +2,6 @@ package org.frc5010.common.telemetry;
 
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -14,6 +10,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutDistance;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a length to the dashboard */
 public class DisplayLength {
@@ -40,26 +38,31 @@ public class DisplayLength {
   /**
    * Add a length to the dashboard
    *
-   * @param unit       - length unit
+   * @param unit - length unit
    * @param unitLength - length in that unit
-   * @param name       - name of the variable
-   * @param table      - name of the table
+   * @param name - name of the variable
+   * @param table - name of the table
    */
-  public DisplayLength(final double length, final DistanceUnit unit, final String name, final String table) {
+  public DisplayLength(
+      final double length, final DistanceUnit unit, final String name, final String table) {
     this(length, unit, name, table, LogLevel.COMPETITION);
   }
 
   /**
    * Add a length to the dashboard
    *
-   * @param unit       - length unit
+   * @param unit - length unit
    * @param unitLength - length in that unit
-   * @param name       - name of the variable
-   * @param table      - name of the table
-   * @param debug      - debug mode
+   * @param name - name of the variable
+   * @param table - name of the table
+   * @param debug - debug mode
    */
   public DisplayLength(
-      final double length, final DistanceUnit unit, final String name, final String table, LogLevel logLevel) {
+      final double length,
+      final DistanceUnit unit,
+      final String name,
+      final String table,
+      LogLevel logLevel) {
     length_ = new MutDistance(length, unit.getBaseUnit().convertFrom(length, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
@@ -76,8 +79,8 @@ public class DisplayLength {
   /**
    * Add a length to the dashboard
    *
-   * @param unit  - length with units
-   * @param name  - name of the variable
+   * @param unit - length with units
+   * @param name - name of the variable
    * @param table - name of the table
    */
   public DisplayLength(final Distance length, final String name, final String table) {
@@ -87,8 +90,8 @@ public class DisplayLength {
   /**
    * Add a length to the dashboard
    *
-   * @param unit  - length with units
-   * @param name  - name of the variable
+   * @param unit - length with units
+   * @param name - name of the variable
    * @param table - name of the table
    */
   public DisplayLength(
@@ -111,13 +114,14 @@ public class DisplayLength {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(length_.in(unit_));
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setLength(event.valueData.value.getDouble(), unit_, false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setLength(event.valueData.value.getDouble(), unit_, false);
+                    });
         setLength(subscriber_.get(), unit_, false);
       }
     }
@@ -127,7 +131,7 @@ public class DisplayLength {
   /**
    * Sets the length
    *
-   * @param unit       - length unit
+   * @param unit - length unit
    * @param unitLength - length in that unit
    */
   public void setLength(final double length, final DistanceUnit unit) {
@@ -137,9 +141,9 @@ public class DisplayLength {
   /**
    * Sets the length
    *
-   * @param unit       - length unit
+   * @param unit - length unit
    * @param unitLength - length in that unit
-   * @param publish    - publish the value
+   * @param publish - publish the value
    */
   public void setLength(final double length, final DistanceUnit unit, final boolean publish) {
     setLength(unit.of(length), publish);
@@ -157,7 +161,7 @@ public class DisplayLength {
   /**
    * Sets the length using a Distance object
    *
-   * @param length  - the Distance object representing the length to set
+   * @param length - the Distance object representing the length to set
    * @param publish - whether or not to publish the value
    */
   public void setLength(final Distance length, final boolean publish) {
@@ -175,8 +179,7 @@ public class DisplayLength {
   }
 
   /**
-   * Publishes the current length to the network table if the publish flag is
-   * true.
+   * Publishes the current length to the network table if the publish flag is true.
    *
    * @param publish - flag indicating whether to publish the length
    */

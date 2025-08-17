@@ -8,21 +8,21 @@ import java.util.function.BooleanSupplier;
 
 /** Add your docs here. */
 public class Beambreak {
-    BooleanSupplier valueSupplier;
+  BooleanSupplier valueSupplier;
 
-    public Beambreak(int channel) {
-        valueSupplier = () -> false;
-    }
+  public Beambreak(int channel) {
+    valueSupplier = () -> false;
+  }
 
-    public Beambreak(BooleanSupplier supplier) {
-        valueSupplier = supplier;
-    }
+  public Beambreak(BooleanSupplier supplier) {
+    valueSupplier = supplier;
+  }
 
-    public boolean isBroken() {
-        return valueSupplier.getAsBoolean();
-    }
+  public boolean isBroken() {
+    return valueSupplier.getAsBoolean();
+  }
 
-    public BooleanSupplier isBrokenSupplier() {
-        return () -> isBroken();
-    }
+  public BooleanSupplier isBrokenSupplier() {
+    return () -> isBroken();
+  }
 }

@@ -4,31 +4,30 @@
 
 package org.frc5010.common.sensors;
 
-import java.util.function.BooleanSupplier;
-
 import com.thethriftybot.ThriftyNova;
+import java.util.function.BooleanSupplier;
 
 /** Add your docs here. */
 public class ThriftyLimit {
-    ThriftyNova motor;
+  ThriftyNova motor;
 
-    public ThriftyLimit(ThriftyNova motor) {
-        this.motor = motor;
-    }
+  public ThriftyLimit(ThriftyNova motor) {
+    this.motor = motor;
+  }
 
-    public boolean getForward() {
-        return getForwardBooleanSupplier().getAsBoolean();
-    }
+  public boolean getForward() {
+    return getForwardBooleanSupplier().getAsBoolean();
+  }
 
-    public BooleanSupplier getForwardBooleanSupplier() {
-        return motor.getForwardLimit();
-    }
+  public BooleanSupplier getForwardBooleanSupplier() {
+    return motor.getForwardLimit();
+  }
 
-    public boolean getReverse() {
-        return getReverseBooleanSupplier().getAsBoolean();
-    }
+  public boolean getReverse() {
+    return getReverseBooleanSupplier().getAsBoolean();
+  }
 
-    public BooleanSupplier getReverseBooleanSupplier() {
-        return motor.getReverseLimit();
-    }
+  public BooleanSupplier getReverseBooleanSupplier() {
+    return motor.getReverseLimit();
+  }
 }

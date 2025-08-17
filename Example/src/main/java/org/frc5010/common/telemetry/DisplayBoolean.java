@@ -1,14 +1,12 @@
 package org.frc5010.common.telemetry;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a boolean to the dashboard */
 public class DisplayBoolean {
@@ -35,8 +33,8 @@ public class DisplayBoolean {
    * Create a new display boolean
    *
    * @param defaultValue the default value
-   * @param name         the name of the variable being stored
-   * @param table        the table being stored in
+   * @param name the name of the variable being stored
+   * @param table the table being stored in
    */
   public DisplayBoolean(final boolean defaultValue, final String name, final String table) {
     this(defaultValue, name, table, LogLevel.COMPETITION);
@@ -46,10 +44,11 @@ public class DisplayBoolean {
    * Create a new display boolean
    *
    * @param defaultValue the default value
-   * @param name         the name of the variable being stored
-   * @param table        the table being stored in
+   * @param name the name of the variable being stored
+   * @param table the table being stored in
    */
-  public DisplayBoolean(final boolean defaultValue, final String name, final String table, final LogLevel logLevel) {
+  public DisplayBoolean(
+      final boolean defaultValue, final String name, final String table, final LogLevel logLevel) {
     value_ = defaultValue;
     name_ = name;
     table_ = table;
@@ -63,13 +62,14 @@ public class DisplayBoolean {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(value_);
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setValue(event.valueData.value.getBoolean(), false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setValue(event.valueData.value.getBoolean(), false);
+                    });
         setValue(subscriber_.get(), false);
       }
     }
@@ -98,7 +98,7 @@ public class DisplayBoolean {
   /**
    * Set the value
    *
-   * @param value   the value to set
+   * @param value the value to set
    * @param publish whether or not to publish the value
    */
   public synchronized void setValue(final boolean value, final boolean publish) {

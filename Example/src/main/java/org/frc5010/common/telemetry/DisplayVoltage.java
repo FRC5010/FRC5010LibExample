@@ -2,10 +2,6 @@ package org.frc5010.common.telemetry;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -14,6 +10,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a voltage to the dashboard */
 public class DisplayVoltage {
@@ -40,10 +38,10 @@ public class DisplayVoltage {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit       - voltage unit
+   * @param unit - voltage unit
    * @param unitLength - voltage in that unit
-   * @param name       - name of the variable
-   * @param table      - name of the table
+   * @param name - name of the variable
+   * @param table - name of the table
    */
   public DisplayVoltage(
       final double voltage, final VoltageUnit unit, final String name, final String table) {
@@ -53,14 +51,18 @@ public class DisplayVoltage {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit       - voltage unit
+   * @param unit - voltage unit
    * @param unitLength - voltage in that unit
-   * @param name       - name of the variable
-   * @param table      - name of the table
-   * @param debug      - debug mode
+   * @param name - name of the variable
+   * @param table - name of the table
+   * @param debug - debug mode
    */
   public DisplayVoltage(
-      final double voltage, final VoltageUnit unit, final String name, final String table, LogLevel logLevel) {
+      final double voltage,
+      final VoltageUnit unit,
+      final String name,
+      final String table,
+      LogLevel logLevel) {
     voltage_ = new MutVoltage(voltage, unit.getBaseUnit().convertFrom(voltage, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
@@ -77,8 +79,8 @@ public class DisplayVoltage {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit  - voltage with units
-   * @param name  - name of the variable
+   * @param unit - voltage with units
+   * @param name - name of the variable
    * @param table - name of the table
    */
   public DisplayVoltage(final Voltage voltage, final String name, final String table) {
@@ -88,8 +90,8 @@ public class DisplayVoltage {
   /**
    * Add a voltage to the dashboard
    *
-   * @param unit  - voltage with units
-   * @param name  - name of the variable
+   * @param unit - voltage with units
+   * @param name - name of the variable
    * @param table - name of the table
    * @param debug - debug mode
    */
@@ -112,13 +114,14 @@ public class DisplayVoltage {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(voltage_.in(unit_));
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setVoltage(event.valueData.value.getDouble(), unit_, false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setVoltage(event.valueData.value.getDouble(), unit_, false);
+                    });
         setVoltage(subscriber_.get(), unit_, false);
       }
     }
@@ -129,7 +132,7 @@ public class DisplayVoltage {
   /**
    * Sets the voltage
    *
-   * @param unit       - voltage unit
+   * @param unit - voltage unit
    * @param unitLength - voltage in that unit
    */
   public void setVoltage(final double voltage, final VoltageUnit unit) {
@@ -139,9 +142,9 @@ public class DisplayVoltage {
   /**
    * Sets the voltage
    *
-   * @param unit       - voltage unit
+   * @param unit - voltage unit
    * @param unitLength - voltage in that unit
-   * @param publish    - publish the value
+   * @param publish - publish the value
    */
   public void setVoltage(final double voltage, final VoltageUnit unit, final boolean publish) {
     setVoltage(unit.of(voltage), publish);
@@ -177,8 +180,7 @@ public class DisplayVoltage {
   }
 
   /**
-   * Publishes the current voltage to the network table if the publish flag is
-   * true.
+   * Publishes the current voltage to the network table if the publish flag is true.
    *
    * @param publish - flag indicating whether to publish the voltage
    */

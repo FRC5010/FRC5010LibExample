@@ -1,5 +1,7 @@
 package org.frc5010.common.config.json.devices;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.DeviceConfiguration;
@@ -7,13 +9,7 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.function.VelocityControlMotor;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-
-/**
- * Configures a VelocityControlMotor with the given parameters and visualizes
- * it.
- */
+/** Configures a VelocityControlMotor with the given parameters and visualizes it. */
 public class VelocityMotorConfigurationJson implements DeviceConfiguration {
   /** The name of the motor */
   public String name;
@@ -51,18 +47,20 @@ public class VelocityMotorConfigurationJson implements DeviceConfiguration {
   public String logLevel = "COMPETITION";
 
   /**
-   * Configures a VelocityControlMotor with the given parameters and visualizes
-   * it.
+   * Configures a VelocityControlMotor with the given parameters and visualizes it.
    *
    * @param mechanismSimulation The LoggedMechanism2d instance for visualization.
    * @return A configured VelocityControlMotor object.
    */
   @Override
   public Object configure(GenericSubsystem deviceHandler) {
-    VelocityControlMotor motor = new VelocityControlMotor(DeviceConfigReader.getMotor(controller, type, id), name,
-        deviceHandler.getDisplayValuesHelper())
-        .setupSimulatedMotor(gearing, momentOfInertiaKgMSq)
-        .setVisualizer(deviceHandler.getMechVisual(), new Pose3d(x, y, z, new Rotation3d()));
+    VelocityControlMotor motor =
+        new VelocityControlMotor(
+                DeviceConfigReader.getMotor(controller, type, id),
+                name,
+                deviceHandler.getDisplayValuesHelper())
+            .setupSimulatedMotor(gearing, momentOfInertiaKgMSq)
+            .setVisualizer(deviceHandler.getMechVisual(), new Pose3d(x, y, z, new Rotation3d()));
     if (kP != 0.0 || kI != 0.0 || kD != 0.0) {
       motor.setValues(new GenericPID(kP, kI, kD));
     }

@@ -28,10 +28,14 @@
 // import org.littletonrobotics.junction.Logger;
 
 // public class DriveToPose extends Command {
-//   private static final LoggedTunableNumber drivekP = new LoggedTunableNumber("DriveToPose/DrivekP");
-//   private static final LoggedTunableNumber drivekD = new LoggedTunableNumber("DriveToPose/DrivekD");
-//   private static final LoggedTunableNumber thetakP = new LoggedTunableNumber("DriveToPose/ThetakP");
-//   private static final LoggedTunableNumber thetakD = new LoggedTunableNumber("DriveToPose/ThetakD");
+//   private static final LoggedTunableNumber drivekP = new
+// LoggedTunableNumber("DriveToPose/DrivekP");
+//   private static final LoggedTunableNumber drivekD = new
+// LoggedTunableNumber("DriveToPose/DrivekD");
+//   private static final LoggedTunableNumber thetakP = new
+// LoggedTunableNumber("DriveToPose/ThetakP");
+//   private static final LoggedTunableNumber thetakD = new
+// LoggedTunableNumber("DriveToPose/ThetakD");
 //   private static final LoggedTunableNumber driveMaxVelocity =
 //       new LoggedTunableNumber("DriveToPose/DriveMaxVelocity");
 //   private static final LoggedTunableNumber driveMaxVelocitySlow =
@@ -168,7 +172,8 @@
 //     Pose2d targetPose = target.get();
 
 //     // Calculate drive speed
-//     double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+//     double currentDistance =
+// currentPose.getTranslation().getDistance(targetPose.getTranslation());
 //     double ffScaler =
 //         MathUtil.clamp(
 //             (currentDistance - ffMinRadius.get()) / (ffMaxRadius.get() - ffMinRadius.get()),
@@ -188,7 +193,8 @@
 //                 new Rotation2d(
 //                     Math.atan2(
 //                         currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
-//                         currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
+//                         currentPose.getTranslation().getX() -
+// targetPose.getTranslation().getX())))
 //             .transformBy(GeomUtil.toTransform2d(driveController.getSetpoint().position, 0.0))
 //             .getTranslation();
 
@@ -207,7 +213,8 @@
 //                 new Rotation2d(
 //                     Math.atan2(
 //                         currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
-//                         currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
+//                         currentPose.getTranslation().getX() -
+// targetPose.getTranslation().getX())))
 //             .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
 //             .getTranslation();
 
@@ -223,10 +230,9 @@
 //     // Command speeds
 //     drive.runVelocity(
 //         ChassisSpeeds.fromFieldRelativeSpeeds(
-//             driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, currentPose.getRotation()));
+//             driveVelocity.getX(), driveVelocity.getY(), thetaVelocity,
+// currentPose.getRotation()));
 
-
-  
 //   }
 
 //   @Override

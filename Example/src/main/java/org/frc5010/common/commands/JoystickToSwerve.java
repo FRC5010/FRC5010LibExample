@@ -4,18 +4,16 @@
 
 package org.frc5010.common.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 
 public class JoystickToSwerve extends Command {
   /** Creates a new JoystickToSwerve. */
@@ -58,12 +56,12 @@ public class JoystickToSwerve extends Command {
 
   public void setYSpeedFunction(DoubleSupplier ySpeedFunction) {
     ySpdFunction = ySpeedFunction;
-  } 
+  }
 
   public void setRobotSpeedFactor(DoubleSupplier robotSpeedFactor) {
     this.robotSpeedFactor = robotSpeedFactor;
   }
-  
+
   public DoubleSupplier getTurnSpeedFunction() {
     return turnSpdFunction;
   }
@@ -105,10 +103,12 @@ public class JoystickToSwerve extends Command {
 
     if (fieldOrientedDrive.getAsBoolean()) {
       Alliance alliance = allianceSupplier.get();
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(    
+      chassisSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
               alliance == Alliance.Red ? -xSpeed : xSpeed,
               alliance == Alliance.Red ? -ySpeed : ySpeed,
-              turnSpeed, correctedRotation);
+              turnSpeed,
+              correctedRotation);
     } else {
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turnSpeed);
     }

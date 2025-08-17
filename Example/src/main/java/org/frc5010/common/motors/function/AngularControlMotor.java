@@ -9,19 +9,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.Optional;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.MotorFactory;
-import org.frc5010.common.motors.SystemIdentification;
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.telemetry.DisplayDouble;
-import org.frc5010.common.telemetry.DisplayValuesHelper;
-import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
@@ -36,6 +23,17 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.MotorFactory;
+import org.frc5010.common.motors.SystemIdentification;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.telemetry.DisplayDouble;
+import org.frc5010.common.telemetry.DisplayValuesHelper;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 /** Provides PID control for angular motors */
 public class AngularControlMotor extends GenericControlledMotor {
@@ -52,7 +50,8 @@ public class AngularControlMotor extends GenericControlledMotor {
   protected DisplayDouble kG;
   ArmFeedforward pivotFeedforward;
 
-  public AngularControlMotor(MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
+  public AngularControlMotor(
+      MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName, tab);
     kG = _displayValuesHelper.makeConfigDouble(K_G);
     encoder = motor.getMotorEncoder();
@@ -76,15 +75,16 @@ public class AngularControlMotor extends GenericControlledMotor {
     this.startingAngle = startingAngle;
     this.kG.setValue(kG);
 
-    simMechanism = new SingleJointedArmSim(
-        _motor.getMotorSimulationType(),
-        gearing,
-        SingleJointedArmSim.estimateMOI(armLength.in(Meters), mass),
-        armLength.in(Meters),
-        minAngle.in(Radians),
-        maxAngle.in(Radians),
-        simulateGravity,
-        startingAngle.in(Radians));
+    simMechanism =
+        new SingleJointedArmSim(
+            _motor.getMotorSimulationType(),
+            gearing,
+            SingleJointedArmSim.estimateMOI(armLength.in(Meters), mass),
+            armLength.in(Meters),
+            minAngle.in(Radians),
+            maxAngle.in(Radians),
+            simulateGravity,
+            startingAngle.in(Radians));
 
     encoder.setInverted(inverted);
     encoder.setPosition(startingAngle.in(Degrees));
@@ -97,22 +97,25 @@ public class AngularControlMotor extends GenericControlledMotor {
   public AngularControlMotor setVisualizer(LoggedMechanism2d visualizer, Pose3d robotToMotor) {
     super.setVisualizer(visualizer, robotToMotor);
 
-    root = visualizer.getRoot(
-        _visualName,
-        getSimX(Meters.of(robotToMotor.getX())),
-        getSimY(Meters.of(robotToMotor.getZ())));
-    simulatedArm = new LoggedMechanismLigament2d(
-        _visualName + "-arm",
-        armLength.in(Meters),
-        startingAngle.in(Degrees),
-        5,
-        new Color8Bit(MotorFactory.getNextVisualColor()));
-    setpoint = new LoggedMechanismLigament2d(
-        _visualName + "-setpoint",
-        armLength.in(Meters),
-        startingAngle.in(Degrees),
-        5,
-        new Color8Bit(MotorFactory.getNextVisualColor()));
+    root =
+        visualizer.getRoot(
+            _visualName,
+            getSimX(Meters.of(robotToMotor.getX())),
+            getSimY(Meters.of(robotToMotor.getZ())));
+    simulatedArm =
+        new LoggedMechanismLigament2d(
+            _visualName + "-arm",
+            armLength.in(Meters),
+            startingAngle.in(Degrees),
+            5,
+            new Color8Bit(MotorFactory.getNextVisualColor()));
+    setpoint =
+        new LoggedMechanismLigament2d(
+            _visualName + "-setpoint",
+            armLength.in(Meters),
+            startingAngle.in(Degrees),
+            5,
+            new Color8Bit(MotorFactory.getNextVisualColor()));
     root.append(simulatedArm);
     root.append(setpoint);
     return this;
@@ -120,13 +123,17 @@ public class AngularControlMotor extends GenericControlledMotor {
 
   @Override
   public void setReference(double reference) {
-    setReference(reference, controller.getControlType(),
+    setReference(
+        reference,
+        controller.getControlType(),
         getFeedForward(0).in(Volts) / RobotController.getBatteryVoltage());
   }
 
   public void updateReference() {
     if (PIDControlType.NONE != controller.getControlType()) {
-      controller.setReference(reference.getValue(), getControlType(),
+      controller.setReference(
+          reference.getValue(),
+          getControlType(),
           getFeedForward(0).in(Volts) / RobotController.getBatteryVoltage());
     }
   }
@@ -142,15 +149,15 @@ public class AngularControlMotor extends GenericControlledMotor {
   @Override
   public Voltage getFeedForward(double velocity) {
     if (null == pivotFeedforward || _displayValuesHelper.getLoggingLevel() == LogLevel.CONFIG) {
-      pivotFeedforward = new ArmFeedforward(
-          getMotorFeedFwd().getkS(),
-          kG.getValue(),
-          getMotorFeedFwd().getkV(),
-          getMotorFeedFwd().getkA());
+      pivotFeedforward =
+          new ArmFeedforward(
+              getMotorFeedFwd().getkS(),
+              kG.getValue(),
+              getMotorFeedFwd().getkV(),
+              getMotorFeedFwd().getkA());
     }
-    Voltage ff = Volts.of(
-        pivotFeedforward.calculate(
-            Degrees.of(getPivotPosition()).in(Radians), 0.0));
+    Voltage ff =
+        Volts.of(pivotFeedforward.calculate(Degrees.of(getPivotPosition()).in(Radians), 0.0));
     feedForward.setValue(ff.in(Volts));
     return ff;
   }
@@ -170,8 +177,8 @@ public class AngularControlMotor extends GenericControlledMotor {
     simMechanism.setInput(_motor.getVoltage());
     outputEffort.setVoltage(_motor.getVoltage(), Volts);
     simMechanism.update(0.020);
-    _motor.simulationUpdate(Optional.of(simMechanism.getAngleRads()),
-        simMechanism.getVelocityRadPerSec());
+    _motor.simulationUpdate(
+        Optional.of(simMechanism.getAngleRads()), simMechanism.getVelocityRadPerSec());
 
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(simMechanism.getCurrentDrawAmps()));

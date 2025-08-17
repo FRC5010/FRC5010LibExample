@@ -4,17 +4,15 @@
 
 package org.frc5010.common.motors;
 
-import java.util.Optional;
-
-import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.Optional;
+import org.frc5010.common.motors.MotorConstants.Motor;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 
@@ -47,7 +45,7 @@ public interface MotorController5010 extends MotorController {
   /**
    * Sets the motor as an inverted follower of another motor
    *
-   * @param motor    The motor to follow
+   * @param motor The motor to follow
    * @param inverted Whether the motor should be inverted
    * @return a reference to the motor
    */
@@ -125,6 +123,7 @@ public interface MotorController5010 extends MotorController {
 
   /**
    * Returns the motor configuration
+   *
    * @return The motor configuration
    */
   public Motor getMotorConfig();
@@ -153,9 +152,7 @@ public interface MotorController5010 extends MotorController {
    */
   public MotorController5010 setVoltageCompensation(double nominalVoltage);
 
-  /**
-   * Clear the sticky faults on the motor controller.
-   */
+  /** Clear the sticky faults on the motor controller. */
   public void clearStickyFaults();
 
   /**
@@ -165,9 +162,7 @@ public interface MotorController5010 extends MotorController {
    */
   public MotorController5010 setMotorBrake(boolean isBrakeMode);
 
-  /**
-   * Save the configurations from flash to EEPROM.
-   */
+  /** Save the configurations from flash to EEPROM. */
   public void burnFlash();
 
   /**
@@ -186,13 +181,14 @@ public interface MotorController5010 extends MotorController {
 
   /**
    * Get the current output of the motor controller.
-   * 
+   *
    * @return Current output.
    */
   public double getOutputCurrent();
 
   /**
    * Get the smart motor controller
+   *
    * @param config The smart motor controller config
    * @return The smart motor controller
    */

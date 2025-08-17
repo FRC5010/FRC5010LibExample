@@ -13,20 +13,20 @@ public class CountingValueSwitch extends ValueSwitch {
   private int counts;
   private int triggerCounts;
 
-
-  public CountingValueSwitch(double threshold, Supplier<Double> value, double triggerThreshold, int countsToTrigger) {
+  public CountingValueSwitch(
+      double threshold, Supplier<Double> value, double triggerThreshold, int countsToTrigger) {
     super(threshold, value, triggerThreshold);
     triggerCounts = countsToTrigger;
   }
 
   @Override
   public Boolean get() {
-    boolean switchState = (valueFilter.calculate(valueSupplier.get()) - thresholdSupplier.get())
-    > triggerThreshold;
+    boolean switchState =
+        (valueFilter.calculate(valueSupplier.get()) - thresholdSupplier.get()) > triggerThreshold;
     counts += switchState ? 1 : 0;
     boolean countsAchieved = counts > triggerCounts;
     if (countsAchieved) {
-        counts = 0;
+      counts = 0;
     }
     return countsAchieved;
   }

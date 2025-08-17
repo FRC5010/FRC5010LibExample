@@ -1,8 +1,7 @@
 package org.frc5010.common.sensors;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.function.Supplier;
 
 public class ValueSwitch {
   Supplier<Double> thresholdSupplier;

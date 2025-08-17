@@ -4,19 +4,6 @@
 
 package org.frc5010.common.sensors.camera;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
-
-import org.frc5010.common.vision.VisionConstants;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -28,6 +15,17 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import org.frc5010.common.vision.VisionConstants;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /** A camera using the PhotonVision library. */
 public class PhotonVisionPoseCamera extends PhotonVisionCamera {
@@ -43,12 +41,12 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
-   * @param fieldLayout   - the field layout
-   * @param strategy      - the pose strategy
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
+   * @param fieldLayout - the field layout
+   * @param strategy - the pose strategy
    * @param cameraToRobot - the camera-to-robot transform
-   * @param poseSupplier  - the pose supplier
+   * @param poseSupplier - the pose supplier
    */
   public PhotonVisionPoseCamera(
       String name,
@@ -63,7 +61,8 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     this.fieldLayout = fieldLayout;
     poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, cameraToRobot);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
-    visionLayout.addString("Primary Strategy " + name, () -> poseEstimator.getPrimaryStrategy().name());
+    visionLayout.addString(
+        "Primary Strategy " + name, () -> poseEstimator.getPrimaryStrategy().name());
   }
 
   public PhotonVisionPoseCamera(
@@ -82,7 +81,8 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     visionLayout.addDouble("Observations", () -> input.poseObservations.length);
     poseEstimator = new PhotonPoseEstimator(fieldLayout, strategy, cameraToRobot);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
-    visionLayout.addString("Primary Strategy " + name, () -> poseEstimator.getPrimaryStrategy().name());
+    visionLayout.addString(
+        "Primary Strategy " + name, () -> poseEstimator.getPrimaryStrategy().name());
   }
 
   /** Update the camera and target with the latest result */
@@ -115,11 +115,18 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
         // Add tag IDs
         camResult.multitagResult.map(it -> tagIds.addAll(it.fiducialIDsUsed));
 
-        SmartDashboard.putNumber("Camera/" + name() + "/Total Distance To Tag " + name, totalTagDistance);
-        SmartDashboard.putNumber("Camera/" + name() + "/Photon Ambiguity " + name, camResult.getBestTarget().poseAmbiguity);
-        SmartDashboard.putNumberArray("Camera/" + name() + "/Photon Camera " + name + " POSE", new double[] {
-            robotPose.getX(), robotPose.getY(), robotPose.getRotation().toRotation2d().getDegrees()
-        });
+        SmartDashboard.putNumber(
+            "Camera/" + name() + "/Total Distance To Tag " + name, totalTagDistance);
+        SmartDashboard.putNumber(
+            "Camera/" + name() + "/Photon Ambiguity " + name,
+            camResult.getBestTarget().poseAmbiguity);
+        SmartDashboard.putNumberArray(
+            "Camera/" + name() + "/Photon Camera " + name + " POSE",
+            new double[] {
+              robotPose.getX(),
+              robotPose.getY(),
+              robotPose.getRotation().toRotation2d().getDegrees()
+            });
 
         observations.add(
             new PoseObservation(
@@ -156,14 +163,17 @@ public class PhotonVisionPoseCamera extends PhotonVisionCamera {
     if (camResult.multitagResult.isEmpty()) {
       angularStdDev = 1.0;
     }
-    //double rotStdDev = 0.3;
+    // double rotStdDev = 0.3;
 
     // If really close, disregard angle measurement
-    if (observation.averageTagDistance() < 0.3 || (observation.averageTagDistance() > 2 && RobotState.isEnabled())) {
+    if (observation.averageTagDistance() < 0.3
+        || (observation.averageTagDistance() > 2 && RobotState.isEnabled())) {
       angularStdDev = 1000.0;
     }
 
-    if ((observation.averageTagDistance() > 2.5 && RobotState.isEnabled() && observation.tagCount() < 2)) {
+    if ((observation.averageTagDistance() > 2.5
+        && RobotState.isEnabled()
+        && observation.tagCount() < 2)) {
       linearStdDev = 100.0;
     }
     return VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev);

@@ -1,18 +1,16 @@
 package org.frc5010.common.commands;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.frc5010.common.drive.GenericDrivetrain;
-import org.frc5010.common.mechanisms.DriveConstantsDef;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.frc5010.common.drive.GenericDrivetrain;
+import org.frc5010.common.mechanisms.DriveConstantsDef;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
 /** Drive the robot where the angle is given */
 public class DriveByAngle extends Command {
@@ -40,19 +38,21 @@ public class DriveByAngle extends Command {
   /** The heading axis simulation */
   private LoggedMechanismLigament2d heading;
   /** The max chassis velocity */
-  private double maxChassisVelocity = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
+  private double maxChassisVelocity =
+      Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_VELOCITY, 15);
   /** The max chassis rotation rate */
-  private double maxChassisRotation = Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
+  private double maxChassisRotation =
+      Preferences.getDouble(DriveConstantsDef.MAX_CHASSIS_ROTATION, 1.5);
 
   /**
    * Creates a new DriveByAngle command.
    *
-   * @param drivetrainSubsystem  the subsystem used by this command
+   * @param drivetrainSubsystem the subsystem used by this command
    * @param translationXSupplier the translation supplier in the X direction
    * @param translationYSupplier the translation supplier in the Y direction
-   * @param rotationXSupplier    the rotation supplier in the X direction
-   * @param rotationYSupplier    the rotation supplier in the Y direction
-   * @param fieldOrientedDrive   whether to use field oriented drive
+   * @param rotationXSupplier the rotation supplier in the X direction
+   * @param rotationYSupplier the rotation supplier in the Y direction
+   * @param fieldOrientedDrive whether to use field oriented drive
    */
   public DriveByAngle(
       GenericDrivetrain drivetrainSubsystem,
@@ -84,22 +84,25 @@ public class DriveByAngle extends Command {
   public void execute() {
     double x = m_translationXSupplier.getAsDouble();
     double y = m_translationYSupplier.getAsDouble();
-    double r = Math.max(
-        Math.min(
-            Math.atan2(m_rotationXSupplier.getAsDouble(), m_rotationYSupplier.getAsDouble())
-                - drivetrainSubsystem.getHeading().getRadians(),
-            1),
-        -1);
+    double r =
+        Math.max(
+            Math.min(
+                Math.atan2(m_rotationXSupplier.getAsDouble(), m_rotationYSupplier.getAsDouble())
+                    - drivetrainSubsystem.getHeading().getRadians(),
+                1),
+            -1);
 
     xAxis.setLength(x * 30);
     yAxis.setLength(y * 30);
     heading.setAngle(180 * r);
 
     if (fieldOrientedDrive.get()) {
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          x * maxChassisVelocity,
-          y * maxChassisVelocity,
-          r * maxChassisRotation, drivetrainSubsystem.getHeading());
+      ChassisSpeeds chassisSpeeds =
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              x * maxChassisVelocity,
+              y * maxChassisVelocity,
+              r * maxChassisRotation,
+              drivetrainSubsystem.getHeading());
       drivetrainSubsystem.drive(chassisSpeeds);
     } else {
       drivetrainSubsystem.drive(

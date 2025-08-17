@@ -2,10 +2,6 @@ package org.frc5010.common.telemetry;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import java.util.EnumSet;
-
-import org.frc5010.common.arch.GenericRobot.LogLevel;
-
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
@@ -15,6 +11,8 @@ import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
+import java.util.EnumSet;
+import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add an angle to the dashboard */
 public class DisplayAngle {
@@ -43,12 +41,11 @@ public class DisplayAngle {
    * Constructor for an angle display
    *
    * @param angle - angle in that unit
-   * @param unit  - angle unit
-   * @param name  - name of the angle
+   * @param unit - angle unit
+   * @param name - name of the angle
    * @param table - name of the table
    */
-  public DisplayAngle(
-      final double angle, AngleUnit unit, final String name, final String table) {
+  public DisplayAngle(final double angle, AngleUnit unit, final String name, final String table) {
     this(angle, unit, name, table, LogLevel.COMPETITION);
   }
 
@@ -56,12 +53,16 @@ public class DisplayAngle {
    * Constructor for an angle display
    *
    * @param angle - angle in that unit
-   * @param unit  - angle unit
-   * @param name  - name of the angle
+   * @param unit - angle unit
+   * @param name - name of the angle
    * @param table - name of the table
    */
   public DisplayAngle(
-      final double angle, AngleUnit unit, final String name, final String table, LogLevel logLevel) {
+      final double angle,
+      AngleUnit unit,
+      final String name,
+      final String table,
+      LogLevel logLevel) {
     angle_ = new MutAngle(angle, unit.getBaseUnit().convertFrom(angle, unit), unit);
     unit_ = unit;
     name_ = String.format("%s (%s)", name, unit_.symbol());
@@ -78,11 +79,10 @@ public class DisplayAngle {
    * Constructor for an angle display
    *
    * @param angle - angle with units
-   * @param name  - name of the angle
+   * @param name - name of the angle
    * @param table - name of the table
    */
-  public DisplayAngle(
-      final Angle angle, final String name, final String table) {
+  public DisplayAngle(final Angle angle, final String name, final String table) {
     this(angle, name, table, LogLevel.COMPETITION);
   }
 
@@ -90,12 +90,11 @@ public class DisplayAngle {
    * Constructor for an angle display
    *
    * @param angle - angle with units
-   * @param name  - name of the angle
+   * @param name - name of the angle
    * @param table - name of the table
    * @param debug - whether or not to debug
    */
-  public DisplayAngle(
-      final Angle angle, final String name, final String table, LogLevel logLevel) {
+  public DisplayAngle(final Angle angle, final String name, final String table, LogLevel logLevel) {
     angle_ = angle.mutableCopy();
     unit_ = angle.unit();
     name_ = String.format("%s (%s)", name, unit_.symbol());
@@ -109,8 +108,8 @@ public class DisplayAngle {
   }
 
   /**
-   * Initializes the display by adding a listener to the subscriber and
-   * setting the default value of the publisher
+   * Initializes the display by adding a listener to the subscriber and setting the default value of
+   * the publisher
    */
   protected void init(LogLevel logLevel) {
     publisher_.setDefault(angle_.in(unit_));
@@ -118,13 +117,14 @@ public class DisplayAngle {
       if (isDisplayed_) topic_.setPersistent(true);
       if (DisplayValuesHelper.isAtLogLevel(LogLevel.CONFIG)) {
         subscriber_ = topic_.subscribe(angle_.in(unit_));
-        listenerHandle_ = NetworkTableInstance.getDefault()
-            .addListener(
-                subscriber_,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-                event -> {
-                  setAngle(event.valueData.value.getDouble(), unit_, false);
-                });
+        listenerHandle_ =
+            NetworkTableInstance.getDefault()
+                .addListener(
+                    subscriber_,
+                    EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+                    event -> {
+                      setAngle(event.valueData.value.getDouble(), unit_, false);
+                    });
         setAngle(subscriber_.get(), unit_, false);
       }
     }
@@ -135,7 +135,7 @@ public class DisplayAngle {
    * Sets the angle
    *
    * @param angle - angle in that unit
-   * @param unit  - angle unit
+   * @param unit - angle unit
    */
   public void setAngle(final double angle, final AngleUnit unit) {
     setAngle(angle, unit, true);
@@ -144,8 +144,8 @@ public class DisplayAngle {
   /**
    * Sets the angle
    *
-   * @param angle   - angle in that unit
-   * @param unit    - angle unit
+   * @param angle - angle in that unit
+   * @param unit - angle unit
    * @param publish - whether or not to publish
    */
   public void setAngle(final double angle, final AngleUnit unit, final boolean publish) {
@@ -156,7 +156,7 @@ public class DisplayAngle {
    * Sets the angle using base units
    *
    * @param unitAngle - angle with units
-   * @param publish   - whether or not to publish
+   * @param publish - whether or not to publish
    */
   public void setAngle(final Angle unitAngle, final boolean publish) {
     angle_.mut_setBaseUnitMagnitude(unitAngle.baseUnitMagnitude());

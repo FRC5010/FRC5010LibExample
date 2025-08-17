@@ -7,14 +7,13 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import org.frc5010.common.config.json.devices.ArmParser;
-import org.frc5010.common.config.json.devices.ElevatorParser;
-import org.frc5010.common.config.json.devices.PivotParser;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.frc5010.common.config.json.devices.ArmParser;
+import org.frc5010.common.config.json.devices.ElevatorParser;
+import org.frc5010.common.config.json.devices.PivotParser;
 import yams.mechanisms.positional.Arm;
 import yams.mechanisms.positional.Elevator;
 import yams.mechanisms.positional.Pivot;
@@ -31,62 +30,51 @@ public class ConfiguredMechanisms extends SubsystemBase {
     pivot = PivotParser.parse("mechanisms", "yams_pivot.json", this);
   }
 
-  public void periodic()
-  {
+  public void periodic() {
     elevator.updateTelemetry();
     arm.updateTelemetry();
     pivot.updateTelemetry();
   }
 
-  public void simulationPeriodic()
-  {
+  public void simulationPeriodic() {
     elevator.simIterate();
     arm.simIterate();
     pivot.simIterate();
   }
 
-  public Command elevCmd(double dutycycle)
-  {
+  public Command elevCmd(double dutycycle) {
     return elevator.set(dutycycle);
   }
 
-  public Command setHeight(Distance height)
-  {
+  public Command setHeight(Distance height) {
     return elevator.setHeight(height);
   }
 
-  public Command sysIdElevator()
-  {
+  public Command sysIdElevator() {
     return elevator.sysId(Volts.of(12), Volts.of(12).per(Second), Second.of(30));
   }
 
-  public Command armCmd(double dutycycle)
-  {
+  public Command armCmd(double dutycycle) {
     return arm.set(dutycycle);
   }
 
-  public Command sysIdArm()
-  {
+  public Command sysIdArm() {
     return arm.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
   }
 
-  public Command setArmAngle(Angle angle)
-  {
+  public Command setArmAngle(Angle angle) {
     return arm.setAngle(angle);
   }
 
-  public Command turretCmd(double dutycycle)
-  {
+  public Command turretCmd(double dutycycle) {
     return pivot.set(dutycycle);
   }
 
-  public Command sysIdTurret()
-  {
+  public Command sysIdTurret() {
     return pivot.sysId(Volts.of(3), Volts.of(3).per(Second), Second.of(30));
   }
 
-  public Command setPivotAngle(Angle angle)
-  {
+  public Command setPivotAngle(Angle angle) {
     return pivot.setAngle(angle);
   }
 }

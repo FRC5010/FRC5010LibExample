@@ -4,19 +4,17 @@
 
 package org.frc5010.common.commands;
 
-import org.frc5010.common.constants.SwerveConstants;
-import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
-import org.frc5010.common.vision.AprilTags;
-
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import org.frc5010.common.constants.SwerveConstants;
+import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
+import org.frc5010.common.vision.AprilTags;
 
 public class DriveToTrajectory extends Command {
 

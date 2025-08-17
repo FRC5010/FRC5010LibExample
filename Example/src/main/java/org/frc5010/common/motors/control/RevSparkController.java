@@ -4,16 +4,15 @@
 
 package org.frc5010.common.motors.control;
 
-import org.frc5010.common.constants.GenericPID;
-import org.frc5010.common.constants.MotorFeedFwdConstants;
-import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
-
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import org.frc5010.common.constants.GenericPID;
+import org.frc5010.common.constants.MotorFeedFwdConstants;
+import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
 
 /** Add your docs here. */
 public class RevSparkController extends GenericPIDController {
@@ -24,9 +23,7 @@ public class RevSparkController extends GenericPIDController {
   /** The control type */
   ControlType sparkControlType = ControlType.kVoltage;
 
-  /**
-   * Configuration object for {@link SparkMax} motor.
-   */
+  /** Configuration object for {@link SparkMax} motor. */
   private SparkMaxConfig cfg;
   /** The reference */
   private double reference = 0.0;
@@ -160,7 +157,8 @@ public class RevSparkController extends GenericPIDController {
         sparkControlType = ControlType.kMAXMotionVelocityControl;
         break;
       default:
-        throw new IllegalArgumentException("Control Type " + controlType.name() + " is not supported by Rev");
+        throw new IllegalArgumentException(
+            "Control Type " + controlType.name() + " is not supported by Rev");
     }
   }
 
@@ -236,9 +234,7 @@ public class RevSparkController extends GenericPIDController {
     cfg.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
     cfg.absoluteEncoder.zeroOffset(offset);
     cfg.absoluteEncoder.inverted(inverted);
-    cfg.closedLoop
-        .positionWrappingEnabled(true)
-        .positionWrappingInputRange(min, max);
+    cfg.closedLoop.positionWrappingEnabled(true).positionWrappingInputRange(min, max);
   }
 
   @Override
@@ -252,6 +248,5 @@ public class RevSparkController extends GenericPIDController {
   }
 
   @Override
-  public void setMotorFeedFwd(MotorFeedFwdConstants motorConstants) {
-  }
+  public void setMotorFeedFwd(MotorFeedFwdConstants motorConstants) {}
 }

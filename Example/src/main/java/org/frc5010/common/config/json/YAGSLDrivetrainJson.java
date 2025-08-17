@@ -4,10 +4,11 @@
 
 package org.frc5010.common.config.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.wpi.first.wpilibj.RobotBase;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
@@ -16,10 +17,6 @@ import org.frc5010.common.constants.SwerveConstants;
 import org.frc5010.common.drive.swerve.GenericSwerveDrivetrain;
 import org.frc5010.common.drive.swerve.YAGSLSwerveDrivetrain;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.wpi.first.wpilibj.RobotBase;
 
 /** Parameters for a YAGSLSwerveDrivetrain */
 public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
@@ -31,8 +28,7 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
 
   private Optional<GamePiecesJson> gamePiecesJson = Optional.empty();
   /**
-   * The file names of the drive module's feed forward constants. These should
-   * match what are used
+   * The file names of the drive module's feed forward constants. These should match what are used
    * in the YAGSL config
    */
   public String[] driveModules;
@@ -44,8 +40,10 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
       File moduleFile = new File(baseDirectory, "drive_modules/" + driveModules[i]);
       String moduleName = driveModules[i].substring(0, driveModules[i].indexOf(".json"));
       assert moduleFile.exists();
-      YAGSLDriveModuleJson module = new ObjectMapper().readValue(moduleFile, YAGSLDriveModuleJson.class);
-      MotorFeedFwdConstants feedFwdConstants = new MotorFeedFwdConstants(module.s, module.v, module.a);
+      YAGSLDriveModuleJson module =
+          new ObjectMapper().readValue(moduleFile, YAGSLDriveModuleJson.class);
+      MotorFeedFwdConstants feedFwdConstants =
+          new MotorFeedFwdConstants(module.s, module.v, module.a);
       swerveConstants.getSwerveModuleConstants().addDriveMotorFF(moduleName, feedFwdConstants);
     }
     robot.setDrivetrainConstants(swerveConstants);
@@ -55,23 +53,26 @@ public class YAGSLDrivetrainJson implements DrivetrainPropertiesJson {
       if (fieldDirectory.exists()) {
         File gamePiecesFile = new File(fieldDirectory, "game_pieces.json");
         if (gamePiecesFile.exists()) {
-          gamePiecesJson = Optional.ofNullable(new ObjectMapper().readValue(gamePiecesFile, GamePiecesJson.class));
+          gamePiecesJson =
+              Optional.ofNullable(
+                  new ObjectMapper().readValue(gamePiecesFile, GamePiecesJson.class));
         }
       }
     }
     return;
-  };
+  }
+  ;
 
   @Override
   public void createDriveTrain(GenericRobot robot) {
-    YAGSLSwerveDrivetrain yagsl = new YAGSLSwerveDrivetrain(robot.getDrivetrainConstants(),
-        turningMotorGearRatio,
-        directory);
-    GenericSwerveDrivetrain drivetrain = new GenericSwerveDrivetrain(
-        new LoggedMechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
-        robot.getDrivetrainConstants(), yagsl);
-    robot.addSubsystem(
-        ConfigConstants.DRIVETRAIN, drivetrain);
+    YAGSLSwerveDrivetrain yagsl =
+        new YAGSLSwerveDrivetrain(robot.getDrivetrainConstants(), turningMotorGearRatio, directory);
+    GenericSwerveDrivetrain drivetrain =
+        new GenericSwerveDrivetrain(
+            new LoggedMechanism2d(RobotConstantsDef.robotVisualH, RobotConstantsDef.robotVisualV),
+            robot.getDrivetrainConstants(),
+            yagsl);
+    robot.addSubsystem(ConfigConstants.DRIVETRAIN, drivetrain);
     robot.setPoseSupplier(() -> drivetrain.getPoseEstimator().getCurrentPose());
     robot.setSimulatedPoseSupplier(() -> yagsl.getMapleSimPose());
     gamePiecesJson.ifPresent(it -> it.createGamePieces(drivetrain));

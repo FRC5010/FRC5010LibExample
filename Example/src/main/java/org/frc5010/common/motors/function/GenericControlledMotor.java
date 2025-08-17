@@ -6,6 +6,10 @@ package org.frc5010.common.motors.function;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
@@ -16,11 +20,6 @@ import org.frc5010.common.telemetry.DisplayDouble;
 import org.frc5010.common.telemetry.DisplayString;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.frc5010.common.telemetry.DisplayVoltage;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** Add your docs here. */
 public abstract class GenericControlledMotor extends GenericFunctionalMotor
@@ -75,7 +74,8 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   protected MotorFeedFwdConstants feedFwd;
   protected GenericEncoder encoder;
 
-  public GenericControlledMotor(MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
+  public GenericControlledMotor(
+      MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName);
     encoder = _motor.getMotorEncoder();
     controller = motor.getPIDController5010();
@@ -85,9 +85,8 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   }
 
   /**
-   * Initializes all the display values for the motor, including PID values, feed
-   * forward, and control type. This function is called by the superclass's
-   * constructor.
+   * Initializes all the display values for the motor, including PID values, feed forward, and
+   * control type. This function is called by the superclass's constructor.
    */
   @Override
   protected void initiateDisplayValues() {
@@ -139,12 +138,9 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
 
   @Override
   public void setValues(GenericPID pidValues) {
-    if (0 != pidValues.getkP())
-      kP.setValue(pidValues.getkP());
-    if (0 != pidValues.getkI())
-      kI.setValue(pidValues.getkI());
-    if (0 != pidValues.getkD())
-      kD.setValue(pidValues.getkD());
+    if (0 != pidValues.getkP()) kP.setValue(pidValues.getkP());
+    if (0 != pidValues.getkI()) kI.setValue(pidValues.getkI());
+    if (0 != pidValues.getkD()) kD.setValue(pidValues.getkD());
     pidValues.setkP(kP.getValue());
     pidValues.setkI(kI.getValue());
     pidValues.setkD(kD.getValue());
@@ -198,7 +194,8 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
     this.reference.setValue(reference);
     if (GenericRobot.LogLevel.CONFIG == _displayValuesHelper.getLoggingLevel()) {
       controller.setValues(new GenericPID(kP.getValue(), kI.getValue(), kD.getValue()));
-      controller.setMotorFeedFwd(new MotorFeedFwdConstants(kS.getValue(), kV.getValue(), kA.getValue()));
+      controller.setMotorFeedFwd(
+          new MotorFeedFwdConstants(kS.getValue(), kV.getValue(), kA.getValue()));
     }
     controller.setReference(reference);
   }
@@ -250,7 +247,7 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
 
   /**
    * Gets the proportional value of the PID controller from the config values.
-   * 
+   *
    * @return the proportional value.
    */
   @Override
@@ -260,7 +257,7 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
 
   /**
    * Gets the integral value of the PID controller from the config values.
-   * 
+   *
    * @return the integral value.
    */
   @Override
@@ -270,7 +267,7 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
 
   /**
    * Gets the derivative value of the PID controller from the config values.
-   * 
+   *
    * @return the derivative value.
    */
   @Override
@@ -313,8 +310,11 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   public void setOutputWithFF(double power, double ffVelocity) {
     double outputFactor = this.outputFactor.getValue();
     double ff = getFeedForward(ffVelocity).in(Volts);
-    double actual = MathUtil.clamp(power * outputFactor + ff, minOutput.getValue() * outputFactor,
-        maxOutput.getValue() * outputFactor);
+    double actual =
+        MathUtil.clamp(
+            power * outputFactor + ff,
+            minOutput.getValue() * outputFactor,
+            maxOutput.getValue() * outputFactor);
     outputEffort.setVoltage(actual, Volts);
     _motor.setVoltage(actual);
   }
@@ -322,7 +322,8 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   @Override
   public double calculateControlEffort(double current) {
     double controlEffort = controller.calculateControlEffort(current);
-    MathUtil.clamp(controlEffort, minOutput.getValue(), maxOutput.getValue()); // clamp effort to (min, max, 0)
+    MathUtil.clamp(
+        controlEffort, minOutput.getValue(), maxOutput.getValue()); // clamp effort to (min, max, 0)
     calculatedEffort.setVoltage(controlEffort * outputFactor.getValue(), Volts);
     return controlEffort;
   }
@@ -343,12 +344,9 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
 
   @Override
   public void setMotorFeedFwd(MotorFeedFwdConstants feedFwd) {
-    if (0 != feedFwd.getkS())
-      kS.setValue(feedFwd.getkS());
-    if (0 != feedFwd.getkV())
-      kV.setValue(feedFwd.getkV());
-    if (0 != feedFwd.getkA())
-      kA.setValue(feedFwd.getkA());
+    if (0 != feedFwd.getkS()) kS.setValue(feedFwd.getkS());
+    if (0 != feedFwd.getkV()) kV.setValue(feedFwd.getkV());
+    if (0 != feedFwd.getkA()) kA.setValue(feedFwd.getkA());
     feedFwd.setkS(kS.getValue());
     feedFwd.setkV(kV.getValue());
     feedFwd.setkA(kA.getValue());
@@ -361,9 +359,10 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   }
 
   public Voltage getFeedForward(double velocity) {
-    double feedforward = (null == feedFwd
-        ? controller.getF()
-        : controller.getReference() * (feedFwd.getkV() + feedFwd.getkA()) + feedFwd.getkS());
+    double feedforward =
+        (null == feedFwd
+            ? controller.getF()
+            : controller.getReference() * (feedFwd.getkV() + feedFwd.getkA()) + feedFwd.getkS());
     feedForward.setValue(feedforward);
     return Volts.of(feedforward);
   }

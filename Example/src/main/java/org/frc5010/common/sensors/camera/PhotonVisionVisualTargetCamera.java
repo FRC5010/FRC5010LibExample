@@ -4,18 +4,17 @@
 
 package org.frc5010.common.sensors.camera;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import java.util.Optional;
 
 /** A camera using the PhotonVision library. */
 public class PhotonVisionVisualTargetCamera extends PhotonVisionCamera {
   /**
    * Constructor
    *
-   * @param name          - the name of the camera
-   * @param colIndex      - the column index for the dashboard
+   * @param name - the name of the camera
+   * @param colIndex - the column index for the dashboard
    * @param cameraToRobot - the camera-to-robot transform
    */
   public PhotonVisionVisualTargetCamera(String name, int colIndex, Transform3d cameraToRobot) {
@@ -29,10 +28,13 @@ public class PhotonVisionVisualTargetCamera extends PhotonVisionCamera {
     if (camResult.hasTargets()) {
       target = Optional.ofNullable(camResult.getBestTarget());
       input.hasTarget = target.isPresent();
-      input.latestTargetRotation = target
-          .map(it -> new TargetRotation(
-              new Rotation3d(0, target.get().getPitch(), target.get().getYaw())))
-          .orElse(new TargetRotation(new Rotation3d()));
+      input.latestTargetRotation =
+          target
+              .map(
+                  it ->
+                      new TargetRotation(
+                          new Rotation3d(0, target.get().getPitch(), target.get().getYaw())))
+              .orElse(new TargetRotation(new Rotation3d()));
     }
   }
 }

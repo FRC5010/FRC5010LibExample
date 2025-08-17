@@ -4,12 +4,11 @@
 
 package org.frc5010.common.drive.pose;
 
-import org.frc5010.common.sensors.gyro.GenericGyro;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import org.frc5010.common.sensors.gyro.GenericGyro;
 
 /** Add your docs here. */
 public class SimulatedPose extends GenericPose {

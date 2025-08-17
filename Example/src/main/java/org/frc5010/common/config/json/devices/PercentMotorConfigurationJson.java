@@ -1,16 +1,13 @@
 package org.frc5010.common.config.json.devices;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.motors.function.PercentControlMotor;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-
-/**
- * Configures a PercentControlMotor with the given parameters and visualizes it.
- */
+/** Configures a PercentControlMotor with the given parameters and visualizes it. */
 public class PercentMotorConfigurationJson implements DeviceConfiguration {
   /** The name of the motor */
   public String name;
@@ -40,8 +37,10 @@ public class PercentMotorConfigurationJson implements DeviceConfiguration {
    */
   @Override
   public Object configure(GenericSubsystem deviceHandler) {
-    return new PercentControlMotor(DeviceConfigReader.getMotor(controller, type, id), name,
-        deviceHandler.getDisplayValuesHelper())
+    return new PercentControlMotor(
+            DeviceConfigReader.getMotor(controller, type, id),
+            name,
+            deviceHandler.getDisplayValuesHelper())
         .setupSimulatedMotor(gearing, momentOfInertiaKgMSq)
         .setLogLevel(LogLevel.valueOf(logLevel))
         .setVisualizer(deviceHandler.getMechVisual(), new Pose3d(x, y, z, new Rotation3d()));

@@ -4,11 +4,12 @@
 
 package org.frc5010.common.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.json.CameraConfigurationJson;
 import org.frc5010.common.config.json.DriveteamControllersJson;
@@ -16,10 +17,6 @@ import org.frc5010.common.config.json.DrivetrainPropertiesJson;
 import org.frc5010.common.config.json.RobotJson;
 import org.frc5010.common.config.json.VisionPropertiesJson;
 import org.frc5010.common.config.json.YAGSLDrivetrainJson;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.wpi.first.wpilibj.Filesystem;
 
 /** RobotParser is used to parse JSON configuration files to build a robot. */
 public class RobotParser {

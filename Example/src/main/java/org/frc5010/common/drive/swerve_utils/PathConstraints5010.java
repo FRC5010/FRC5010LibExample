@@ -1,28 +1,27 @@
 package org.frc5010.common.drive.swerve_utils;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-
-import java.util.function.Supplier;
 
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import java.util.function.Supplier;
 
 /**
  * Kinematic path following constraints
  *
- * @param maxVelocityMPS                    Max linear velocity (M/S)
- * @param maxAccelerationMPSSq              Max linear acceleration (M/S^2)
- * @param maxAngularVelocityRadPerSec       Max angular velocity (Rad/S)
+ * @param maxVelocityMPS Max linear velocity (M/S)
+ * @param maxAccelerationMPSSq Max linear acceleration (M/S^2)
+ * @param maxAngularVelocityRadPerSec Max angular velocity (Rad/S)
  * @param maxAngularAccelerationRadPerSecSq Max angular acceleration (Rad/S^2)
- * @param nominalVoltageVolts               The nominal battery voltage (Volts)
- * @param unlimited                         Should the constraints be unlimited
+ * @param nominalVoltageVolts The nominal battery voltage (Volts)
+ * @param unlimited Should the constraints be unlimited
  */
 public record PathConstraints5010(
     double maxVelocityMPS,
@@ -42,12 +41,12 @@ public record PathConstraints5010(
   /**
    * Kinematic path following constraints
    *
-   * @param maxVelocity            Max linear velocity
-   * @param maxAcceleration        Max linear acceleration
-   * @param maxAngularVelocity     Max angular velocity
+   * @param maxVelocity Max linear velocity
+   * @param maxAcceleration Max linear acceleration
+   * @param maxAngularVelocity Max angular velocity
    * @param maxAngularAcceleration Max angular acceleration
-   * @param nominalVoltage         The nominal battery voltage
-   * @param unlimited              Should the constraints be unlimited
+   * @param nominalVoltage The nominal battery voltage
+   * @param unlimited Should the constraints be unlimited
    */
   public PathConstraints5010(
       LinearVelocity maxVelocity,

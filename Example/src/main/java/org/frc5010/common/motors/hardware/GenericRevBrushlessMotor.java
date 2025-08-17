@@ -7,17 +7,6 @@ package org.frc5010.common.motors.hardware;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Seconds;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.PIDController5010;
-import org.frc5010.common.motors.SystemIdentification;
-import org.frc5010.common.motors.control.RevSparkController;
-import org.frc5010.common.sensors.encoder.GenericEncoder;
-import org.frc5010.common.sensors.encoder.RevEncoder;
-
 import com.revrobotics.REVLibError;
 import com.revrobotics.sim.SparkMaxSim;
 import com.revrobotics.spark.SparkBase;
@@ -29,7 +18,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -40,15 +28,22 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.Optional;
+import java.util.function.Supplier;
+import org.frc5010.common.motors.MotorConstants.Motor;
+import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.PIDController5010;
+import org.frc5010.common.motors.SystemIdentification;
+import org.frc5010.common.motors.control.RevSparkController;
+import org.frc5010.common.sensors.encoder.GenericEncoder;
+import org.frc5010.common.sensors.encoder.RevEncoder;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.local.SparkWrapper;
 
 /** A class for a generic REV brushless motor */
 public class GenericRevBrushlessMotor implements MotorController5010 {
-  /**
-   * {@link SparkMax} Instance.
-   */
+  /** {@link SparkMax} Instance. */
   private final SparkMax motor;
   /** The current limit */
   protected int currentLimit;
@@ -61,24 +56,23 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   protected Motor config;
 
   /**
-   * The maximum amount of times the swerve motor will attempt to configure a
-   * motor if failures occur.
+   * The maximum amount of times the swerve motor will attempt to configure a motor if failures
+   * occur.
    */
   public final int maximumRetries = 5;
-  /**
-   * Configuration object for {@link SparkMax} motor.
-   */
+  /** Configuration object for {@link SparkMax} motor. */
   private SparkMaxConfig cfg = new SparkMaxConfig();
 
   /** A reference to the encoder */
   private RevEncoder encoder = null;
+
   private RevSparkController controller;
 
   /**
    * Constructor for a generic REV brushless motor
    *
-   * @param port         the port number
-   * @param config       the configuration
+   * @param port the port number
+   * @param config the configuration
    * @param currentLimit the current limit
    */
   public GenericRevBrushlessMotor(int port, Motor config, Current currentLimit) {
@@ -98,7 +92,8 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
     setCurrentLimit(config.currentLimit);
     setMotorSimulationType(config.getMotorSimulationType());
     setMaxRPM(config.maxRpm);
-    cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder); // Configure feedback of the PID controller as the
+    cfg.closedLoop.feedbackSensor(
+        FeedbackSensor.kPrimaryEncoder); // Configure feedback of the PID controller as the
     // integrated encoder.
   }
 
@@ -109,7 +104,8 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    */
   @Override
   public MotorController5010 duplicate(int port) {
-    MotorController5010 duplicate = new GenericRevBrushlessMotor(port, config, Amps.of(currentLimit));
+    MotorController5010 duplicate =
+        new GenericRevBrushlessMotor(port, config, Amps.of(currentLimit));
     return duplicate;
   }
 
@@ -131,12 +127,13 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   /**
    * Update the config for the {@link SparkMax}
    *
-   * @param cfgGiven Given {@link SparkMaxConfig} which should have minimal
-   *                 modifications.
+   * @param cfgGiven Given {@link SparkMaxConfig} which should have minimal modifications.
    */
   public void updateConfig(SparkMaxConfig cfgGiven) {
     cfg.apply(cfgGiven);
-    configureSparkMax(() -> motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
+    configureSparkMax(
+        () ->
+            motor.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
   }
 
   /**
@@ -165,10 +162,8 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   /**
-   * Set the current limit for the swerve drive motor, remember this may cause
-   * jumping if used in conjunction with
-   * voltage compensation. This is useful to protect the motor from current
-   * spikes.
+   * Set the current limit for the swerve drive motor, remember this may cause jumping if used in
+   * conjunction with voltage compensation. This is useful to protect the motor from current spikes.
    *
    * @param currentLimit Current limit in AMPS at free speed.
    */
@@ -187,8 +182,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    */
   @Override
   public MotorController5010 setSlewRate(double rate) {
-    cfg.closedLoopRampRate(rate)
-        .openLoopRampRate(rate);
+    cfg.closedLoopRampRate(rate).openLoopRampRate(rate);
     updateConfig(cfg);
 
     return this;
@@ -208,10 +202,9 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   /**
-   * Sets the motor as a follower of another motor, with the option to invert the
-   * output.
+   * Sets the motor as a follower of another motor, with the option to invert the output.
    *
-   * @param motor    the motor to follow
+   * @param motor the motor to follow
    * @param inverted whether the output should be inverted
    * @return a reference to the current MotorController5010 instance
    */
@@ -230,19 +223,19 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    */
   @Override
   public MotorController5010 invert(boolean inverted) {
-    configureSparkMax(() -> {
-      cfg.inverted(inverted);
-      return motor.getLastError();
-    });
+    configureSparkMax(
+        () -> {
+          cfg.inverted(inverted);
+          return motor.getLastError();
+        });
     return this;
   }
 
   /**
    * Retrieves the generic encoder for the motor.
    *
-   * @return a new instance of GenericEncoder, which wraps the encoder returned by
-   *         the superclass's
-   *         getEncoder() method
+   * @return a new instance of GenericEncoder, which wraps the encoder returned by the superclass's
+   *     getEncoder() method
    */
   @Override
   public GenericEncoder getMotorEncoder() {
@@ -253,14 +246,12 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   /**
-   * Retrieves the generic encoder for the motor with the specified sensor type
-   * and counts per
+   * Retrieves the generic encoder for the motor with the specified sensor type and counts per
    * revolution.
    *
    * @param countsPerRev the number of counts per revolution of the motor
-   * @return a new instance of GenericEncoder, which wraps the encoder returned by
-   *         the superclass's
-   *         getEncoder() method
+   * @return a new instance of GenericEncoder, which wraps the encoder returned by the superclass's
+   *     getEncoder() method
    */
   @Override
   public GenericEncoder createMotorEncoder(int countsPerRev) {
@@ -271,8 +262,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   /**
-   * Returns a new instance of PIDController5010, which is a wrapper around the
-   * RevPID class.
+   * Returns a new instance of PIDController5010, which is a wrapper around the RevPID class.
    *
    * @return a new instance of PIDController5010
    */
@@ -292,13 +282,11 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   /**
-   * Returns a SysIdRoutine instance that represents the default system
-   * identification routine for
+   * Returns a SysIdRoutine instance that represents the default system identification routine for
    * this object.
    *
    * @param subsystemBase the subsystem that this routine is associated with
-   * @return a SysIdRoutine instance that represents the default system
-   *         identification routine
+   * @return a SysIdRoutine instance that represents the default system identification routine
    */
   @Override
   public SysIdRoutine getDefaultSysId(SubsystemBase subsystemBase) {
@@ -307,13 +295,11 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   }
 
   /**
-   * Overrides the factoryDefault method to restore the default settings of the
-   * superclass. This
+   * Overrides the factoryDefault method to restore the default settings of the superclass. This
    * method is called to restore the default settings of the motor controller.
    */
   @Override
-  public void factoryDefaults() {
-  }
+  public void factoryDefaults() {}
 
   /**
    * Returns the motor simulation type as a {@link DCMotor} instance.
@@ -335,9 +321,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
     return maxRPM;
   }
 
-  /**
-   * Clear the sticky faults on the motor controller.
-   */
+  /** Clear the sticky faults on the motor controller. */
   @Override
   public void clearStickyFaults() {
     configureSparkMax(motor::clearFaults);
@@ -355,9 +339,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
     return this;
   }
 
-  /**
-   * Save the configurations from flash to EEPROM.
-   */
+  /** Save the configurations from flash to EEPROM. */
   @Override
   public void burnFlash() {
     try {
@@ -413,7 +395,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
 
   /**
    * Gets the motor output as a percentage
-   * 
+   *
    * @return The motor output
    */
   @Override
@@ -441,18 +423,14 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
     throw new UnsupportedOperationException("Unimplemented method 'getInverted'");
   }
 
-  /**
-   * Disables the motor by calling the disable method on the underlying motor
-   * object.
-   */
+  /** Disables the motor by calling the disable method on the underlying motor object. */
   @Override
   public void disable() {
     motor.disable();
   }
 
   /**
-   * Stops the motor by calling the stopMotor method on the underlying motor
-   * object.
+   * Stops the motor by calling the stopMotor method on the underlying motor object.
    *
    * @see MotorController5010#stopMotor()
    */
@@ -463,7 +441,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
 
   /**
    * Get the current output of the motor controller.
-   * 
+   *
    * @return Current output.
    */
   @Override

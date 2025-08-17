@@ -4,21 +4,19 @@
 
 package org.frc5010.common.subsystems;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.frc5010.common.sensors.camera.GenericCamera;
-import org.frc5010.common.telemetry.DisplayDouble;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.frc5010.common.sensors.camera.GenericCamera;
+import org.frc5010.common.telemetry.DisplayDouble;
 
 /**
  * AprilTagPoseSystem
@@ -167,7 +165,8 @@ public class AprilTagPoseSystem extends CameraSystem {
    */
   public Vector<N3> getStdVector(double distance) {
     double calib = distance * stdVectorFactor.getValue();
-    return VecBuilder.fill(calib, calib, Units.degreesToRadians(stdVectorRadianFactor.getValue() * distance));
+    return VecBuilder.fill(
+        calib, calib, Units.degreesToRadians(stdVectorRadianFactor.getValue() * distance));
   }
 
   public Vector<N3> getStdConfidenceVector(double confidence) {
@@ -176,10 +175,8 @@ public class AprilTagPoseSystem extends CameraSystem {
   }
 
   @Override
-  public void periodic() {
-    
-  }
-  
+  public void periodic() {}
+
   /**
    * Determines if any cameras have a valida target
    *
