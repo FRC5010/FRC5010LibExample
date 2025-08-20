@@ -7,13 +7,13 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
-import static edu.wpi.first.units.Units.*;
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.*;
+import static edu.wpi.first.units.Units.Volts;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.driveBaseRadius;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.maxSpeedMetersPerSec;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.moduleTranslations;
 
 import com.ctre.phoenix6.CANBus;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
@@ -29,10 +29,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Force;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -41,17 +44,22 @@ import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.frc5010.common.drive.pose.AkitSwervePose;
+import org.frc5010.common.drive.pose.DrivePoseEstimator;
+import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
+import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Drive extends SubsystemBase {
+public class AkitSwerveDrive extends SwerveDriveFunctions {
   static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
-  private final SysIdRoutine sysId;
+  private SysIdRoutine sysId;
+  private Field2d field = new Field2d(); // For visualization in SmartDashboard
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
@@ -67,7 +75,7 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  public Drive(
+  public AkitSwerveDrive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
@@ -85,17 +93,6 @@ public class Drive extends SubsystemBase {
     // Start odometry thread
     SparkOdometryThread.getInstance().start();
 
-    // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configure(
-        this::getPose,
-        this::setPose,
-        this::getChassisSpeeds,
-        this::runVelocity,
-        new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-        ppConfig,
-        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-        this);
     // Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -106,17 +103,6 @@ public class Drive extends SubsystemBase {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
-
-    // Configure SysId
-    sysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -250,7 +236,8 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the module positions (turn angles and drive positions) for all of the modules. */
-  private SwerveModulePosition[] getModulePositions() {
+  @Override
+  public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
       states[i] = modules[i].getPosition();
@@ -315,5 +302,104 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return maxSpeedMetersPerSec / driveBaseRadius;
+  }
+
+  @Override
+  public Field2d getField2d() {
+    return field;
+  }
+
+  @Override
+  public DrivePoseEstimator initializePoseEstimator() {
+    return new DrivePoseEstimator(new AkitSwervePose(this));
+  }
+
+  @Override
+  public ChassisSpeeds getRobotVelocity() {
+    return getChassisSpeeds();
+  }
+
+  @Override
+  public ChassisSpeeds getFieldVelocity() {
+    return ChassisSpeeds.fromFieldRelativeSpeeds(getChassisSpeeds(), gyroInputs.yawPosition);
+  }
+
+  @Override
+  public void drive(ChassisSpeeds velocity, DriveFeedforwards feedforwards) {
+    runVelocity(velocity);
+  }
+
+  @Override
+  public void driveFieldOriented(ChassisSpeeds velocity) {
+    runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(velocity, gyroInputs.yawPosition));
+  }
+
+  @Override
+  public void driveRobotRelative(ChassisSpeeds velocity) {
+    runVelocity(velocity);
+  }
+
+  @Override
+  public void resetEncoders() {}
+
+  @Override
+  public double getGyroRate() {
+    return Units.radiansToDegrees(gyroInputs.yawVelocityRadPerSec);
+  }
+
+  protected SysIdRoutine getSysId(SubsystemBase swerveSubsystem) {
+    if (null == sysId) {
+      sysId =
+          new SysIdRoutine(
+              new SysIdRoutine.Config(
+                  null,
+                  null,
+                  null,
+                  (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+              new SysIdRoutine.Mechanism(
+                  (voltage) -> runCharacterization(voltage.in(Volts)), null, swerveSubsystem));
+    }
+    return sysId;
+  }
+
+  @Override
+  public Command sysIdDriveMotorCommand(SubsystemBase swerveSubsystem) {
+    // Configure SysId
+    return sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        .andThen(sysIdQuasistatic(SysIdRoutine.Direction.kReverse))
+        .andThen(sysIdDynamic(SysIdRoutine.Direction.kForward))
+        .andThen(sysIdDynamic(SysIdRoutine.Direction.kReverse));
+  }
+
+  @Override
+  public Command sysIdAngleMotorCommand(SubsystemBase swerveSubsystem) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'sysIdAngleMotorCommand'");
+  }
+
+  @Override
+  public void drive(
+      ChassisSpeeds robotRelativeVelocity, SwerveModuleState[] states, Force[] feedforwardForces) {
+    runVelocity(robotRelativeVelocity);
+  }
+
+  @Override
+  public SwerveModuleState[] getStates() {
+    return getModuleStates();
+  }
+
+  @Override
+  public AngularVelocity getMaximumModuleAngleVelocity() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getMaximumModuleAngleVelocity'");
+  }
+
+  @Override
+  public GenericSwerveModuleInfo[] getModulesInfo() {
+    if (null == moduleInfos) moduleInfos = new GenericSwerveModuleInfo[modules.length];
+    for (int i = 0; i < modules.length; i++) {
+      moduleInfos[i] = new GenericSwerveModuleInfo(modules[i]);
+    }
+    return moduleInfos;
   }
 }

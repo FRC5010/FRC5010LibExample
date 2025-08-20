@@ -36,6 +36,7 @@ import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.commands.DefaultDriveCommand;
 import org.frc5010.common.constants.Constants;
+import org.frc5010.common.constants.GenericDrivetrainConstants;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.sensors.Controller;
 import org.frc5010.common.telemetry.DisplayBoolean;
@@ -259,9 +260,9 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     }
   }
 
-  protected void initializeSimulation() {
+  protected void initializeSimulation(GenericDrivetrainConstants constants) {
     if (RobotBase.isSimulation() || useGlass) {
-      initGlassWidget();
+      initGlassWidget(constants);
     }
     if (RobotBase.isSimulation()) {
       SimulatedArena.getInstance().placeGamePiecesOnField();
@@ -345,7 +346,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
   protected double highXLimit = Units.feetToMeters(54);
   protected double highYLimit = Units.feetToMeters(27);
 
-  public void initGlassWidget() {}
+  public void initGlassWidget(GenericDrivetrainConstants constants) {}
 
   public void updateGlassWidget() {}
 

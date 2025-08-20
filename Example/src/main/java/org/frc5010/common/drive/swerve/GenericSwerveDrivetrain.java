@@ -4,6 +4,7 @@
 
 package org.frc5010.common.drive.swerve;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -61,7 +62,6 @@ import org.frc5010.common.sensors.Controller;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
-import swervelib.SwerveModule;
 
 /** Add your docs here. */
 public class GenericSwerveDrivetrain extends GenericDrivetrain {
@@ -78,7 +78,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     this.swerveConstants = swerveConstants;
 
     setDrivetrainPoseEstimator(swerveDrive.initializePoseEstimator());
-    initializeSimulation();
+    initializeSimulation(swerveConstants);
   }
 
   @Override
@@ -134,20 +134,20 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
 
   @Override
   public void updateGlassWidget() {
-    SwerveModule[] modules = swerveDrive.getModules();
+    GenericSwerveModuleInfo[] modules = swerveDrive.getModulesInfo();
     for (int moduleKey = 0; moduleKey < modules.length; moduleKey++) {
-      double turningDeg = modules[moduleKey].getRelativePosition();
-      double absEncDeg = modules[moduleKey].getAbsolutePosition();
+      double turningDeg = modules[moduleKey].steerRelativeDegrees();
+      double absEncDeg = modules[moduleKey].steerAbsoluteDegrees();
       // This method will be called once per scheduler run
       absEncDials.get(moduleKey).setAngle(absEncDeg + 90);
       motorDials.get(moduleKey).setAngle(turningDeg + 90);
       motorDials
           .get(moduleKey)
-          .setLength(0.0001 * modules[moduleKey].getAngleMotor().getVelocity() + 0.002);
+          .setLength(0.0001 * modules[moduleKey].steerVelocityDegreesPerSecond() + 0.002);
       expectDials
           .get(moduleKey)
-          .setLength(0.0001 * modules[moduleKey].getDriveMotor().getVelocity() + 0.002);
-      expectDials.get(moduleKey).setAngle(modules[moduleKey].getState().angle.getDegrees() + 90);
+          .setLength(0.0001 * modules[moduleKey].driveVelocityMetersPerSecond() + 0.002);
+      expectDials.get(moduleKey).setAngle(modules[moduleKey].expectedSteerDegrees() + 90);
     }
   }
 
@@ -160,41 +160,41 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   }
 
   @Override
-  public void initGlassWidget() {
+  public void initGlassWidget(GenericDrivetrainConstants constants) {
     SmartDashboard.putData("Drive Visual", mechanismSimulation);
-    SwerveModule[] modules = swerveDrive.getModules();
+    GenericSwerveModuleInfo[] modules = swerveDrive.getModulesInfo();
 
     visualRoots.put(
         0,
         mechanismSimulation.getRoot(
             "frontleft",
-            RobotConstantsDef.robotVisualH * modules[0].configuration.moduleLocation.getX()
+            RobotConstantsDef.robotVisualH * constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualH / 2.0,
-            RobotConstantsDef.robotVisualV * modules[0].configuration.moduleLocation.getY()
+            RobotConstantsDef.robotVisualV * constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualV / 2.0));
     visualRoots.put(
         1,
         mechanismSimulation.getRoot(
             "frontright",
-            RobotConstantsDef.robotVisualH * modules[1].configuration.moduleLocation.getX()
+            RobotConstantsDef.robotVisualH * constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualH / 2.0,
-            RobotConstantsDef.robotVisualV * modules[1].configuration.moduleLocation.getY()
+            RobotConstantsDef.robotVisualV * -constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualV / 2.0));
     visualRoots.put(
         2,
         mechanismSimulation.getRoot(
             "backleft",
-            RobotConstantsDef.robotVisualH * modules[2].configuration.moduleLocation.getX()
+            RobotConstantsDef.robotVisualH * -constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualH / 2.0,
-            RobotConstantsDef.robotVisualV * modules[2].configuration.moduleLocation.getY()
+            RobotConstantsDef.robotVisualV * constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualV / 2.0));
     visualRoots.put(
         3,
         mechanismSimulation.getRoot(
             "backright",
-            RobotConstantsDef.robotVisualH * modules[3].configuration.moduleLocation.getX()
+            RobotConstantsDef.robotVisualH * -constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualH / 2.0,
-            RobotConstantsDef.robotVisualV * modules[3].configuration.moduleLocation.getY()
+            RobotConstantsDef.robotVisualV * -constants.getWheelBase().in(Meters) / 2.0
                 + RobotConstantsDef.robotVisualV / 2.0));
     for (int i = 0; i < modules.length; i++) {
       visualRoots
@@ -619,7 +619,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
             new SwerveSetpoint(
                 swerveDrive.getRobotVelocity(),
                 swerveDrive.getStates(),
-                DriveFeedforwards.zeros(swerveDrive.getModules().length)));
+                DriveFeedforwards.zeros(swerveDrive.getModulesInfo().length)));
 
     AtomicReference<Double> previousTime = new AtomicReference<>();
 
@@ -654,7 +654,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
               new SwerveSetpoint(
                   swerveDrive.getRobotVelocity(),
                   swerveDrive.getStates(),
-                  DriveFeedforwards.zeros(swerveDrive.getModules().length)));
+                  DriveFeedforwards.zeros(swerveDrive.getModulesInfo().length)));
         },
         () -> {
           double newTime = Timer.getFPGATimestamp();
@@ -779,5 +779,11 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
   public void drive(
       ChassisSpeeds robotRelativeSpeeds, SwerveModuleState[] moduleStates, Force[] linearForces) {
     swerveDrive.drive(robotRelativeSpeeds, moduleStates, linearForces);
+  }
+
+  @Override
+  public void periodic() {
+    super.periodic();
+    swerveDrive.periodic();
   }
 }

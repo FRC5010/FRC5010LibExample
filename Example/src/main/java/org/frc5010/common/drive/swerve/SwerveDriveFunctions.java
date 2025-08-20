@@ -17,12 +17,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import swervelib.SwerveDrive;
-import swervelib.SwerveModule;
 
 /** Add your docs here. */
 public abstract class SwerveDriveFunctions {
+  protected GenericSwerveModuleInfo[] moduleInfos;
 
-  public abstract SwerveModule[] getModules();
+  public abstract GenericSwerveModuleInfo[] getModulesInfo();
 
   public abstract SwerveModulePosition[] getModulePositions();
 
@@ -85,5 +85,9 @@ public abstract class SwerveDriveFunctions {
 
   public Command run(Runnable runnable) {
     return Commands.run(runnable);
+  }
+
+  public void periodic() {
+    // Default empty
   }
 }

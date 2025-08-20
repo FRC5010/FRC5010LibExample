@@ -31,7 +31,6 @@ import org.frc5010.common.motors.function.VelocityControlMotor;
 import org.frc5010.common.motors.function.VerticalPositionControlMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.IntakeSimulation.IntakeSide;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.NoteOnFly;
 import yams.mechanisms.positional.Arm;
@@ -43,7 +42,7 @@ public class ExampleSubsystem extends GenericSubsystem {
   protected VelocityControlMotor controlledMotor;
   protected AngularControlMotor angularMotor;
   protected VerticalPositionControlMotor verticalMotor;
-  protected final IntakeSimulation intakeSimulation;
+  protected IntakeSimulation intakeSimulation;
   protected NoteOnFly noteOnFly;
   protected int scoredNotes = 0;
   protected Rotation2d rotation = new Rotation2d(Degrees.of(180));
@@ -61,13 +60,13 @@ public class ExampleSubsystem extends GenericSubsystem {
 
     this.angularMotor = angularControlledMotor();
     // verticalMotor = verticalControlledMotor();
-    intakeSimulation =
-        IntakeSimulation.InTheFrameIntake(
-            "Coral",
-            YAGSLSwerveDrivetrain.getSwerveDrive().getMapleSimDrive().get(),
-            Inches.of(24.25),
-            IntakeSide.FRONT,
-            1);
+    // intakeSimulation =
+    //     IntakeSimulation.InTheFrameIntake(
+    //         "Coral",
+    //         YAGSLSwerveDrivetrain.getSwerveDrive().getMapleSimDrive().get(),
+    //         Inches.of(24.25),
+    //         IntakeSide.FRONT,
+    //         1);
   }
 
   public AngularControlMotor angularControlledMotor() {

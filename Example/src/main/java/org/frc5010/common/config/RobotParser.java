@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import org.frc5010.common.arch.GenericRobot;
+import org.frc5010.common.config.json.AKitSwerveDrivetrainJson;
 import org.frc5010.common.config.json.CameraConfigurationJson;
 import org.frc5010.common.config.json.DriveteamControllersJson;
 import org.frc5010.common.config.json.DrivetrainPropertiesJson;
@@ -68,6 +69,17 @@ public class RobotParser {
                       new File(directory, "yagsl_drivetrain.json"), YAGSLDrivetrainJson.class);
           yagslDriveTrainJson.readDrivetrainConfiguration(robot, directory);
           driveTrainJson = Optional.of(yagslDriveTrainJson);
+          break;
+        }
+      case "AKIT_SWERVE_DRIVE":
+        {
+          AKitSwerveDrivetrainJson akitDriveTrainJson =
+              new ObjectMapper()
+                  .readValue(
+                      new File(directory, "akit_swerve_drivetrain.json"),
+                      AKitSwerveDrivetrainJson.class);
+          akitDriveTrainJson.readDrivetrainConfiguration(robot, directory);
+          driveTrainJson = Optional.of(akitDriveTrainJson);
           break;
         }
       default:
