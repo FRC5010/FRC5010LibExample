@@ -6,27 +6,20 @@ import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StringTopic;
 import java.util.EnumSet;
+import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a string to the dashboard */
-public class DisplayString {
+public class DisplayString extends DisplayableValue {
   // Variables
   /** The value */
   protected String value_;
-  /** The name */
-  protected final String name_;
-  /** The name of the table */
-  protected final String table_;
   /** The topic */
   protected StringTopic topic_;
   /** The publisher */
   protected StringPublisher publisher_;
   /** The subscriber */
   protected StringSubscriber subscriber_;
-  /** The listener handle */
-  protected int listenerHandle_;
-  /** Display mode */
-  protected final boolean isDisplayed_;
 
   // Constructor
   /**
@@ -50,10 +43,8 @@ public class DisplayString {
    */
   public DisplayString(
       final String defaultValue, final String name, final String table, final LogLevel logLevel) {
+    super(name, table, logLevel);
     value_ = defaultValue;
-    name_ = name;
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getStringTopic(name_);
       publisher_ = topic_.publish();
@@ -107,5 +98,17 @@ public class DisplayString {
     if (publish && isDisplayed_) {
       publisher_.set(value_);
     }
+  }
+
+  /**
+   * Registers a listener to the display values helper to update this string with the result of the
+   * given supplier when the listener is called.
+   *
+   * @param supplier - supplier of the string to update this with
+   * @return this object
+   */
+  public DisplayString updateWith(Supplier<String> supplier) {
+    displayValuesHelper_.registerListener(() -> setValue(supplier.get()));
+    return this;
   }
 }

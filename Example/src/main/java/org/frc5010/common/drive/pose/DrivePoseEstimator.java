@@ -31,6 +31,7 @@ import org.frc5010.common.drive.GenericDrivetrain;
 import org.frc5010.common.drive.pose.PoseProvider.PoseObservation;
 import org.frc5010.common.drive.pose.PoseProvider.ProviderType;
 import org.frc5010.common.subsystems.LEDStripSegment;
+import org.frc5010.common.telemetry.DisplayBoolean;
 import org.frc5010.common.vision.AprilTags;
 import org.frc5010.common.vision.VisionConstants;
 
@@ -47,7 +48,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
   /** List of PoseProviders */
   private List<PoseProvider> poseProviders = new ArrayList<>();
 
-  private boolean aprilTagVisible = false;
+  private DisplayBoolean aprilTagVisible = displayValues.makeDisplayBoolean("AprilTagVisible");
   private boolean updatingPoseAcceptor = false;
 
   private static double CONFIDENCE_RESET_THRESHOLD = 0.025;
@@ -81,14 +82,15 @@ public class DrivePoseEstimator extends GenericSubsystem {
     field2d = poseTracker.getField();
 
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
-    tab.addString("Pose (X,Y)", this::getFormattedPose).withPosition(11, 0);
+    displayValues.display("Pose (X,Y)", this::getFormattedPose);
+    displayValues.display(
+        "Pose Degrees", () -> getCurrentPose().getRotation().getMeasure().toShortString());
+
     tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray())
         .withPosition(11, 2)
         .withSize(4, 2);
 
-    tab.addNumber("Pose Degrees", () -> (getCurrentPose().getRotation().getDegrees()))
-        .withPosition(11, 4);
-    tab.add("Pose Field", field2d).withPosition(0, 0).withSize(11, 5);
+    displayValues.display("Pose Field", field2d);
 
     tab.addStringArray(
             "Providers Active",
@@ -104,7 +106,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
             })
         .withSize(6, 2)
         .withPosition(0, 5);
-    tab.addBoolean("April Tag Visible", () -> aprilTagVisible).withPosition(6, 5);
+    // tab.addBoolean("April Tag Visible", () -> aprilTagVisible).withPosition(6, 5);
     tab.addBoolean("Acceptor Updating", () -> updatingPoseAcceptor).withPosition(8, 5);
     tab.addString("Estimator State", () -> state.name());
 
@@ -300,7 +302,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
       }
     }
 
-    aprilTagVisible = visionUpdated;
+    aprilTagVisible.setValue(visionUpdated);
     updatingPoseAcceptor = accepterUpdating;
   }
 

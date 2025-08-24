@@ -12,18 +12,15 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
 import java.util.EnumSet;
+import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add an angle to the dashboard */
-public class DisplayAngle {
+public class DisplayAngle extends DisplayableValue {
   /** Angle value */
   final MutAngle angle_;
   /** Angle unit */
   protected final AngleUnit unit_;
-  /** Name of the angle value */
-  protected final String name_;
-  /** Name of the table to display the value */
-  protected final String table_;
   /** Topic for the angle */
   protected DoubleTopic topic_;
   /** Publisher for the angle */
@@ -32,10 +29,6 @@ public class DisplayAngle {
   protected SuppliedValueWidget<Double> component_;
   /** Subscriber for the angle */
   protected DoubleSubscriber subscriber_;
-  /** Listener handle */
-  protected int listenerHandle_;
-  /** Display mode */
-  protected final boolean isDisplayed_;
 
   /**
    * Constructor for an angle display
@@ -63,11 +56,9 @@ public class DisplayAngle {
       final String name,
       final String table,
       LogLevel logLevel) {
+    super(String.format("%s (%s)", name, unit.symbol()), table, logLevel);
     angle_ = new MutAngle(angle, unit.getBaseUnit().convertFrom(angle, unit), unit);
     unit_ = unit;
-    name_ = String.format("%s (%s)", name, unit_.symbol());
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
@@ -95,11 +86,9 @@ public class DisplayAngle {
    * @param debug - whether or not to debug
    */
   public DisplayAngle(final Angle angle, final String name, final String table, LogLevel logLevel) {
+    super(String.format("%s (%s)", name, angle.unit().symbol()), table, logLevel);
     angle_ = angle.mutableCopy();
     unit_ = angle.unit();
-    name_ = String.format("%s (%s)", name, unit_.symbol());
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
@@ -201,7 +190,24 @@ public class DisplayAngle {
     return angle_;
   }
 
+  /**
+   * Retrieves the current angle in degrees.
+   *
+   * @return the current angle in degrees
+   */
   public double getAngleInDegrees() {
     return angle_.in(Degrees);
+  }
+
+  /**
+   * Registers a listener to the display values helper to update this angle with the result of the
+   * given supplier when the listener is called.
+   *
+   * @param supplier - supplier of the angle to update this with
+   * @return this object
+   */
+  public DisplayAngle updateWith(Supplier<Angle> supplier) {
+    displayValuesHelper_.registerListener(() -> setAngle(supplier.get()));
+    return this;
   }
 }

@@ -10,10 +10,15 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.WpiHelperInterface;
 
@@ -27,14 +32,43 @@ public class DisplayValuesHelper implements WpiHelperInterface {
   protected boolean isDisplayed;
   protected LogLevel logLevel = LogLevel.COMPETITION;
 
+  protected final List<Runnable> listeners = new ArrayList<>();
+  protected final List<DisplayableValue> internals = new ArrayList<>();
+
+  /**
+   * Constructs a DisplayValuesHelper with the specified tab and table names, display state, and
+   * starting column.
+   *
+   * @param tab the name of the Shuffleboard tab
+   * @param table the name of the Shuffleboard layout
+   * @param isDisplayed whether the values should be displayed on the dashboard
+   * @param startingColumn the starting column for the layout
+   */
   public DisplayValuesHelper(String tab, String table) {
     this(tab, table, false, 0);
   }
 
+  /**
+   * Constructs a DisplayValuesHelper with the specified tab and table names, and display state. The
+   * starting column defaults to 0.
+   *
+   * @param tab the name of the Shuffleboard tab
+   * @param table the name of the Shuffleboard layout
+   * @param isDisplayed whether the values should be displayed on the dashboard
+   */
   public DisplayValuesHelper(String tab, String table, boolean isDisplayed) {
     this(tab, table, isDisplayed, 0);
   }
 
+  /**
+   * Constructs a DisplayValuesHelper with the specified tab and table names, display state, and
+   * starting column.
+   *
+   * @param tab the name of the Shuffleboard tab
+   * @param table the name of the Shuffleboard layout
+   * @param isDisplayed whether the values should be displayed on the dashboard
+   * @param startingColumn the starting column for the layout
+   */
   public DisplayValuesHelper(String tab, String table, boolean isDisplayed, int startingColumn) {
     column = startingColumn;
     this.isDisplayed = isDisplayed;
@@ -56,6 +90,53 @@ public class DisplayValuesHelper implements WpiHelperInterface {
         this.tab.getLayout(layoutName, BuiltInLayouts.kList).withSize(2, 4).withPosition(column, 0);
   }
 
+  /**
+   * Registers a listener to the display values helper. Listeners will be called when the
+   * notifyListeners function is called. This function is used to update the display values on the
+   * dashboard.
+   *
+   * @param listener - Runnable to be called when notifyListeners is called
+   */
+  public void registerListener(Runnable listener) {
+    listeners.add(listener);
+  }
+
+  /**
+   * Removes a listener from the display values helper. This listener will not be called when
+   * notifyListeners is called.
+   *
+   * @param listener - Runnable to be removed from the list of listeners
+   */
+  public void unregisterListener(Runnable listener) {
+    listeners.remove(listener);
+  }
+
+  /**
+   * Calls all registered listeners. This should be called when a value is updated so that all
+   * dashboard values are updated.
+   */
+  public void notifyListeners() {
+    for (Runnable listener : listeners) {
+      listener.run();
+    }
+  }
+
+  /**
+   * Registers a value to be displayed on the dashboard. The value will be retrieved by calling the
+   * provided Supplier, and the result will be displayed on the dashboard when the notifyListeners
+   * function is called.
+   *
+   * @param key the name of the value to be displayed
+   * @param value a Supplier that returns the value to be displayed
+   */
+  public void display(String key, Supplier<String> value) {
+    internals.add(new DisplayString("", key, getNtFolder()).setDisplayValuesHelper(this));
+    registerListener(value::get);
+  }
+
+  public void display(String key, Sendable value) {
+    SmartDashboard.putData(tabName + "/" + layoutName + "/" + key, value);
+  }
   /**
    * Sets the logging level for the display. Values that are at a higher or equal level to the
    * specified level will be displayed on the dashboard.
@@ -138,6 +219,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayAngle makeDisplayAngle(String name) {
     DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtFolder());
+    angle.setDisplayValuesHelper(this);
     return angle;
   }
 
@@ -150,6 +232,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayAngle makeInfoAngle(String name) {
     DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtFolder(), LogLevel.INFO);
+    angle.setDisplayValuesHelper(this);
     return angle;
   }
 
@@ -162,6 +245,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayAngle makeConfigAngle(String name) {
     DisplayAngle angle = new DisplayAngle(0, Degrees, name, getNtFolder(), LogLevel.CONFIG);
+    angle.setDisplayValuesHelper(this);
     return angle;
   }
 
@@ -174,6 +258,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayLength makeDisplayLength(String name) {
     DisplayLength length = new DisplayLength(0, Meters, name, getNtFolder());
+    length.setDisplayValuesHelper(this);
     return length;
   }
 
@@ -186,6 +271,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayLength makeInfoLength(String name) {
     DisplayLength length = new DisplayLength(0, Meters, name, getNtFolder(), LogLevel.INFO);
+    length.setDisplayValuesHelper(this);
     return length;
   }
 
@@ -198,6 +284,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayLength makeConfigLength(String name) {
     DisplayLength length = new DisplayLength(0, Meters, name, getNtFolder(), LogLevel.CONFIG);
+    length.setDisplayValuesHelper(this);
     return length;
   }
 
@@ -210,6 +297,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayTime makeDisplayTime(String name) {
     DisplayTime time = new DisplayTime(0, Seconds, name, getNtFolder());
+    time.setDisplayValuesHelper(this);
     return time;
   }
 
@@ -222,6 +310,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayTime makeInfoTime(String name) {
     DisplayTime time = new DisplayTime(0, Seconds, name, getNtFolder(), LogLevel.INFO);
+    time.setDisplayValuesHelper(this);
     return time;
   }
 
@@ -234,6 +323,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayTime makeConfigTime(String name) {
     DisplayTime time = new DisplayTime(0, Seconds, name, getNtFolder(), LogLevel.CONFIG);
+    time.setDisplayValuesHelper(this);
     return time;
   }
 
@@ -246,6 +336,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayVoltage makeDisplayVoltage(String name) {
     DisplayVoltage voltage = new DisplayVoltage(0, Volts, name, getNtFolder());
+    voltage.setDisplayValuesHelper(this);
     return voltage;
   }
 
@@ -258,6 +349,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayVoltage makeInfoVoltage(String name) {
     DisplayVoltage voltage = new DisplayVoltage(0, Volts, name, getNtFolder(), LogLevel.INFO);
+    voltage.setDisplayValuesHelper(this);
     return voltage;
   }
 
@@ -270,6 +362,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayVoltage makeConfigVoltage(String name) {
     DisplayVoltage voltage = new DisplayVoltage(0, Volts, name, getNtFolder(), LogLevel.CONFIG);
+    voltage.setDisplayValuesHelper(this);
     return voltage;
   }
 
@@ -281,6 +374,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayBoolean makeDisplayBoolean(String name) {
     DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtFolder());
+    booleanValue.setDisplayValuesHelper(this);
     return booleanValue;
   }
 
@@ -293,6 +387,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayBoolean makeInfoBoolean(String name) {
     DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtFolder(), LogLevel.INFO);
+    booleanValue.setDisplayValuesHelper(this);
     return booleanValue;
   }
 
@@ -305,6 +400,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayBoolean makeConfigBoolean(String name) {
     DisplayBoolean booleanValue = new DisplayBoolean(false, name, getNtFolder(), LogLevel.CONFIG);
+    booleanValue.setDisplayValuesHelper(this);
     return booleanValue;
   }
 
@@ -316,6 +412,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayDouble makeDisplayDouble(String name) {
     DisplayDouble doubleValue = new DisplayDouble(0, name, getNtFolder());
+    doubleValue.setDisplayValuesHelper(this);
     return doubleValue;
   }
 
@@ -328,6 +425,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayDouble makeInfoDouble(String name) {
     DisplayDouble doubleValue = new DisplayDouble(0, name, getNtFolder(), LogLevel.INFO);
+    doubleValue.setDisplayValuesHelper(this);
     return doubleValue;
   }
 
@@ -340,6 +438,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayDouble makeConfigDouble(String name) {
     DisplayDouble doubleValue = new DisplayDouble(0, name, getNtFolder(), LogLevel.CONFIG);
+    doubleValue.setDisplayValuesHelper(this);
     return doubleValue;
   }
 
@@ -351,6 +450,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayString makeDisplayString(String name) {
     DisplayString stringValue = new DisplayString("", name, getNtFolder());
+    stringValue.setDisplayValuesHelper(this);
     return stringValue;
   }
 
@@ -363,6 +463,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayString makeInfoString(String name) {
     DisplayString stringValue = new DisplayString("", name, getNtFolder(), LogLevel.INFO);
+    stringValue.setDisplayValuesHelper(this);
     return stringValue;
   }
 
@@ -375,6 +476,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayString makeConfigString(String name) {
     DisplayString stringValue = new DisplayString("", name, getNtFolder(), LogLevel.CONFIG);
+    stringValue.setDisplayValuesHelper(this);
     return stringValue;
   }
 
@@ -386,6 +488,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayLong makeDisplayLong(String name) {
     DisplayLong longValue = new DisplayLong(0, name, getNtFolder());
+    longValue.setDisplayValuesHelper(this);
     return longValue;
   }
 
@@ -398,6 +501,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayLong makeInfoLong(String name) {
     DisplayLong longValue = new DisplayLong(0, name, getNtFolder(), LogLevel.INFO);
+    longValue.setDisplayValuesHelper(this);
     return longValue;
   }
 
@@ -410,6 +514,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayLong makeConfigLong(String name) {
     DisplayLong longValue = new DisplayLong(0, name, getNtFolder(), LogLevel.CONFIG);
+    longValue.setDisplayValuesHelper(this);
     return longValue;
   }
 
@@ -421,6 +526,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayFloat makeDisplayFloat(String name) {
     DisplayFloat floatValue = new DisplayFloat(0, name, getNtFolder());
+    floatValue.setDisplayValuesHelper(this);
     return floatValue;
   }
 
@@ -433,6 +539,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayFloat makeInfoFloat(String name) {
     DisplayFloat floatValue = new DisplayFloat(0, name, getNtFolder(), LogLevel.INFO);
+    floatValue.setDisplayValuesHelper(this);
     return floatValue;
   }
 
@@ -445,6 +552,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayFloat makeConfigFloat(String name) {
     DisplayFloat floatValue = new DisplayFloat(0, name, getNtFolder(), LogLevel.CONFIG);
+    floatValue.setDisplayValuesHelper(this);
     return floatValue;
   }
 
@@ -456,6 +564,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayCurrent makeDisplayCurrent(String name) {
     DisplayCurrent currentValue = new DisplayCurrent(0, Amps, name, getNtFolder());
+    currentValue.setDisplayValuesHelper(this);
     return currentValue;
   }
 
@@ -468,6 +577,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayCurrent makeInfoCurrent(String name) {
     DisplayCurrent currentValue = new DisplayCurrent(0, Amps, name, getNtFolder(), LogLevel.INFO);
+    currentValue.setDisplayValuesHelper(this);
     return currentValue;
   }
 
@@ -480,6 +590,7 @@ public class DisplayValuesHelper implements WpiHelperInterface {
    */
   public DisplayCurrent makeConfigCurrent(String name) {
     DisplayCurrent currentValue = new DisplayCurrent(0, Amps, name, getNtFolder(), LogLevel.CONFIG);
+    currentValue.setDisplayValuesHelper(this);
     return currentValue;
   }
 }

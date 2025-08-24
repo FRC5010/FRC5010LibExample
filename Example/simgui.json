@@ -72,6 +72,7 @@
       "/SmartDashboard/Arm/mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Modes": "String Chooser",
       "/SmartDashboard/Drive Visual": "Mechanism2d",
+      "/SmartDashboard/DrivePoseEstimator/values/Pose Field": "Field2d",
       "/SmartDashboard/Elevator/mechanism": "Mechanism2d",
       "/SmartDashboard/Encoders": "Alerts",
       "/SmartDashboard/Field": "Field2d",
@@ -102,7 +103,12 @@
           "visible": true
         }
       },
-      "/Shuffleboard/Pose/Pose Field": {
+      "/SmartDashboard/Arm/mechanism": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/DrivePoseEstimator/values/Pose Field": {
         "CARPET0": {
           "image": ".\\pictures\\carpet.png",
           "length": 0.44999998807907104,
@@ -628,11 +634,6 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Arm/mechanism": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Elevator/mechanism": {
         "window": {
           "visible": true
@@ -718,6 +719,15 @@
         "open": true
       },
       "SmartDashboard": {
+        "DrivePoseEstimator": {
+          "DrivePoseEstimator": {
+            "open": true
+          },
+          "open": true,
+          "values": {
+            "open": true
+          }
+        },
         "open": true
       },
       "Tuning": {

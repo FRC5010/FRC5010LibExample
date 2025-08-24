@@ -14,25 +14,17 @@ import java.util.EnumSet;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a voltage to the dashboard */
-public class DisplayVoltage {
+public class DisplayVoltage extends DisplayableValue {
   /** Length value */
   MutVoltage voltage_;
   /** Length unit */
   protected final VoltageUnit unit_;
-  /** The name of the variable */
-  protected final String name_;
-  /** The name of the table */
-  protected final String table_;
   /** The topic */
   protected DoubleTopic topic_;
   /** The publisher */
   protected DoublePublisher publisher_;
   /** The subscriber */
   protected DoubleSubscriber subscriber_;
-  /** The listener handle */
-  protected int listenerHandle_;
-  /** Display mode */
-  protected final boolean isDisplayed_;
 
   // Constructor
   /**
@@ -63,11 +55,9 @@ public class DisplayVoltage {
       final String name,
       final String table,
       LogLevel logLevel) {
+    super(String.format("%s (%s)", name, unit.symbol()), table, logLevel);
     voltage_ = new MutVoltage(voltage, unit.getBaseUnit().convertFrom(voltage, unit), unit);
     unit_ = unit;
-    name_ = String.format("%s (%s)", name, unit_.symbol());
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
@@ -97,11 +87,9 @@ public class DisplayVoltage {
    */
   public DisplayVoltage(
       final Voltage voltage, final String name, final String table, LogLevel logLevel) {
+    super(String.format("%s (%s)", name, voltage.unit().symbol()), table, logLevel);
     voltage_ = voltage.mutableCopy();
     unit_ = voltage.unit();
-    name_ = String.format("%s (%s)", name, unit_.symbol());
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();

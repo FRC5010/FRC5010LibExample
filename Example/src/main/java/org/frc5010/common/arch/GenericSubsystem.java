@@ -35,17 +35,17 @@ public class GenericSubsystem extends SubsystemBase
   /** Creates a new LoggedSubsystem. */
   public GenericSubsystem(LoggedMechanism2d mechanismSimulation) {
     this.mechanismSimulation = mechanismSimulation;
-    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
+    displayValues = new DisplayValuesHelper(logPrefix, "values");
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem() {
-    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
+    displayValues = new DisplayValuesHelper(logPrefix, "values");
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem(String configFile) {
-    displayValues = new DisplayValuesHelper(logPrefix, logPrefix);
+    displayValues = new DisplayValuesHelper(logPrefix, "values");
     try {
       GenericRobot.subsystemParser.parseSubsystem(this, configFile);
     } catch (Exception e) {
@@ -121,6 +121,7 @@ public class GenericSubsystem extends SubsystemBase
    */
   @Override
   public void periodic() {
+    displayValues.notifyListeners();
     devices.values().stream()
         .forEach(
             it -> {

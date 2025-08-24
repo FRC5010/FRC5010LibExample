@@ -11,28 +11,21 @@ import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.MutCurrent;
 import java.util.EnumSet;
+import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 
 /** Add a current to the dashboard */
-public class DisplayCurrent {
+public class DisplayCurrent extends DisplayableValue {
   /** Length value */
   MutCurrent current_;
   /** Length unit */
   protected final CurrentUnit unit_;
-  /** The name of the variable */
-  protected final String name_;
-  /** The name of the table */
-  protected final String table_;
   /** The topic */
   protected DoubleTopic topic_;
   /** The publisher */
   protected DoublePublisher publisher_;
   /** The subscriber */
   protected DoubleSubscriber subscriber_;
-  /** The listener handle */
-  protected int listenerHandle_;
-  /** Display mode */
-  protected final boolean isDisplayed_;
 
   // Constructor
   /**
@@ -63,11 +56,9 @@ public class DisplayCurrent {
       final String name,
       final String table,
       LogLevel logLevel) {
+    super(String.format("%s (%s)", name, unit.symbol()), table, logLevel);
     current_ = new MutCurrent(current, unit.getBaseUnit().convertFrom(current, unit), unit);
     unit_ = unit;
-    name_ = String.format("%s (%s)", name, unit_.symbol());
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
@@ -97,11 +88,9 @@ public class DisplayCurrent {
    */
   public DisplayCurrent(
       final Current current, final String name, final String table, LogLevel logLevel) {
+    super(String.format("%s (%s)", name, current.unit().symbol()), table, logLevel);
     current_ = current.mutableCopy();
     unit_ = current.unit();
-    name_ = String.format("%s (%s)", name, unit_.symbol());
-    table_ = table;
-    isDisplayed_ = DisplayValuesHelper.isAtLogLevel(logLevel);
     if (isDisplayed_) {
       topic_ = NetworkTableInstance.getDefault().getTable(table_).getDoubleTopic(name_);
       publisher_ = topic_.publish();
@@ -206,5 +195,17 @@ public class DisplayCurrent {
    */
   public double getCurrentInAmps() {
     return current_.in(Amps);
+  }
+
+  /**
+   * Registers a listener to the display values helper to update this current with the result of the
+   * given supplier when the listener is called.
+   *
+   * @param supplier - supplier of the current to update this with
+   * @return this object
+   */
+  public DisplayCurrent updateWith(Supplier<Current> supplier) {
+    displayValuesHelper_.registerListener(() -> setCurrent(supplier.get()));
+    return this;
   }
 }
