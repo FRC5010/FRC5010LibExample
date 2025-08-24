@@ -31,7 +31,6 @@ import org.frc5010.common.motors.function.VelocityControlMotor;
 import org.frc5010.common.motors.function.VerticalPositionControlMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 import org.ironmaple.simulation.IntakeSimulation;
-import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.NoteOnFly;
 import yams.mechanisms.positional.Arm;
 import yams.mechanisms.positional.Elevator;
@@ -138,7 +137,7 @@ public class ExampleSubsystem extends GenericSubsystem {
               //         SmartDashboard.putNumber("Notes Speaker", ++scoredNotes);
               //     }
               // });
-              SimulatedArena.getInstance().addGamePieceProjectile(noteOnFly);
+              // SimulatedArena.getInstance().addGamePieceProjectile(noteOnFly);
             }
           } else if (speed < 3000
               && speed > 1000

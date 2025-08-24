@@ -7,8 +7,19 @@
 
 package org.frc5010.common.drive.swerve.akit;
 
-import static org.frc5010.common.drive.swerve.akit.DriveConstants.*;
-import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.*;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.odometryFrequency;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderInverted;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderPositionFactor;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnEncoderVelocityFactor;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnInverted;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKd;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnKp;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnMotorCurrentLimit;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMaxInput;
+import static org.frc5010.common.drive.swerve.akit.DriveConstants.turnPIDMinInput;
+import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.ifOk;
+import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.sparkStickyFault;
+import static org.frc5010.common.drive.swerve.akit.util.SparkUtil.tryUntilOk;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -189,7 +200,7 @@ public class ModuleIOSparkTalon implements ModuleIO {
     ifOk(
         turnSpark,
         turnEncoder::getPosition,
-        (value) -> inputs.turnPosition = new Rotation2d(value).minus(zeroRotation));
+        (value) -> inputs.turnAbsolutePosition = new Rotation2d(value).minus(zeroRotation));
     ifOk(turnSpark, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
     ifOk(
         turnSpark,

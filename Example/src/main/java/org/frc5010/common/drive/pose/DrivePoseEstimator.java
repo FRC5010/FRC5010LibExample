@@ -212,6 +212,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
   public void periodic() {
     poseProviders.forEach(it -> it.update());
     updatePoseObservationFromProviders();
+    field2d.setRobotPose(getCurrentPose());
   }
 
   private void resetProviderPoses(Pose2d pose) {

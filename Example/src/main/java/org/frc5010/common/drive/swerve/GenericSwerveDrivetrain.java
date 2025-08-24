@@ -786,4 +786,10 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     super.periodic();
     swerveDrive.periodic();
   }
+
+  @Override
+  public void simulationPeriodic() {
+    super.simulationPeriodic();
+    swerveDrive.updateSimulation();
+  }
 }

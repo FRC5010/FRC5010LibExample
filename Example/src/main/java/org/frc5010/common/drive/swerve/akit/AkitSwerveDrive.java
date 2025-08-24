@@ -44,22 +44,30 @@ import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import org.frc5010.common.drive.pose.AkitSwervePose;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.drive.swerve.GenericSwerveModuleInfo;
 import org.frc5010.common.drive.swerve.SwerveDriveFunctions;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class AkitSwerveDrive extends SwerveDriveFunctions {
   static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
+
+  public static DriveTrainSimulationConfig mapleSimConfig = DriveTrainSimulationConfig.Default();
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private SysIdRoutine sysId;
   private Field2d field = new Field2d(); // For visualization in SmartDashboard
+  public static SwerveDriveSimulation driveSimulation = null;
+
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
@@ -75,13 +83,17 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private final Consumer<Pose2d> resetSimulationPoseCallBack;
+
   public AkitSwerveDrive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+      ModuleIO brModuleIO,
+      Consumer<Pose2d> resetSimulationPoseCallBack) {
     this.gyroIO = gyroIO;
+    this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -93,7 +105,9 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
     // Start odometry thread
     SparkOdometryThread.getInstance().start();
 
+    // Should we keep this?
     // Pathfinding.setPathfinder(new LocalADStarAK());
+
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -282,6 +296,7 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
+    resetSimulationPoseCallBack.accept(pose);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
@@ -401,5 +416,24 @@ public class AkitSwerveDrive extends SwerveDriveFunctions {
       moduleInfos[i] = new GenericSwerveModuleInfo(modules[i]);
     }
     return moduleInfos;
+  }
+
+  /**
+   * Retrieves the pose of the simulated drivetrain from the MapleSim system.
+   *
+   * @return The current pose of the simulated drivetrain as a {@link Pose2d}.
+   */
+  public Pose2d getMapleSimPose() {
+    return driveSimulation.getSimulatedDriveTrainPose();
+  }
+
+  public void updateSimulation() {
+    SimulatedArena.getInstance().simulationPeriodic();
+    Logger.recordOutput(
+        "FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+    Logger.recordOutput(
+        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+    Logger.recordOutput(
+        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
   }
 }

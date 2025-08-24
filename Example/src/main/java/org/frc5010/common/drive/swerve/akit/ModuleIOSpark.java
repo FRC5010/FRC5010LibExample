@@ -188,7 +188,7 @@ public class ModuleIOSpark implements ModuleIO {
     ifOk(
         turnSpark,
         turnEncoder::getPosition,
-        (value) -> inputs.turnPosition = new Rotation2d(value).minus(zeroRotation));
+        (value) -> inputs.turnAbsolutePosition = new Rotation2d(value).minus(zeroRotation));
     ifOk(turnSpark, turnEncoder::getVelocity, (value) -> inputs.turnVelocityRadPerSec = value);
     ifOk(
         turnSpark,

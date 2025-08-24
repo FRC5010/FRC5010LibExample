@@ -90,4 +90,8 @@ public abstract class SwerveDriveFunctions {
   public void periodic() {
     // Default empty
   }
+
+  public void updateSimulation() {
+    // Default empty
+  }
 }
