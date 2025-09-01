@@ -4,7 +4,7 @@
 
 package org.frc5010.common.motors.function;
 
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 
 /** A motor that acts as a follower. */
 public class FollowerMotor extends GenericFunctionalMotor {
@@ -14,13 +14,17 @@ public class FollowerMotor extends GenericFunctionalMotor {
    * @param motor the motor to use as a follower
    * @param leader the leader motor
    */
-  public FollowerMotor(MotorController5010 motor, MotorController5010 leader, String visualName) {
+  public FollowerMotor(
+      GenericMotorController motor, GenericMotorController leader, String visualName) {
     super(motor, visualName);
     setFollow(leader);
   }
 
   public FollowerMotor(
-      MotorController5010 motor, MotorController5010 leader, String visualName, boolean inversion) {
+      GenericMotorController motor,
+      GenericMotorController leader,
+      String visualName,
+      boolean inversion) {
     super(motor, visualName);
     setFollow(leader, inversion);
   }

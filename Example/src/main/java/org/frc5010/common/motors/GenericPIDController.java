@@ -7,7 +7,7 @@ package org.frc5010.common.motors;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 
-public interface PIDController5010 {
+public interface GenericPIDController {
   public static enum PIDControlType {
     NONE,
     POSITION,

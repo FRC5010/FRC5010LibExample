@@ -23,7 +23,7 @@ import org.frc5010.common.motors.hardware.GenericTalonFXMotor;
 import org.frc5010.common.sensors.encoder.TalonFXEncoder;
 
 /** Add your docs here. */
-public class TalonFXController extends GenericPIDController {
+public class TalonFXController extends GenericPIDControllerAbsract {
   protected TalonFX internalMotor;
   protected GenericTalonFXMotor motor;
   protected ControlRequest request;

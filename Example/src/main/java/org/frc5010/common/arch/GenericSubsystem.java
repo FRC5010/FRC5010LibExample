@@ -21,7 +21,7 @@ public class GenericSubsystem extends SubsystemBase
   /** The network table values */
   protected final WpiNetworkTableValuesHelper values = new WpiNetworkTableValuesHelper();
 
-  protected final DisplayValuesHelper displayValues;
+  protected final DisplayValuesHelper DashBoard;
   /** The log prefix */
   protected String logPrefix = getClass().getSimpleName();
   /** The mechanism simulation */
@@ -35,17 +35,17 @@ public class GenericSubsystem extends SubsystemBase
   /** Creates a new LoggedSubsystem. */
   public GenericSubsystem(LoggedMechanism2d mechanismSimulation) {
     this.mechanismSimulation = mechanismSimulation;
-    displayValues = new DisplayValuesHelper(logPrefix, "values");
+    DashBoard = new DisplayValuesHelper(logPrefix, "values");
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem() {
-    displayValues = new DisplayValuesHelper(logPrefix, "values");
+    DashBoard = new DisplayValuesHelper(logPrefix, "values");
     WpiNetworkTableValuesHelper.register(this);
   }
 
   public GenericSubsystem(String configFile) {
-    displayValues = new DisplayValuesHelper(logPrefix, "values");
+    DashBoard = new DisplayValuesHelper(logPrefix, "values");
     try {
       GenericRobot.subsystemParser.parseSubsystem(this, configFile);
     } catch (Exception e) {
@@ -85,7 +85,7 @@ public class GenericSubsystem extends SubsystemBase
   }
 
   public void setLoggingLevel(LogLevel logLevel) {
-    displayValues.setLoggingLevel(logLevel);
+    DashBoard.setLoggingLevel(logLevel);
     if (logLevel == LogLevel.COMPETITION) {
       loggingAlert.set(false);
       ;
@@ -121,7 +121,7 @@ public class GenericSubsystem extends SubsystemBase
    */
   @Override
   public void periodic() {
-    displayValues.notifyListeners();
+    DashBoard.notifyListeners();
     devices.values().stream()
         .forEach(
             it -> {
@@ -153,7 +153,7 @@ public class GenericSubsystem extends SubsystemBase
    */
   @Override
   public DisplayValuesHelper getDisplayValuesHelper() {
-    return displayValues;
+    return DashBoard;
   }
 
   /**
@@ -162,6 +162,6 @@ public class GenericSubsystem extends SubsystemBase
    * @param display a boolean indicating whether to enable or disable the display
    */
   public void setDisplay(boolean display) {
-    if (display) displayValues.makeDisplayed();
+    if (display) DashBoard.makeDisplayed();
   }
 }

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.config.DeviceConfiguration;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.ElevatorConfig;
 import yams.mechanisms.positional.Elevator;
@@ -40,7 +40,7 @@ public class YamsElevatorConfigurationJson implements DeviceConfiguration {
    */
   @Override
   public Elevator configure(SubsystemBase deviceHandler) {
-    MotorController5010 motor =
+    GenericMotorController motor =
         DeviceConfigReader.getMotor(
             motorSetup.controllerType, motorSetup.motorType, motorSetup.canId);
     SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(deviceHandler);

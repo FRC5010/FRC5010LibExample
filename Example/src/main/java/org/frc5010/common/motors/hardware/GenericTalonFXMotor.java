@@ -24,9 +24,9 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
+import org.frc5010.common.motors.GenericMotorController;
+import org.frc5010.common.motors.GenericPIDController;
 import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.motors.control.TalonFXController;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.encoder.TalonFXEncoder;
@@ -35,7 +35,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 /** A class for a generic TalonFX motor */
-public class GenericTalonFXMotor implements MotorController5010 {
+public class GenericTalonFXMotor implements GenericMotorController {
   /** Wait time for status frames to show up. */
   public static double STATUS_TIMEOUT_SECONDS = 0.02;
   /** Factory default already occurred. */
@@ -101,8 +101,8 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return A new instance of MotorController5010 with the same configuration.
    */
   @Override
-  public MotorController5010 duplicate(int port) {
-    MotorController5010 duplicate = new GenericTalonFXMotor(port, config);
+  public GenericMotorController duplicate(int port) {
+    GenericMotorController duplicate = new GenericTalonFXMotor(port, config);
     return duplicate;
   }
 
@@ -130,7 +130,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setCurrentLimit(Current limit) {
+  public GenericMotorController setCurrentLimit(Current limit) {
     motorCurrentLimit = (int) limit.in(Amps);
     refreshCurrentLimits();
 
@@ -146,7 +146,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
             .withStatorCurrentLimitEnable(0 != motorCurrentLimit));
   }
 
-  public MotorController5010 setSupplyCurrent(Current limit) {
+  public GenericMotorController setSupplyCurrent(Current limit) {
     supplyCurrentLimit = (int) limit.in(Amps);
     refreshCurrentLimits();
 
@@ -160,7 +160,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setSlewRate(double rate) {
+  public GenericMotorController setSlewRate(double rate) {
     cfg.refresh(configuration.ClosedLoopRamps);
     cfg.apply(configuration.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(rate));
     return this;
@@ -174,7 +174,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor) {
+  public GenericMotorController setFollow(GenericMotorController motor) {
     this.motor.setControl(new Follower(((TalonFX) motor.getMotor()).getDeviceID(), false));
     return this;
   }
@@ -187,7 +187,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
+  public GenericMotorController setFollow(GenericMotorController motor, boolean inverted) {
     this.motor.setControl(new Follower(((TalonFX) motor.getMotor()).getDeviceID(), inverted));
     return this;
   }
@@ -212,7 +212,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 invert(boolean inverted) {
+  public GenericMotorController invert(boolean inverted) {
     setInverted(inverted);
     return this;
   }
@@ -249,7 +249,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return an instance of PIDController5010, specifically a TalonFXPID associated with this motor.
    */
   @Override
-  public PIDController5010 getPIDController5010() {
+  public GenericPIDController getPIDController5010() {
     return controller;
   }
 
@@ -342,7 +342,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return This motor controller.
    */
   @Override
-  public MotorController5010 setVoltageCompensation(double nominalVoltage) {
+  public GenericMotorController setVoltageCompensation(double nominalVoltage) {
     return this;
   }
 
@@ -353,7 +353,7 @@ public class GenericTalonFXMotor implements MotorController5010 {
    * @return This motor controller instance.
    */
   @Override
-  public MotorController5010 setMotorBrake(boolean isBrakeMode) {
+  public GenericMotorController setMotorBrake(boolean isBrakeMode) {
     motor.setNeutralMode(isBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     return this;
   }

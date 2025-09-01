@@ -11,8 +11,8 @@ import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.config.ConfigConstants;
 import org.frc5010.common.config.json.devices.ReflectionsManager.SparkBaseType;
 import org.frc5010.common.config.json.devices.ReflectionsManager.VENDOR;
+import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.MotorFactory;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -28,8 +28,8 @@ public class DeviceConfigReader {
    * @return A MotorController5010 instance for the specified type and ID, or null if the type is
    *     not recognized.
    */
-  public static MotorController5010 getMotor(String controller, String type, int id) {
-    MotorController5010 motor;
+  public static GenericMotorController getMotor(String controller, String type, int id) {
+    GenericMotorController motor;
     switch (controller) {
       case "spark":
         motor = MotorFactory.Spark(id, Motor.valueOf(type));

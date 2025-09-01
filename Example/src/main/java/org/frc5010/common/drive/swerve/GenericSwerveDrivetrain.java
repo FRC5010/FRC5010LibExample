@@ -50,7 +50,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericRobot;
-import org.frc5010.common.auto.pathplanner.PathfindingCommand5010;
+import org.frc5010.common.auto.pathplanner.PathFinderCommand;
 import org.frc5010.common.commands.DriveToPoseSupplier;
 import org.frc5010.common.commands.JoystickToSwerve;
 import org.frc5010.common.constants.GenericDrivetrainConstants;
@@ -336,7 +336,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
             getSwerveConstants().getkTeleDriveMaxAngularAccelerationUnitsPerSecond());
 
     return () ->
-        new PathfindingCommand5010(
+        new PathFinderCommand(
                 pose.get().transformBy(PathPlanOffset),
                 constraints,
                 0.0,
@@ -427,7 +427,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     // swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return () ->
-        new PathfindingCommand5010(
+        new PathFinderCommand(
                 pose.get().transformBy(PathPlanOffset),
                 driveConstraints,
                 0.0,
@@ -492,7 +492,7 @@ public class GenericSwerveDrivetrain extends GenericDrivetrain {
     // swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
     return () ->
-        new PathfindingCommand5010(
+        new PathFinderCommand(
                 pose.get().transformBy(PathPlanOffset),
                 driveConstraints,
                 0.0,

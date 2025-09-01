@@ -14,10 +14,10 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
+import org.frc5010.common.motors.GenericMotorController;
+import org.frc5010.common.motors.GenericPIDController;
 import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.motors.MotorController5010;
 import org.frc5010.common.motors.MotorFactory;
-import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.motors.control.ThriftyNovaController;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.encoder.SimulatedEncoder;
@@ -26,7 +26,7 @@ import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 
 /** Add your docs here. */
-public class GenericThriftyNovaMotor implements MotorController5010 {
+public class GenericThriftyNovaMotor implements GenericMotorController {
   /** The motor controller */
   protected ThriftyNova motor;
   /** The maximum RPM */
@@ -41,7 +41,7 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   /** The internal simulation representation */
   protected SimulatedEncoder simEncoder;
   /** The internal PID controller representation */
-  protected PIDController5010 controller;
+  protected GenericPIDController controller;
   /** The configuration */
   protected Motor config;
 
@@ -105,12 +105,12 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public MotorController5010 duplicate(int port) {
+  public GenericMotorController duplicate(int port) {
     return new GenericThriftyNovaMotor(port, config, currentLimit);
   }
 
   @Override
-  public MotorController5010 setSlewRate(double rate) {
+  public GenericMotorController setSlewRate(double rate) {
     motor.setRampUp(rate);
     checkErrors("Setting motor ramp up failed: ");
     motor.setRampDown(rate);
@@ -119,14 +119,14 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor) {
+  public GenericMotorController setFollow(GenericMotorController motor) {
     this.motor.follow(((ThriftyNova) motor.getMotor()).getID());
     checkErrors("Setting motor follow failed: ");
     return this;
   }
 
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
+  public GenericMotorController setFollow(GenericMotorController motor, boolean inverted) {
     this.motor.follow(((ThriftyNova) motor.getMotor()).getID());
     this.motor.setInverted(inverted);
     checkErrors("Setting motor inversion failed: ");
@@ -134,7 +134,7 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public MotorController5010 invert(boolean inverted) {
+  public GenericMotorController invert(boolean inverted) {
     motor.setInverted(inverted);
     simEncoder.setInverted(inverted);
     checkErrors("Setting motor inversion failed: ");
@@ -142,7 +142,7 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public MotorController5010 setCurrentLimit(Current limit) {
+  public GenericMotorController setCurrentLimit(Current limit) {
     this.currentLimit = limit;
     motor.setMaxCurrent(CurrentType.STATOR, limit.in(Amps));
     checkErrors("Setting current limit failed: ");
@@ -164,7 +164,7 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public PIDController5010 getPIDController5010() {
+  public GenericPIDController getPIDController5010() {
     return controller;
   }
 
@@ -193,7 +193,7 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public MotorController5010 setVoltageCompensation(double nominalVoltage) {
+  public GenericMotorController setVoltageCompensation(double nominalVoltage) {
     motor.setVoltageCompensation(nominalVoltage);
     checkErrors("Setting voltage compensation failed: ");
     return this;
@@ -206,7 +206,7 @@ public class GenericThriftyNovaMotor implements MotorController5010 {
   }
 
   @Override
-  public MotorController5010 setMotorBrake(boolean isBrakeMode) {
+  public GenericMotorController setMotorBrake(boolean isBrakeMode) {
     motor.setBrakeMode(isBrakeMode);
     checkErrors("Setting motor brake mode failed: ");
     return this;

@@ -7,7 +7,7 @@ package org.frc5010.common.config.json.devices;
 import edu.wpi.first.math.Pair;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.config.json.UnitValueJson;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 
 /** Add your docs here. */
@@ -43,7 +43,7 @@ public class MotorSetupJson {
       Pair<Object, Boolean>[] followers = new Pair[motorSetup.followers.length];
       for (int i = 0; i < motorSetup.followers.length; i++) {
         MotorSetupJson.FollowerMotorJson motorSetupFollower = motorSetup.followers[i];
-        MotorController5010 followerMotor =
+        GenericMotorController followerMotor =
             DeviceConfigReader.getMotor(
                 motorSetup.controllerType, motorSetup.motorType, motorSetupFollower.canId);
         followers[i] =

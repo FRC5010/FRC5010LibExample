@@ -96,7 +96,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
               0.5);
     }
 
-    isFieldOrientedDrive = displayValues.makeDisplayBoolean("Field Oriented Drive");
+    isFieldOrientedDrive = DashBoard.makeDisplayBoolean("Field Oriented Drive");
     isFieldOrientedDrive.setValue(true);
     hasIssues = new DisplayBoolean(false, "Has Issues", logPrefix, LogLevel.COMPETITION);
   }

@@ -11,7 +11,7 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 
 /** Add your docs here. */
-public class ThriftyNovaController extends GenericPIDController {
+public class ThriftyNovaController extends GenericPIDControllerAbsract {
   /** The controller */
   protected ThriftyNova controller;
   /** The reference */
@@ -41,7 +41,7 @@ public class ThriftyNovaController extends GenericPIDController {
   public void setValues(GenericPID pid) {
     PIDController pidc = new PIDController(pid.getkP(), pid.getkI(), pid.getkD());
     pidfConfig = new GenericPID(pid.getkP(), pid.getkI(), pid.getkD());
-    //     controller.pid0.setPID(pidc);
+    controller.pid0.setPID(pidc);
   }
 
   @Override

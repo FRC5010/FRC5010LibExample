@@ -47,9 +47,9 @@ public class AprilTagPoseSystem extends CameraSystem {
   public AprilTagPoseSystem(AprilTagFieldLayout fieldLayout) {
     super(null);
     this.fieldLayout = fieldLayout;
-    stdVectorFactor = displayValues.makeConfigDouble("Std Vector Factor");
+    stdVectorFactor = DashBoard.makeConfigDouble("Std Vector Factor");
     stdVectorFactor.setValue(0.1);
-    stdVectorRadianFactor = displayValues.makeConfigDouble("Std Vector Radian Factor");
+    stdVectorRadianFactor = DashBoard.makeConfigDouble("Std Vector Radian Factor");
     stdVectorRadianFactor.setValue(5);
   }
 
@@ -62,9 +62,9 @@ public class AprilTagPoseSystem extends CameraSystem {
   public AprilTagPoseSystem(GenericCamera camera, AprilTagFieldLayout fieldLayout) {
     super(camera);
     this.fieldLayout = fieldLayout;
-    stdVectorFactor = displayValues.makeConfigDouble("Std Vector Factor");
+    stdVectorFactor = DashBoard.makeConfigDouble("Std Vector Factor");
     stdVectorFactor.setValue(0.1);
-    stdVectorRadianFactor = displayValues.makeConfigDouble("Std Vector Radian Factor");
+    stdVectorRadianFactor = DashBoard.makeConfigDouble("Std Vector Radian Factor");
     stdVectorRadianFactor.setValue(5);
     addCamera(camera);
   }

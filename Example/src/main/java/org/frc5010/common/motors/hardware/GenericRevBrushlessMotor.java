@@ -30,9 +30,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.frc5010.common.motors.GenericMotorController;
+import org.frc5010.common.motors.GenericPIDController;
 import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.motors.SystemIdentification;
 import org.frc5010.common.motors.control.RevSparkController;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
@@ -42,7 +42,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.local.SparkWrapper;
 
 /** A class for a generic REV brushless motor */
-public class GenericRevBrushlessMotor implements MotorController5010 {
+public class GenericRevBrushlessMotor implements GenericMotorController {
   /** {@link SparkMax} Instance. */
   private final SparkMax motor;
   /** The current limit */
@@ -103,8 +103,8 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @param port The port number of the motor
    */
   @Override
-  public MotorController5010 duplicate(int port) {
-    MotorController5010 duplicate =
+  public GenericMotorController duplicate(int port) {
+    GenericMotorController duplicate =
         new GenericRevBrushlessMotor(port, config, Amps.of(currentLimit));
     return duplicate;
   }
@@ -155,7 +155,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @param nominalVoltage Nominal voltage for operation to output to.
    */
   @Override
-  public MotorController5010 setVoltageCompensation(double nominalVoltage) {
+  public GenericMotorController setVoltageCompensation(double nominalVoltage) {
     cfg.voltageCompensation(nominalVoltage);
     updateConfig(cfg);
     return this;
@@ -168,7 +168,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @param currentLimit Current limit in AMPS at free speed.
    */
   @Override
-  public MotorController5010 setCurrentLimit(Current currentLimit) {
+  public GenericMotorController setCurrentLimit(Current currentLimit) {
     cfg.smartCurrentLimit((int) currentLimit.in(Amps));
     updateConfig(cfg);
     return this;
@@ -181,7 +181,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setSlewRate(double rate) {
+  public GenericMotorController setSlewRate(double rate) {
     cfg.closedLoopRampRate(rate).openLoopRampRate(rate);
     updateConfig(cfg);
 
@@ -195,7 +195,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor) {
+  public GenericMotorController setFollow(GenericMotorController motor) {
     cfg.follow((SparkBase) motor.getMotor());
     updateConfig(cfg);
     return this;
@@ -209,7 +209,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
+  public GenericMotorController setFollow(GenericMotorController motor, boolean inverted) {
     cfg.follow((SparkBase) motor.getMotor(), inverted);
     updateConfig(cfg);
     return this;
@@ -222,7 +222,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 invert(boolean inverted) {
+  public GenericMotorController invert(boolean inverted) {
     configureSparkMax(
         () -> {
           cfg.inverted(inverted);
@@ -267,7 +267,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @return a new instance of PIDController5010
    */
   @Override
-  public PIDController5010 getPIDController5010() {
+  public GenericPIDController getPIDController5010() {
     return controller;
   }
 
@@ -333,7 +333,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
    * @param isBrakeMode Set the brake mode.
    */
   @Override
-  public MotorController5010 setMotorBrake(boolean isBrakeMode) {
+  public GenericMotorController setMotorBrake(boolean isBrakeMode) {
     cfg.idleMode(isBrakeMode ? IdleMode.kBrake : IdleMode.kCoast);
     updateConfig(cfg);
     return this;
@@ -432,7 +432,7 @@ public class GenericRevBrushlessMotor implements MotorController5010 {
   /**
    * Stops the motor by calling the stopMotor method on the underlying motor object.
    *
-   * @see MotorController5010#stopMotor()
+   * @see GenericMotorController#stopMotor()
    */
   @Override
   public void stopMotor() {

@@ -53,7 +53,7 @@ public class MotorFactory {
     return visualColors[visualColorIndex++];
   }
 
-  public static MotorController5010 Spark(int canId, Motor config) {
+  public static GenericMotorController Spark(int canId, Motor config) {
     switch (config) {
       case KrakenX60:
         throw new IllegalArgumentException("Sparks can not use KrakenX60 config");
@@ -62,7 +62,7 @@ public class MotorFactory {
     return new GenericRevBrushlessMotor(canId, config);
   }
 
-  public static MotorController5010 Thrifty(int canId, Motor config) {
+  public static GenericMotorController Thrifty(int canId, Motor config) {
     switch (config) {
       case KrakenX60:
         throw new IllegalArgumentException("Thrifty Novas can not use KrakenX60 config");
@@ -71,7 +71,7 @@ public class MotorFactory {
     return new GenericThriftyNovaMotor(canId, config);
   }
 
-  public static MotorController5010 TalonFX(int canId, Motor config) {
+  public static GenericMotorController TalonFX(int canId, Motor config) {
     switch (config) {
       case KrakenX60:
         return new GenericTalonFXMotor(canId, config);
@@ -80,12 +80,12 @@ public class MotorFactory {
     }
   }
 
-  public static MotorController5010 DriveTrainMotor(MotorController5010 motor, String name) {
+  public static GenericMotorController DriveTrainMotor(GenericMotorController motor, String name) {
     return new DriveTrainMotor(motor, name);
   }
 
-  public static MotorController5010 FollowMotor(
-      MotorController5010 motor, MotorController5010 leader) {
+  public static GenericMotorController FollowMotor(
+      GenericMotorController motor, GenericMotorController leader) {
     return new FollowerMotor(motor, leader, "");
   }
 }

@@ -27,7 +27,7 @@ import org.frc5010.common.constants.DrivePorts;
 import org.frc5010.common.drive.pose.DifferentialPose;
 import org.frc5010.common.drive.pose.DrivePoseEstimator;
 import org.frc5010.common.mechanisms.DriveConstantsDef;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 import org.frc5010.common.sensors.gyro.GenericGyro;
@@ -35,11 +35,11 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 
 /** A class for differential drive. */
 public class DifferentialDrivetrain extends GenericDrivetrain {
-  private List<MotorController5010> motorList;
+  private List<GenericMotorController> motorList;
   private DifferentialDrive diffDrive;
   private DifferentialDriveKinematics diffKinematics;
   private List<DrivePorts> motorPorts;
-  private MotorController5010 left, right;
+  private GenericMotorController left, right;
   private GenericEncoder leftEncoder, rightEncoder;
   private GenericGyro gyro;
   private ChassisSpeeds chassisSpeeds;
@@ -53,7 +53,7 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
    * @param mechVisual - the visualizer
    */
   public DifferentialDrivetrain(
-      MotorController5010 left,
+      GenericMotorController left,
       List<DrivePorts> ports,
       GenericGyro gyro,
       LoggedMechanism2d mechVisual) {
@@ -65,13 +65,13 @@ public class DifferentialDrivetrain extends GenericDrivetrain {
     motorList = new ArrayList<>();
     this.left = left;
     motorList.add(left);
-    MotorController5010 lMotor = left.duplicate(motorPorts.get(1).getDrivePort());
+    GenericMotorController lMotor = left.duplicate(motorPorts.get(1).getDrivePort());
     lMotor.setFollow(left);
     motorList.add(lMotor);
 
     this.right = left.duplicate(motorPorts.get(2).getDrivePort());
     right.invert(true);
-    MotorController5010 rMotor = right.duplicate(motorPorts.get(3).getDrivePort());
+    GenericMotorController rMotor = right.duplicate(motorPorts.get(3).getDrivePort());
     rMotor.setFollow(right);
     motorList.add(rMotor);
 

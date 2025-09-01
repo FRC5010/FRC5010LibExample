@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.PIDController5010;
+import org.frc5010.common.motors.GenericMotorController;
+import org.frc5010.common.motors.GenericPIDController;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.telemetry.DisplayDouble;
 import org.frc5010.common.telemetry.DisplayString;
@@ -23,7 +23,7 @@ import org.frc5010.common.telemetry.DisplayVoltage;
 
 /** Add your docs here. */
 public abstract class GenericControlledMotor extends GenericFunctionalMotor
-    implements PIDController5010 {
+    implements GenericPIDController {
   protected static final String K_P = "kP";
   protected static final String K_I = "kI";
   protected static final String K_D = "kD";
@@ -70,12 +70,12 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   protected DisplayDouble outputFactor;
   protected DisplayDouble encoderFeedback;
 
-  protected PIDController5010 controller;
+  protected GenericPIDController controller;
   protected MotorFeedFwdConstants feedFwd;
   protected GenericEncoder encoder;
 
   public GenericControlledMotor(
-      MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
+      GenericMotorController motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName);
     encoder = _motor.getMotorEncoder();
     controller = motor.getPIDController5010();
@@ -117,11 +117,11 @@ public abstract class GenericControlledMotor extends GenericFunctionalMotor
   }
 
   @Override
-  public PIDController5010 getPIDController5010() {
+  public GenericPIDController getPIDController5010() {
     return controller;
   }
 
-  public void setPIDController5010(PIDController5010 controller) {
+  public void setPIDController5010(GenericPIDController controller) {
     this.controller = controller;
   }
 

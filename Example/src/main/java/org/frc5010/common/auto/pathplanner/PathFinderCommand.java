@@ -35,7 +35,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Base pathfinding command */
-public class PathfindingCommand5010 extends Command {
+public class PathFinderCommand extends Command {
   private static int instances = 0;
 
   private final Timer timer = new Timer();
@@ -83,7 +83,7 @@ public class PathfindingCommand5010 extends Command {
    *     will maintain a global blue alliance origin.
    * @param requirements the subsystems required by this command
    */
-  public PathfindingCommand5010(
+  public PathFinderCommand(
       PathPlannerPath targetPath,
       PathConstraints constraints,
       Supplier<Pose2d> poseSupplier,
@@ -148,7 +148,7 @@ public class PathfindingCommand5010 extends Command {
    * @param robotConfig The robot configuration
    * @param requirements the subsystems required by this command
    */
-  public PathfindingCommand5010(
+  public PathFinderCommand(
       Pose2d targetPose,
       PathConstraints constraints,
       double goalEndVel,
@@ -197,7 +197,7 @@ public class PathfindingCommand5010 extends Command {
    * @param robotConfig The robot configuration
    * @param requirements the subsystems required by this command
    */
-  public PathfindingCommand5010(
+  public PathFinderCommand(
       Pose2d targetPose,
       PathConstraints constraints,
       LinearVelocity goalEndVel,
@@ -236,7 +236,7 @@ public class PathfindingCommand5010 extends Command {
    * @param robotConfig The robot configuration
    * @param requirements the subsystems required by this command
    */
-  public PathfindingCommand5010(
+  public PathFinderCommand(
       Pose2d targetPose,
       PathConstraints constraints,
       Supplier<Pose2d> poseSupplier,
@@ -465,7 +465,7 @@ public class PathfindingCommand5010 extends Command {
    * @return Pathfinding warmup command
    */
   public static Command warmupCommand() {
-    return new PathfindingCommand5010(
+    return new PathFinderCommand(
             new Pose2d(15.0, 4.0, Rotation2d.k180deg),
             new PathConstraints(4, 3, 4, 4),
             () -> new Pose2d(1.5, 4, Rotation2d.kZero),

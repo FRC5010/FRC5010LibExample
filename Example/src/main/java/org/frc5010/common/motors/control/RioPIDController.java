@@ -12,7 +12,7 @@ import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
 
 /** Add your docs here. */
-public class RioPIDController extends GenericPIDController {
+public class RioPIDController extends GenericPIDControllerAbsract {
   private ProfiledPIDController profiledPIDController =
       new ProfiledPIDController(0, 0, 0, new TrapezoidProfile.Constraints(0, 0));
   private double feedForward = 0;

@@ -48,7 +48,7 @@ public class DrivePoseEstimator extends GenericSubsystem {
   /** List of PoseProviders */
   private List<PoseProvider> poseProviders = new ArrayList<>();
 
-  private DisplayBoolean aprilTagVisible = displayValues.makeDisplayBoolean("AprilTagVisible");
+  private DisplayBoolean aprilTagVisible = DashBoard.makeDisplayBoolean("AprilTagVisible");
   private boolean updatingPoseAcceptor = false;
 
   private static double CONFIDENCE_RESET_THRESHOLD = 0.025;
@@ -82,15 +82,15 @@ public class DrivePoseEstimator extends GenericSubsystem {
     field2d = poseTracker.getField();
 
     ShuffleboardTab tab = Shuffleboard.getTab("Pose");
-    displayValues.display("Pose (X,Y)", this::getFormattedPose);
-    displayValues.display(
+    DashBoard.display("Pose (X,Y)", this::getFormattedPose);
+    DashBoard.display(
         "Pose Degrees", () -> getCurrentPose().getRotation().getMeasure().toShortString());
 
     tab.addDoubleArray("Robot Pose3d", () -> getCurrentPose3dArray())
         .withPosition(11, 2)
         .withSize(4, 2);
 
-    displayValues.display("Pose Field", field2d);
+    DashBoard.display("Pose Field", field2d);
 
     tab.addStringArray(
             "Providers Active",

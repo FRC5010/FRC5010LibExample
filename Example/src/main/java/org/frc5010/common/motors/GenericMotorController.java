@@ -17,14 +17,14 @@ import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 
 /** Common interface fdr motors in the library */
-public interface MotorController5010 extends MotorController {
+public interface GenericMotorController extends MotorController {
   /**
    * Sets up the same motor hardware and current limit
    *
    * @param port The port number of the motor
    * @return a reference to the motor
    */
-  MotorController5010 duplicate(int port);
+  GenericMotorController duplicate(int port);
 
   /**
    * Sets the motor's slew rate
@@ -32,7 +32,7 @@ public interface MotorController5010 extends MotorController {
    * @param rate The slew rate
    * @return a reference to the motor
    */
-  MotorController5010 setSlewRate(double rate);
+  GenericMotorController setSlewRate(double rate);
 
   /**
    * Sets the motor as a follower of another motor
@@ -40,7 +40,7 @@ public interface MotorController5010 extends MotorController {
    * @param motor The motor to follow
    * @return a reference to the motor
    */
-  MotorController5010 setFollow(MotorController5010 motor);
+  GenericMotorController setFollow(GenericMotorController motor);
 
   /**
    * Sets the motor as an inverted follower of another motor
@@ -49,7 +49,7 @@ public interface MotorController5010 extends MotorController {
    * @param inverted Whether the motor should be inverted
    * @return a reference to the motor
    */
-  MotorController5010 setFollow(MotorController5010 motor, boolean inverted);
+  GenericMotorController setFollow(GenericMotorController motor, boolean inverted);
 
   /**
    * Inverts the motor
@@ -57,7 +57,7 @@ public interface MotorController5010 extends MotorController {
    * @param inverted Whether the motor should be inverted
    * @return a reference to the motor
    */
-  MotorController5010 invert(boolean inverted);
+  GenericMotorController invert(boolean inverted);
 
   /**
    * Sets the current limit
@@ -65,7 +65,7 @@ public interface MotorController5010 extends MotorController {
    * @param limit The current limit
    * @return a reference to the motor
    */
-  MotorController5010 setCurrentLimit(Current limit);
+  GenericMotorController setCurrentLimit(Current limit);
 
   /**
    * Gets the motor encoder
@@ -87,7 +87,7 @@ public interface MotorController5010 extends MotorController {
    *
    * @return The PID controller
    */
-  PIDController5010 getPIDController5010();
+  GenericPIDController getPIDController5010();
 
   /**
    * Gets the motor
@@ -150,7 +150,7 @@ public interface MotorController5010 extends MotorController {
    *
    * @param nominalVoltage Nominal voltage for operation to output to.
    */
-  public MotorController5010 setVoltageCompensation(double nominalVoltage);
+  public GenericMotorController setVoltageCompensation(double nominalVoltage);
 
   /** Clear the sticky faults on the motor controller. */
   public void clearStickyFaults();
@@ -160,7 +160,7 @@ public interface MotorController5010 extends MotorController {
    *
    * @param isBrakeMode Set the brake mode.
    */
-  public MotorController5010 setMotorBrake(boolean isBrakeMode);
+  public GenericMotorController setMotorBrake(boolean isBrakeMode);
 
   /** Save the configurations from flash to EEPROM. */
   public void burnFlash();

@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.Optional;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.sensors.encoder.SimulatedEncoder;
 import org.frc5010.common.telemetry.DisplayDouble;
@@ -36,7 +36,7 @@ public class PercentControlMotor extends GenericFunctionalMotor {
   protected DisplayDouble simRPM;
 
   public PercentControlMotor(
-      MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
+      GenericMotorController motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName);
     setDisplayValuesHelper(tab);
   }
@@ -48,7 +48,7 @@ public class PercentControlMotor extends GenericFunctionalMotor {
     simRPM = _displayValuesHelper.makeDisplayDouble("Sim RPM");
   }
 
-  public PercentControlMotor(MotorController5010 motor, double slewRate) {
+  public PercentControlMotor(GenericMotorController motor, double slewRate) {
     super(motor, slewRate);
   }
 

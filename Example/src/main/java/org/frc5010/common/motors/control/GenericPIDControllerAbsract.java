@@ -1,9 +1,9 @@
 package org.frc5010.common.motors.control;
 
 import edu.wpi.first.math.controller.PIDController;
-import org.frc5010.common.motors.PIDController5010;
+import org.frc5010.common.motors.GenericPIDController;
 
-public abstract class GenericPIDController implements PIDController5010 {
+public abstract class GenericPIDControllerAbsract implements GenericPIDController {
   protected PIDController pidController = new PIDController(0, 0, 0);
 
   @Override

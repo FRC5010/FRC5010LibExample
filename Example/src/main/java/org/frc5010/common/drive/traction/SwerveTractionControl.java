@@ -33,7 +33,7 @@ public class SwerveTractionControl extends GenericSubsystem {
 
   private void setupDisplays() {
     for (int i = 0; i < wheelSlipDisplays.length; i++) {
-      wheelSlipDisplays[i] = displayValues.makeDisplayDouble("Wheel Slip " + i);
+      wheelSlipDisplays[i] = DashBoard.makeDisplayDouble("Wheel Slip " + i);
     }
   }
 

@@ -27,7 +27,7 @@ import frc.robot.Robot;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.SystemIdentification;
 import org.frc5010.common.subsystems.PhysicsSim;
@@ -60,7 +60,7 @@ public class VerticalPositionControlMotor extends GenericControlledMotor {
   protected ElevatorFeedforward elevatorFeedforward;
 
   public VerticalPositionControlMotor(
-      MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
+      GenericMotorController motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName, tab);
     kG = _displayValuesHelper.makeConfigDouble(K_G);
     this.conversionRotationsToDistance = _displayValuesHelper.makeConfigDouble(CONVERSION);
@@ -158,7 +158,7 @@ public class VerticalPositionControlMotor extends GenericControlledMotor {
     return isCloseToMax(Meters.of(0.01));
   }
 
-  public MotorController5010 getMotorController() {
+  public GenericMotorController getMotorController() {
     return _motor;
   }
 

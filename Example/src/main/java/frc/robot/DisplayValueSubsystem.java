@@ -38,26 +38,26 @@ public class DisplayValueSubsystem extends GenericSubsystem {
 
   public DisplayValueSubsystem() {
     super();
-    outAngle = displayValues.makeInfoAngle("Out Angle");
-    outputAngle = displayValues.makeDisplayAngle("OUTPUT_ANGLE");
-    outputBoolean = displayValues.makeDisplayBoolean("OUTPUT_BOOLEAN");
-    outputDouble = displayValues.makeDisplayDouble("OUTPUT_DOUBLE");
-    outputFloat = displayValues.makeDisplayFloat("OUTPUT_FLOAT");
-    displayValues.nextColumn("Config");
-    inputAngle = displayValues.makeConfigAngle("INPUT_ANGLE");
-    inputBoolean = displayValues.makeConfigBoolean("INPUT_BOOLEAN");
-    inputDouble = displayValues.makeConfigDouble("INPUT_DOUBLE");
-    inputFloat = displayValues.makeConfigFloat("INPUT_FLOAT");
-    displayValues.nextColumn("Input");
-    inputLength = displayValues.makeConfigLength("INPUT_LENGTH");
-    inputLong = displayValues.makeConfigLong("INPUT_LONG");
-    inputString = displayValues.makeConfigString("INPUT_STRING");
-    inputTime = displayValues.makeConfigTime("INPUT_TIME");
-    displayValues.nextColumn("Debug-Info");
-    outputLength = displayValues.makeInfoLength("OUTPUT_LENGTH");
-    outputLong = displayValues.makeInfoLong("OUTPUT_LONG");
-    outputString = displayValues.makeInfoString("OUTPUT_STRING");
-    outputTime = displayValues.makeInfoTime("OUTPUT_TIME");
+    outAngle = DashBoard.makeInfoAngle("Out Angle");
+    outputAngle = DashBoard.makeDisplayAngle("OUTPUT_ANGLE");
+    outputBoolean = DashBoard.makeDisplayBoolean("OUTPUT_BOOLEAN");
+    outputDouble = DashBoard.makeDisplayDouble("OUTPUT_DOUBLE");
+    outputFloat = DashBoard.makeDisplayFloat("OUTPUT_FLOAT");
+    DashBoard.nextColumn("Config");
+    inputAngle = DashBoard.makeConfigAngle("INPUT_ANGLE");
+    inputBoolean = DashBoard.makeConfigBoolean("INPUT_BOOLEAN");
+    inputDouble = DashBoard.makeConfigDouble("INPUT_DOUBLE");
+    inputFloat = DashBoard.makeConfigFloat("INPUT_FLOAT");
+    DashBoard.nextColumn("Input");
+    inputLength = DashBoard.makeConfigLength("INPUT_LENGTH");
+    inputLong = DashBoard.makeConfigLong("INPUT_LONG");
+    inputString = DashBoard.makeConfigString("INPUT_STRING");
+    inputTime = DashBoard.makeConfigTime("INPUT_TIME");
+    DashBoard.nextColumn("Debug-Info");
+    outputLength = DashBoard.makeInfoLength("OUTPUT_LENGTH");
+    outputLong = DashBoard.makeInfoLong("OUTPUT_LONG");
+    outputString = DashBoard.makeInfoString("OUTPUT_STRING");
+    outputTime = DashBoard.makeInfoTime("OUTPUT_TIME");
   }
 
   @Override

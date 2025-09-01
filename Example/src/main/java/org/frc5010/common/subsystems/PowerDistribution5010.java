@@ -62,7 +62,7 @@ public class PowerDistribution5010 extends GenericSubsystem {
 
   @Override
   public void periodic() {
-    if (LogLevel.DEBUG == displayValues.getLoggingLevel()) {
+    if (LogLevel.DEBUG == DashBoard.getLoggingLevel()) {
       double totalCurrent = powerDistribution.getTotalCurrent();
       double pdpVoltage = powerDistribution.getVoltage();
       // TODO: Maybe add a verbosity level to the logging...cause it could be a lot

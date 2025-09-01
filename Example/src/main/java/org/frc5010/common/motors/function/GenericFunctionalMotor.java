@@ -19,9 +19,9 @@ import java.util.Optional;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.constants.RobotConstantsDef;
+import org.frc5010.common.motors.GenericMotorController;
+import org.frc5010.common.motors.GenericPIDController;
 import org.frc5010.common.motors.MotorConstants.Motor;
-import org.frc5010.common.motors.MotorController5010;
-import org.frc5010.common.motors.PIDController5010;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
@@ -29,9 +29,9 @@ import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 
 /** A class that wraps a motor controller with functionality */
-public class GenericFunctionalMotor implements MotorController5010, WpiHelperInterface {
+public class GenericFunctionalMotor implements GenericMotorController, WpiHelperInterface {
   /** The motor */
-  protected MotorController5010 _motor;
+  protected GenericMotorController _motor;
 
   protected LoggedMechanism2d _visualizer;
   protected Pose3d _robotToMotor;
@@ -47,7 +47,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    *
    * @param motor The motor
    */
-  public GenericFunctionalMotor(MotorController5010 motor, String visualName) {
+  public GenericFunctionalMotor(GenericMotorController motor, String visualName) {
     this._motor = motor;
     _visualName = visualName;
   }
@@ -58,7 +58,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @param motor The motor
    * @param slewRate The slew rate
    */
-  public GenericFunctionalMotor(MotorController5010 motor, double slewRate) {
+  public GenericFunctionalMotor(GenericMotorController motor, double slewRate) {
     this._motor = motor;
     _motor.setSlewRate(slewRate);
   }
@@ -96,11 +96,11 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return a new instance of MotorController5010 with the specified port
    */
   @Override
-  public MotorController5010 duplicate(int port) {
+  public GenericMotorController duplicate(int port) {
     return _motor.duplicate(port);
   }
 
-  public MotorController5010 getMotorController() {
+  public GenericMotorController getMotorController() {
     return _motor;
   }
 
@@ -111,7 +111,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setCurrentLimit(Current limit) {
+  public GenericMotorController setCurrentLimit(Current limit) {
     _motor.setCurrentLimit(limit);
     return this;
   }
@@ -123,7 +123,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setSlewRate(double rate) {
+  public GenericMotorController setSlewRate(double rate) {
     _motor.setSlewRate(rate);
     return this;
   }
@@ -171,7 +171,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   /**
    * Disables the motor by calling the disable method on the underlying motor object.
    *
-   * @see MotorController5010#disable()
+   * @see GenericMotorController#disable()
    */
   @Override
   public void disable() {
@@ -181,7 +181,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
   /**
    * Stops the motor by calling the stopMotor method on the underlying motor object.
    *
-   * @see MotorController5010#stopMotor()
+   * @see GenericMotorController#stopMotor()
    */
   @Override
   public void stopMotor() {
@@ -195,7 +195,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor) {
+  public GenericMotorController setFollow(GenericMotorController motor) {
     _motor.setFollow(motor);
     return this;
   }
@@ -208,7 +208,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 setFollow(MotorController5010 motor, boolean inverted) {
+  public GenericMotorController setFollow(GenericMotorController motor, boolean inverted) {
     _motor.setFollow(motor, inverted);
     return this;
   }
@@ -220,7 +220,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return a reference to the current MotorController5010 instance
    */
   @Override
-  public MotorController5010 invert(boolean inverted) {
+  public GenericMotorController invert(boolean inverted) {
     _motor.invert(inverted);
     return this;
   }
@@ -253,7 +253,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @throws UnsupportedOperationException if the motor does not support PIDController5010
    */
   @Override
-  public PIDController5010 getPIDController5010() {
+  public GenericPIDController getPIDController5010() {
     throw new UnsupportedOperationException("Not supported for this motor");
   }
 
@@ -349,7 +349,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return This motor controller.
    */
   @Override
-  public MotorController5010 setVoltageCompensation(double nominalVoltage) {
+  public GenericMotorController setVoltageCompensation(double nominalVoltage) {
     _motor.setVoltageCompensation(nominalVoltage);
     return this;
   }
@@ -367,7 +367,7 @@ public class GenericFunctionalMotor implements MotorController5010, WpiHelperInt
    * @return This motor controller instance.
    */
   @Override
-  public MotorController5010 setMotorBrake(boolean isBrakeMode) {
+  public GenericMotorController setMotorBrake(boolean isBrakeMode) {
     _motor.setMotorBrake(isBrakeMode);
     return this;
   }

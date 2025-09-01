@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
 import org.frc5010.common.arch.GenericRobot.LogLevel;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.SystemIdentification;
 import org.frc5010.common.sensors.encoder.GenericEncoder;
@@ -51,7 +51,7 @@ public class AngularControlMotor extends GenericControlledMotor {
   ArmFeedforward pivotFeedforward;
 
   public AngularControlMotor(
-      MotorController5010 motor, String visualName, DisplayValuesHelper tab) {
+      GenericMotorController motor, String visualName, DisplayValuesHelper tab) {
     super(motor, visualName, tab);
     kG = _displayValuesHelper.makeConfigDouble(K_G);
     encoder = motor.getMotorEncoder();

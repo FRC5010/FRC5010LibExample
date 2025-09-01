@@ -15,7 +15,7 @@ import org.frc5010.common.constants.MotorFeedFwdConstants;
 import org.frc5010.common.motors.hardware.GenericRevBrushlessMotor;
 
 /** Add your docs here. */
-public class RevSparkController extends GenericPIDController {
+public class RevSparkController extends GenericPIDControllerAbsract {
   /** The motor for this controller */
   GenericRevBrushlessMotor motor;
   /** The PID controller */

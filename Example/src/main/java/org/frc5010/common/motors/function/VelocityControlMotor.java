@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
-import org.frc5010.common.motors.MotorController5010;
+import org.frc5010.common.motors.GenericMotorController;
 import org.frc5010.common.motors.MotorFactory;
 import org.frc5010.common.motors.SystemIdentification;
 import org.frc5010.common.telemetry.DisplayValuesHelper;
@@ -34,7 +34,7 @@ public class VelocityControlMotor extends GenericControlledMotor {
   protected FlywheelSim flyWheelSim;
 
   public VelocityControlMotor(
-      MotorController5010 motor, String visualName, DisplayValuesHelper display) {
+      GenericMotorController motor, String visualName, DisplayValuesHelper display) {
     super(motor, visualName, display);
     controller.setControlType(PIDControlType.VELOCITY);
   }

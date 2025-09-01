@@ -39,7 +39,7 @@ public class SystemIdentification {
       new MutAngularVelocity(0, 0, DegreesPerSecond);
 
   public static SysIdRoutine rpmSysIdRoutine(
-      MotorController5010 motor,
+      GenericMotorController motor,
       GenericEncoder encoder,
       String motorName,
       SubsystemBase subsystemBase) {
@@ -61,7 +61,7 @@ public class SystemIdentification {
   }
 
   public static SysIdRoutine angleSysIdRoutine(
-      MotorController5010 motor,
+      GenericMotorController motor,
       GenericEncoder encoder,
       String motorName,
       SubsystemBase subsystemBase) {
