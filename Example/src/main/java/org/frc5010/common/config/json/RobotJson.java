@@ -7,7 +7,6 @@ package org.frc5010.common.config.json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.config.UnitsParser;
 import org.frc5010.common.constants.Constants;
@@ -53,9 +52,6 @@ public class RobotJson {
 
   /** Game piece definition for second game piece */
   public String gamePieceB = "GPB";
-
-  /** Device definition files */
-  public Map<String, String> devices;
 
   /**
    * Reads the robot configuration from the given directory

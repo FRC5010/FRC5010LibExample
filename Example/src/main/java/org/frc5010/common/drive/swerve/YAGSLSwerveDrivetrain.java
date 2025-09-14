@@ -140,6 +140,12 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
     // }
   }
 
+  /**
+   * Initializes a new DrivePoseEstimator object for this drivetrain.
+   *
+   * @return a new DrivePoseEstimator object.
+   */
+  @Override
   public DrivePoseEstimator initializePoseEstimator() {
     return new DrivePoseEstimator(new YAGSLSwervePose(this));
   }
@@ -148,6 +154,7 @@ public class YAGSLSwerveDrivetrain extends SwerveDriveFunctions {
   public double getGyroRate() {
     return swerveDrive.getGyro().getYawAngularVelocity().in(DegreesPerSecond);
   }
+
   /** END 5010 Code */
 
   /**

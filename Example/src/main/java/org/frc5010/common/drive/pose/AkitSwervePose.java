@@ -13,7 +13,7 @@ import org.frc5010.common.drive.swerve.akit.AkitSwerveDrive;
 
 /** Add your docs here. */
 public class AkitSwervePose extends GenericPose {
-  private AkitSwerveDrive drivetrain;
+  private final AkitSwerveDrive drivetrain;
 
   public AkitSwervePose(AkitSwerveDrive drivetrain) {
     super(null);

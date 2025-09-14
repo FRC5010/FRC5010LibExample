@@ -8,17 +8,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import org.frc5010.common.arch.GenericRobot;
 import org.frc5010.common.arch.WpiHelperInterface;
 import org.frc5010.common.arch.WpiNetworkTableValuesHelper;
+import org.frc5010.common.config.RobotsParser;
 import org.frc5010.common.constants.Constants;
 
 public class RobotContainer implements WpiHelperInterface {
+  private static final RobotsParser robotsParser = new RobotsParser();
   public static Constants constants;
   private GenericRobot robot;
 
   public RobotContainer() {
     constants = new Constants();
 
-    // robot = new BabySwerve("baby_swerve");
-    robot = new ExampleRobot("basic_robot");
+    robot = robotsParser.getRobot();
 
     initAutoCommands();
     configureButtonBindings();

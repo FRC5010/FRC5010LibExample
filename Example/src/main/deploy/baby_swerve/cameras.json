@@ -1,6 +1,5 @@
 {
   "cameras": [
-    "localization.json",
-    "quest.json"
+    "localization.json"
   ]
 }
