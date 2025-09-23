@@ -50,11 +50,17 @@ public class VisionPropertiesJson {
           AprilTagFieldLayout.loadFromResource(AprilTagFields.kDefaultField.m_resourceFile);
       AprilTags.setAprilTagFieldLayout(layout);
     } else {
-      AprilTagFieldLayout layout =
-          AprilTagFieldLayout.loadFromResource(
-              AprilTagFields.valueOf(aprilTagLayout).m_resourceFile);
-      AprilTags.setAprilTagFieldLayout(layout);
+      try {
+        AprilTagFieldLayout layout =
+            AprilTagFieldLayout.loadFromResource(
+                AprilTagFields.valueOf(aprilTagLayout).m_resourceFile);
+        AprilTags.setAprilTagFieldLayout(layout);
+      } catch (IllegalArgumentException e) {
+        AprilTagFieldLayout layout = AprilTagFieldLayout.loadFromResource(aprilTagLayout);
+        AprilTags.setAprilTagFieldLayout(layout);
+      }
     }
+
     Map<String, CameraConfigurationJson> camerasMap = new HashMap<>();
     for (String cameraString : cameras) {
       File cameraFile = new File(directory, "cameras/" + cameraString);

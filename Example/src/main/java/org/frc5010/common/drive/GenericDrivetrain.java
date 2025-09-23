@@ -264,7 +264,7 @@ public abstract class GenericDrivetrain extends GenericSubsystem {
     if (RobotBase.isSimulation() || useGlass) {
       initGlassWidget(constants);
     }
-    if (RobotBase.isSimulation()) {
+    if (Constants.Simulation.loadSimulatedField && RobotBase.isSimulation()) {
       SimulatedArena.getInstance().placeGamePiecesOnField();
       int count = 0;
       for (Pose3d gpa :

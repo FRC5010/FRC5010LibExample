@@ -1,4 +1,5 @@
 {
+  "competitionPin": 0,
   "robots": {
     "basic_robot": {
       "id": "basic_robot",

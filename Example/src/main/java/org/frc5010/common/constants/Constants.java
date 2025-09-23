@@ -14,6 +14,7 @@ public class Constants {
   }
 
   public static final class Simulation {
+    public static boolean loadSimulatedField = true;
     public static String gamePieceA = "GPA";
     public static String gamePieceB = "GPB";
   }

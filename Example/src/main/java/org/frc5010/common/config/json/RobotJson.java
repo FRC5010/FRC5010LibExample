@@ -47,6 +47,9 @@ public class RobotJson {
   /** Drivetrain gear ratio between drive motor and wheels */
   public double driveMotorGearRatio = 1.0;
 
+  /** Whether to load the simulated field */
+  public boolean loadSimulatedField = true;
+
   /** Game piece definition for first game piece */
   public String gamePieceA = "GPA";
 
@@ -78,5 +81,6 @@ public class RobotJson {
 
     Constants.Simulation.gamePieceA = gamePieceA;
     Constants.Simulation.gamePieceB = gamePieceB;
+    Constants.Simulation.loadSimulatedField = loadSimulatedField;
   }
 }
