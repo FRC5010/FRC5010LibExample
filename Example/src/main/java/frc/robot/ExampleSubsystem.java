@@ -2,8 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,14 +9,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 import org.frc5010.common.arch.GenericSubsystem;
 import org.frc5010.common.constants.GenericPID;
 import org.frc5010.common.constants.MotorFeedFwdConstants;
@@ -32,9 +27,6 @@ import org.frc5010.common.motors.function.VerticalPositionControlMotor;
 import org.frc5010.common.sensors.absolute_encoder.RevAbsoluteEncoder;
 import org.ironmaple.simulation.IntakeSimulation;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.NoteOnFly;
-import yams.mechanisms.positional.Arm;
-import yams.mechanisms.positional.Elevator;
-import yams.mechanisms.positional.Pivot;
 
 public class ExampleSubsystem extends GenericSubsystem {
   protected PercentControlMotor motor;
@@ -45,17 +37,11 @@ public class ExampleSubsystem extends GenericSubsystem {
   protected NoteOnFly noteOnFly;
   protected int scoredNotes = 0;
   protected Rotation2d rotation = new Rotation2d(Degrees.of(180));
-  protected Elevator elevator;
-  protected Arm arm;
-  protected Pivot pivot;
 
   public ExampleSubsystem() {
     super("example.json");
     this.motor = (PercentControlMotor) devices.get("percent_motor");
     this.controlledMotor = (VelocityControlMotor) devices.get("velocity_motor");
-    this.elevator = (Elevator) devices.get("Elevator");
-    this.arm = (Arm) devices.get("Arm");
-    this.pivot = (Pivot) devices.get("Turret");
 
     this.angularMotor = angularControlledMotor();
     // verticalMotor = verticalControlledMotor();
@@ -194,9 +180,6 @@ public class ExampleSubsystem extends GenericSubsystem {
   public void periodic() {
     super.periodic();
     angularMotor.periodicUpdate();
-    elevator.updateTelemetry();
-    arm.updateTelemetry();
-    pivot.updateTelemetry();
     //        verticalMotor.draw();
   }
 
@@ -204,29 +187,6 @@ public class ExampleSubsystem extends GenericSubsystem {
   public void simulationPeriodic() {
     super.simulationPeriodic();
     angularMotor.simulationUpdate();
-    elevator.simIterate();
-    arm.simIterate();
-    pivot.simIterate();
     //      verticalMotor.simulationUpdate();
-  }
-
-  public Command setElevatorHeight(Supplier<Distance> height) {
-    return elevator.setHeight(height.get());
-  }
-
-  public Command setArmAngle(Supplier<Angle> angle) {
-    return arm.setAngle(angle.get());
-  }
-
-  public Command setPivotAngle(Supplier<Angle> angle) {
-    return pivot.setAngle(angle.get());
-  }
-
-  public Command driveElevator(DoubleSupplier speed) {
-    return elevator.set(speed.getAsDouble());
-  }
-
-  public Command getElevatorSysId() {
-    return elevator.sysId(Volts.of(12), Volts.of(12).per(Second), Second.of(30));
   }
 }
