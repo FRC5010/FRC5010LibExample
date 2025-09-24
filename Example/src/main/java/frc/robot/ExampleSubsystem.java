@@ -189,4 +189,5 @@ public class ExampleSubsystem extends GenericSubsystem {
     angularMotor.simulationUpdate();
     //      verticalMotor.simulationUpdate();
   }
+
 }
