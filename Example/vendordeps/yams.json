@@ -12,7 +12,7 @@
     {
       "groupId": "yams",
       "artifactId": "YAMS-java",
-      "version": "2025.0.0"
+      "version": "2025.9.8"
     }
   ],
   "cppDependencies": [],
